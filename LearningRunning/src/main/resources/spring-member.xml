@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:tx="http://www.springframework.org/schema/tx"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans.xsd  
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx.xsd "
+>
+	<bean id="dataSource" 
+	class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	destroy-method="close"> 
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="jdbcUrl" value="jdbc:mysql://Localhost/db7?charaterEncoding=utf8"/>
+		<property name="user" value="db7"/>
+		<property name="password" value="1234"/>
+	</bean>
+	<bean id="transactionManager" 
+	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+<!-- 	<bean id="memberDao" class="spring.MemberDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+		
+	<bean id="boardDao" class="spring.BoardDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="memberRegSvc" class="spring.MemberResisterService">
+		<constructor-arg name="memberDao" ref="memberDao"/>
+	</bean>
+	<bean id="changePwdSvc" class="spring.ChangePasswordService">
+		<constructor-arg name="memberDao" ref="memberDao"/>
+	</bean>
+	<bean id="authService" class="spring.AuthService">
+		<property name="memberDao" ref="memberDao"/>
+	</bean> -->
+
+</beans>

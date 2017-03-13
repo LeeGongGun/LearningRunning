@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:mvc="http://www.springframework.org/schema/mvc"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/mvc 
+http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
+>
+	<mvc:view-controller path="/main" view-name="main"/>
+	<mvc:resources mapping="/css/**" location="/resources/css/" /> 
+	<mvc:resources mapping="/images/**" location="/resources/images/" /> 
+	<mvc:resources mapping="/js/**" location="/resources/js/" /> 
+	<mvc:resources mapping="/locales/**" location="/resources/js/locales/" /> 
+	<mvc:resources mapping="/less/**" location="/resources/less/" /> 
+	<mvc:resources mapping="/fonts/**" location="/resources/fonts/" /> 
+	<mvc:resources mapping="/build/**" location="/resources/build/" /> 
+	<mvc:resources mapping="/resources/**" location="/resources/" /> 
+	<mvc:resources mapping="/uploads/**" location="/resources/uploads/" /> 
+
+ 	<bean class="com.ds.learningrunning.HomeController">
+	</bean>
+<!--	<bean class="controller.LoginController">
+		<property name="authService" ref="authService"/>
+	</bean>
+	<bean class="controller.LogoutController"/>
+	<bean class="controller.ChangePwdController">
+		<property name="changePasswordService" ref="changePwdSvc"/>
+	</bean>
+	<bean class="controller.MemberListController">
+		<property name="memberDao" ref="memberDao"/>
+	</bean>
+	<bean class="controller.BoardController">
+		<property name="memberDao" ref="memberDao"/>
+		<property name="boardDao" ref="boardDao"/>
+	</bean>-->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		 <!-- setting maximum upload size -->
+		<!--<property name="maxUploadSize" value="100000" />-->
+ 
+	</bean>
+	<!--  <mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/edit/**"/>
+			<mvc:mapping path="/member/**"/>
+			<mvc:mapping path="/board/**" />
+			<bean class="interceptor.AuthCheckInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>-->
+	
+</beans>
