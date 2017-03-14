@@ -1,0 +1,33 @@
+@CHARSET "UTF-8";
+.title-div{
+	width: 80%;margin: 20px 10% ;
+	border: 1px solid #eee;
+	background-color:rgba(255,255,255,1);
+	transition: all .3s;
+	position: absolute;
+	top:0; left:0;
+}
+.div-fixed{
+	width: 100%;margin: 0 ;
+	position: fixed;
+	transition: all .3s;
+	z-index: 10;
+}
+body{width: 100%;height: auto;}
+.search-menu-focus{transition: all .3s;background-color:rgba(255,255,255,1);}
+.main{position:relative;	top:0; left:0;width:80%;margin: 0 auto;padding: 0;}
+.main-div{width:100%;margin: 80px auto;background-color:rgba(255,255,255,0.5);padding: 20px 40px 20px 40px;}
+.VideoPane-bg{position: absolute;z-index: -1;background-color:rgba(255,255,255,0.5);margin:0;top:0;left:0;}
+.dropdown ul{width:100%;}
+.footer{position:fixed;width:100%;	bottom:0;left:0;margin: 10px 0 0 0;background-color:rgba(255,255,255,1);color:rgba(0,0,0,1);padding:10px}
+.footer-div{width:80%;margin:0 auto;}
+.sub-title{color:rgb(255,255,255);}
+.search-menu{width:100%;min-height: 100px; border:1px solid #eee;background-color:rgba(255,255,255,0.6);padding:20px;}
+.search-table{width:100%;margin:20px 0;background-color:rgba(255,255,255,0.4);}
+#datepicker-div{position: relative;}
+.div-high{padding:3px 30px;background-color: rgba(255,255,255,0.4);}
+
+.VideoPane-bg{width:100%;min-height:100%;height: auto;position: absolute;z-index: -1;background-color:rgba(255,255,255,0);margin:0;top:0;left:0;background-size: cover;
+    background-repeat: background-repeat;
+    background-position: 0 0;
+    background-attachment: fixed;}
