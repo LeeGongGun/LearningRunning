@@ -13,10 +13,4 @@ public class JshController {
 		this.jshDao = jshDao;
 	}
 	
-	@RequestMapping(value="attendance/attendancePerson", method=Requestmethod.GET)
-	public String attendIndividualGet {
-		
-	}
-
-	
 }
