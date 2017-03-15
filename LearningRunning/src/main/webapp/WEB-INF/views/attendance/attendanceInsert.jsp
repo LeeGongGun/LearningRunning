@@ -15,7 +15,6 @@
 <div class="main"><div class="main-div">
 	<h3 class="sub-title">글쓰기. </h3>
 	<form:form class="form-horizontal" enctype="multipart/form-data">
-
   	</form:form>
 
 </div></div>
