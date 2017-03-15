@@ -3,13 +3,13 @@ package controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartResolver;
 
-import dao.LggDao;
+import dao.KymDao;
 @Controller
 public class KymController {
-	private LggDao ggDao;
+	private KymDao kymDao;
 	private MultipartResolver multipartResolver;
-	public void setBoardDao(LggDao ggDao) {
-		this.ggDao = ggDao;
+	public void setKymDao(KymDao kymDao) {
+		this.kymDao = kymDao;
 	}
 
 	

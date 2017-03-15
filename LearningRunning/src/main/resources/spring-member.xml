@@ -7,20 +7,34 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/tx 
 http://www.springframework.org/schema/tx/spring-tx.xsd "
 >
-	<bean id="dataSource" 
+	 <bean id="dataSource" 
 	class="com.mchange.v2.c3p0.ComboPooledDataSource"
 	destroy-method="close"> 
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
-		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:XE?charaterEncoding=utf8"/>
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE"/>
 		<property name="user" value="learningrunning"/>
 		<property name="password" value="1234"/>
-	</bean>
+	</bean> 
+
+	<!--<bean id="dataSource" 
+	class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	destroy-method="close"> 
+		<property name="driverClass" value="com.mysql.jdbc.Driver"/>
+		<property name="jdbcUrl" value="jdbc:mysql://Localhost/learningrunning?charaterEncoding=utf8"/>
+		<property name="user" value="learningrunning"/>
+		<property name="password" value="1234"/>
+	</bean>-->
+
+
+
+
+
+
 	<bean id="transactionManager" 
 	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
 	<tx:annotation-driven transaction-manager="transactionManager"/>
-
 <!-- 	<bean id="memberDao" class="spring.MemberDao">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>

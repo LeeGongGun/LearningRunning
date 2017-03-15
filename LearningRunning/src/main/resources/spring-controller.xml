@@ -7,7 +7,6 @@ http://www.springframework.org/schema/beans/spring-beans.xsd
 http://www.springframework.org/schema/mvc 
 http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 >
-	<mvc:view-controller path="/main" view-name="main"/>
 	<mvc:resources mapping="/css/**" location="/resources/css/" /> 
 	<mvc:resources mapping="/images/**" location="/resources/images/" /> 
 	<mvc:resources mapping="/js/**" location="/resources/js/" /> 
@@ -17,9 +16,32 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 	<mvc:resources mapping="/build/**" location="/resources/build/" /> 
 	<mvc:resources mapping="/resources/**" location="/resources/" /> 
 	<mvc:resources mapping="/uploads/**" location="/resources/uploads/" /> 
-
- 	<bean class="com.ds.learningrunning.HomeController">
+ 	<bean id="jshDao" class="dao.JshDao">
+		<property name="dataSource" ref="dataSource"/>
 	</bean>
+	<bean id="kswDao" class="dao.KswDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="kymDao" class="dao.KymDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean> 
+	<bean id="lggDao" class="dao.LggDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+
+ 	<bean class="controller.JshController">
+		<property name="jshDao" ref="jshDao"/>
+	</bean>
+	<bean class="controller.KswController">
+		<property name="kswDao" ref="kswDao"/>
+	</bean>
+	<bean class="controller.KymController">
+		<property name="kymDao" ref="kymDao"/>
+	</bean> 
+	<bean class="controller.LggController">
+		<property name="lggDao" ref="lggDao"/>
+	</bean>
+
 <!--	<bean class="controller.LoginController">
 		<property name="authService" ref="authService"/>
 	</bean>

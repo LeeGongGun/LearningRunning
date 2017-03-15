@@ -13,6 +13,8 @@
 		<org.aspectj-version>1.6.10</org.aspectj-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 	</properties>
+
+
 	<dependencies>
 		<!-- Spring -->
 		<dependency>
@@ -152,6 +154,13 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.30</version>
 		</dependency>
+		<dependency>
+		    <groupId>oracle.jdbc</groupId>
+		    <artifactId>OracleDriver</artifactId>
+		    <version>11.2.0.3.0</version>
+		    <scope>system</scope>
+		    <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc6-11.2.0.3.jar</systemPath>
+		</dependency>
 
 		<!-- json -->
 		<dependency>
@@ -177,7 +186,8 @@
 		    <groupId>aopalliance</groupId>
 		    <artifactId>aopalliance</artifactId>
 		    <version>1.0</version>
-		</dependency>	</dependencies>
+		</dependency>
+	</dependencies>
     <build>
         <plugins>
             <plugin>

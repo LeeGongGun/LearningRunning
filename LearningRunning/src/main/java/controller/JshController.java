@@ -3,13 +3,14 @@ package controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartResolver;
 
+import dao.JshDao;
 import dao.LggDao;
 @Controller
 public class JshController {
-	private LggDao ggDao;
+	private JshDao jshDao;
 	private MultipartResolver multipartResolver;
-	public void setBoardDao(LggDao ggDao) {
-		this.ggDao = ggDao;
+	public void setJshDao(JshDao jshDao) {
+		this.jshDao = jshDao;
 	}
 
 	
