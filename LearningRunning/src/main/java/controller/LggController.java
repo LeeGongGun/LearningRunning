@@ -35,6 +35,20 @@ public class LggController {
 		
 		return "home";
 	}
+	@RequestMapping(value = "/attendance/insert", method = RequestMethod.GET)
+	public String attendanceInsert(Locale locale, Model model) {
+		//System.out.println(lggDao.toString());
+		int n = lggDao.testConn();
+		Date date = new Date();
+		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
+		
+		String formattedDate = dateFormat.format(date);
+		
+		model.addAttribute("serverTime", formattedDate );
+		model.addAttribute("n", n );
+		
+		return "/attendance/attendanceInsert";
+	}
 
 	
 }
