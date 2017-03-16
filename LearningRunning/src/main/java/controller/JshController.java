@@ -1,10 +1,10 @@
 package controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.multipart.MultipartResolver;
 
 import dao.JshDao;
-import dao.LggDao;
 @Controller
 public class JshController {
 	private JshDao jshDao;
@@ -12,6 +12,5 @@ public class JshController {
 	public void setJshDao(JshDao jshDao) {
 		this.jshDao = jshDao;
 	}
-
 	
 }
