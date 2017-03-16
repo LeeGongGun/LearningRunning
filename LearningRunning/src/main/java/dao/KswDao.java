@@ -16,11 +16,6 @@ import bean.ClassList;
 public class KswDao{
 	private JdbcTemplate jdbcTemplate;
 	
-	/*
-	public KswDao(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	*/
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
@@ -40,10 +35,10 @@ public class KswDao{
 		return count;
 	}
 
-	public ClassList selectByNum(Long num){
+	public ClassList getAllClass(){
 		List<ClassList> results = jdbcTemplate.query(
-				"SELECT * FROM ATTENDANCE WHERE ATTEND_ID=? ", 
-				classListRowMapper, num);
+				"SELECT COUNT(*) FROM SUBJECTS ", 
+				classListRowMapper);
 		return results.isEmpty()?null: results.get(0);
 	}
 	
