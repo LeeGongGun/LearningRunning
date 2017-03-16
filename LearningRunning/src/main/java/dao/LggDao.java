@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import bean.Attendance;
+import bean.Subject;
 
 
 
@@ -32,27 +33,39 @@ public class LggDao{
 			return beanAttendance;
 		}		
 	};
+	private RowMapper<Subject> subjectRowMapper = new RowMapper<Subject>() {
+		@Override
+		public Subject mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Subject beanSubject = new Subject(
+					rs.getInt("SUBJECT_ID"),
+					rs.getString("SUBJECT_NAME"),
+					rs.getDate("SUBJECT_START"),
+					rs.getDate("SUBJECT_END"),
+					rs.getString("SUBJECT_STATE"),
+					rs.getString("SUBJECT_COMMENT"),
+					rs.getInt("STUDENT_COUNT")
+				);
+			return beanSubject;
+		}		
+	};
 	
 	
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-	public int testConn() {
-		
-		List<Integer> result = jdbcTemplate.query("SELECT count(*) FROM member ",
-				new RowMapper<Integer>(){
-					@Override
-					public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-						Integer cnt = rs.getInt(1);
-						return cnt;
-					}
-				});
-		return result.isEmpty()?0:result.get(0);
-	}
-	public List<Attendance> tempAttendanceList(int subject_id) {
+	
+	public List<Attendance> tempAttendanceList(int subjectId) {
 		String sql = "select * from temp_attendance where SUBJECT_ID = ? ";
-		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subject_id);
+		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subjectId);
+		return result;
+	}
+	public List<Subject> teachersSubject(int teacherId) {
+		String sql = "select * "
+				+ "from (select SUBJECT_ID from TEACHER_SUBJECT where M_ID = ?) "
+				+ "natural join SUBJECTS "
+				+ "natural join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) ";
+		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper,teacherId);
 		return result;
 	}
 

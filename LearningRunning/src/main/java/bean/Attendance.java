@@ -10,6 +10,12 @@ public class Attendance {
 	Date stop_time	;
 	Date restart	;
 	String a_status	;
+	
+	
+	
+	public Attendance() {
+		super();
+	}
 	public Attendance(int subject_id, int m_id, Date start_time, Date end_time, Date stop_time, Date restart,
 			String a_status) {
 		super();
