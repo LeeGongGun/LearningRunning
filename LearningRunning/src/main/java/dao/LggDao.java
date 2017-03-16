@@ -26,8 +26,8 @@ public class LggDao{
 					rs.getDate("start_time"),
 					rs.getDate("end_time"),
 					rs.getDate("stop_time"),
-					rs.getDate("restart"),
-					rs.getString("a_status")
+					rs.getDate("restart_time"),
+					rs.getString("attendance_status")
 			);
 			return beanAttendance;
 		}		
