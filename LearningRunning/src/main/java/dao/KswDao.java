@@ -15,11 +15,12 @@ import bean.ClassList;
 
 public class KswDao{
 	private JdbcTemplate jdbcTemplate;
-			
+	
+	/*
 	public KswDao(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
-	
+	*/
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
