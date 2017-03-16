@@ -26,8 +26,8 @@ public class LggDao{
 					rs.getDate("start_time"),
 					rs.getDate("end_time"),
 					rs.getDate("stop_time"),
-					rs.getDate("restart_time"),
-					rs.getString("attend_status")
+					rs.getDate("restart"),
+					rs.getString("a_status")
 			);
 			return beanAttendance;
 		}		
@@ -51,7 +51,7 @@ public class LggDao{
 		return result.isEmpty()?0:result.get(0);
 	}
 	public List<Attendance> tempAttendanceList(int subject_id) {
-		String sql = "select * from temp_attendance where subject_id=? ";
+		String sql = "select * from temp_attendance where SUBJECT_ID = ? ";
 		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subject_id);
 		return result;
 	}
