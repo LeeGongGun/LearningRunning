@@ -35,13 +35,13 @@ public class KswDao{
 		return count;
 	}
 
-	public ClassList getAllClass(){
+	public List<ClassList> getAllClass(){
 		List<ClassList> results = jdbcTemplate.query(
-				"SELECT COUNT(*) FROM SUBJECTS ", 
-				classListRowMapper);
-		return results.isEmpty()?null: results.get(0);
+				"SELECT * FROM SUBJECTS ", 
+				classListRowMapper);		
+		return results;
 	}
-	
+
 	public int countPage(String srch) {
 		Integer count;
 		if(srch == null || srch.equals("")){
@@ -83,9 +83,5 @@ public class KswDao{
 		jdbcTemplate.update(
 				"delete from board where num = ?", 
 				classList.getNum());
-	}
-	public ClassList selectByWriter(Long id) {
-		ClassList classList = new ClassList();
-		return classList;
 	}	
 }
