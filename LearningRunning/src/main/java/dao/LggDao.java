@@ -24,6 +24,7 @@ public class LggDao{
 			Attendance beanAttendance = new Attendance(
 					rs.getInt("subject_id"),
 					rs.getInt("m_id"),
+					rs.getString("m_name"),
 					rs.getDate("start_time"),
 					rs.getDate("end_time"),
 					rs.getDate("stop_time"),
@@ -56,7 +57,8 @@ public class LggDao{
 	}
 	
 	public List<Attendance> tempAttendanceList(int subjectId) {
-		String sql = "select * from temp_attendance where SUBJECT_ID = ? ";
+		String sql = "select * from TEMP_ATTENDANCE "
+				+ "natural join MEMBER  where SUBJECT_ID = ? ";
 		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subjectId);
 		return result;
 	}
