@@ -4,9 +4,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<title>입력</title>
 </head>
 <body>
+<%@ include file="/WEB-INF/views/include/nav.jsp" %>
 	<tr>
 		<td>${member.name }님 환영합니다.</td>
 	</tr>
