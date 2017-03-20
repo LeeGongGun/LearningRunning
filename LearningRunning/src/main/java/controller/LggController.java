@@ -1,6 +1,7 @@
 package controller;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartResolver;
 
 import bean.Attendance;
 import bean.Subject;
+import command.AttendanceInsertCommand;
 import dao.LggDao;
 @Controller
 public class LggController {
@@ -40,6 +42,18 @@ public class LggController {
 		List<Attendance> aList = lggDao.tempAttendanceList(subjectId);
 		model.addAttribute("aList", aList );
 		return "/attendance/attendanceInsert";
+	}
+	@RequestMapping(value = "/attendance/insert/{id}", method = RequestMethod.POST)
+	public String attendanceInsertAction(AttendanceInsertCommand command,@PathVariable("id") int subjectId, Model model) {
+		String[] tmpArr = command.getAttendanceCheck();
+		System.out.println(Arrays.toString(tmpArr));
+		int request = 0;
+		if (tmpArr!=null) {
+			request = lggDao.attendInsert(command,subjectId);System.out.println(request);
+		}
+		model.addAttribute("json", "{\"data\": "+request+"}");
+		
+		return "/ajax/ajaxDefault";
 	}
 
 	

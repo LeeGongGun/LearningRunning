@@ -2,6 +2,8 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
+import java.sql.Types;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -9,9 +11,12 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import bean.Attendance;
 import bean.Subject;
+import command.AttendanceInsertCommand;
 
 
 
@@ -69,6 +74,31 @@ public class LggDao{
 				+ "natural join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) ";
 		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper,teacherId);
 		return result;
+	}
+
+	public int attendInsert(AttendanceInsertCommand command,int subjectId) {
+		String state = command.getState();
+		String cName = "";
+		if (state.equals("start")) {
+			cName = "START_TIME";
+		}else if (state.equals("stop")) {
+			cName = "STOP_TIME";
+		}else if (state.equals("restart")) {
+			cName = "RESTART_TIME";
+		}else if (state.equals("end")) {
+			cName = "END_TIME";
+		}else {
+			return 0;
+		}
+		String inSql = "";
+		String[] ids = command.getAttendanceCheck();
+		for (int i = 0; i < ids.length; i++) {
+			if (i!=0) inSql += ",";
+			inSql += ids[i];
+		}
+		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where SUBJECT_ID = ? and M_ID IN ("+inSql+") ";
+		System.out.println(sql + command.getTime());
+		return jdbcTemplate.update(sql, command.getTime(),subjectId);
 	}
 
 }
