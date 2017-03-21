@@ -33,14 +33,11 @@ $(function(){
     
 	<div class="title-div">
 		<ul class="nav nav-pills ">
-			<li><a href="<%=request.getContextPath()%>/attendance/subList">츨결입력</a></li>
-			<li><a href="<%=request.getContextPath()%>/attendance/list">반별 출결보기</a></li>
-			<li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
-            <!-- <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
+            <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
 		          <li><a href="<%=request.getContextPath()%>/attendance/subList">츨결입력</a></li>
-		          <li><a href="<%=request.getContextPath()%>/attendance/insert">반별 출결보기</a></li>
-		          <li><a href="<%=request.getContextPath()%>/attendance/insert">개인별 출결보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/attendance/list">반별 출결보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">상담관리<span class="caret"></span></a>
@@ -62,7 +59,7 @@ $(function(){
 		          <li><a href="<%=request.getContextPath()%>/teacher">선생관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/course">과정(반)관리</a></li>
 		        </ul>
-            </li> -->
+            </li>
           </ul>
           		
 	</div>
