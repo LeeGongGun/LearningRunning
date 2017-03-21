@@ -6,18 +6,10 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class AttendanceInsertCommand {
-	@DateTimeFormat(pattern="yyyy-MM-dd")
-	private Date today;
-	@DateTimeFormat(pattern="HH:mm")
+	@DateTimeFormat(pattern="yyyy-MM-dd HH:mm")
 	private Date time;
 	String state;
 	String[] attendanceCheck;
-	public Date getToday() {
-		return today;
-	}
-	public void setToday(Date today) {
-		this.today = today;
-	}
 	public Date getTime() {
 		return time;
 	}

@@ -30,10 +30,10 @@ public class LggDao{
 					rs.getInt("subject_id"),
 					rs.getInt("m_id"),
 					rs.getString("m_name"),
-					rs.getDate("start_time"),
-					rs.getDate("end_time"),
-					rs.getDate("stop_time"),
-					rs.getDate("restart_time"),
+					rs.getTimestamp("start_time"),
+					rs.getTimestamp("end_time"),
+					rs.getTimestamp("stop_time"),
+					rs.getTimestamp("restart_time"),
 					rs.getString("attendance_status")
 			);
 			return beanAttendance;
@@ -96,7 +96,7 @@ public class LggDao{
 			if (i!=0) inSql += ",";
 			inSql += ids[i];
 		}
-		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where SUBJECT_ID = ? and M_ID IN ("+inSql+") ";
+		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where SUBJECT_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
 		System.out.println(sql + command.getTime());
 		return jdbcTemplate.update(sql, command.getTime(),subjectId);
 	}
