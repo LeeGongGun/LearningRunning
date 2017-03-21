@@ -23,7 +23,7 @@
 				<th>인원수</th>
 				<th>상태</th>
 			</tr>
-			<c:forEach var="subject" items="${subjectList}">
+			<c:forEach var="subject" items="${subject}">
 				<tr>
 					<td>${subject.subject_id}</td>
 					<td><a href="<c:url value="/attendance/insert/${subject.subject_id}"/>">${subject.subject_name}</a></td>

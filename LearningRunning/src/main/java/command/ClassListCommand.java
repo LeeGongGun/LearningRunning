@@ -4,6 +4,17 @@ public class ClassListCommand {
 	
 	private String subject_id, subject_name, subject_start, subject_end, subject_state, subject_comment;
 
+	public ClassListCommand(String subject_id, String subject_name, String subject_start, String subject_end,
+			String subject_state, String subject_comment) {
+		super();
+		this.subject_id = subject_id;
+		this.subject_name = subject_name;
+		this.subject_start = subject_start;
+		this.subject_end = subject_end;
+		this.subject_state = subject_state;
+		this.subject_comment = subject_comment;
+	}	
+	
 	public String getSubject_id() {
 		return subject_id;
 	}
@@ -11,6 +22,7 @@ public class ClassListCommand {
 	public void setSubject_id(String subject_id) {
 		this.subject_id = subject_id;
 	}
+
 
 	public String getSubject_name() {
 		return subject_name;
