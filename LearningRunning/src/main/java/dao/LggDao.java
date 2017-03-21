@@ -107,9 +107,9 @@ public class LggDao{
 		if(command.getSearchText()!=null){
 			whereSql += (tmp==0)?" where ":" and ";
 			tmp++;
-			whereSql += " SUBJECT_NAME= ? ";
+			whereSql += " SUBJECT_NAME like '%"+command.getSearchText()+"%' ";
 		}
-		if(command.getState().length > 0){
+		if(command.getState()!=null && command.getState().length > 0){
 			String[] ids = command.getState();
 			String inSql="";
 			for (int i = 0; i < ids.length; i++) {
@@ -124,9 +124,9 @@ public class LggDao{
 		System.out.println(whereSql);
 		String sql = "select * "
 				+ "from  SUBJECTS "
-				+ "natural join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) "
+				+ "left outer join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) USING(SUBJECT_ID)  "
 				+ whereSql;
-		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper,command.getSearchText());
+		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper);
 		return result;
 	}
 

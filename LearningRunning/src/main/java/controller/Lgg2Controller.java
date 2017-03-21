@@ -21,7 +21,7 @@ public class Lgg2Controller {
 	public void setLggDao(LggDao lggDao) {
 		this.lggDao = lggDao;
 	}
-	@RequestMapping(value = "/course", method = RequestMethod.POST)
+	@RequestMapping(value = "/course")
 	public String subjectList(SubjectSearchCommand command, Model model) {
 		int adminId = 1;
 		List<Subject> subjectList = lggDao.subjectList(command);

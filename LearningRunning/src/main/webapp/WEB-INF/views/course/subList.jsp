@@ -13,7 +13,7 @@
 <body>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
 <div class="main"><div class="main-div">
-	<h3 class="sub-title">출석반선택</h3>
+	<h3 class="sub-title">반(과정)관리</h3>
 <div class="search-table">
 		<table  class="table table-striped table-bordered" cellspacing="0" width="100%">
 			<tr>
