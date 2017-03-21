@@ -41,6 +41,9 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 	<bean class="controller.LggController">
 		<property name="lggDao" ref="lggDao"/>
 	</bean>
+	<bean class="controller.Lgg2Controller">
+		<property name="lggDao" ref="lggDao"/>
+	</bean>
 
 <!--	<bean class="controller.LoginController">
 		<property name="authService" ref="authService"/>
