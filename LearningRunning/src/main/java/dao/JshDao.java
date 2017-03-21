@@ -26,27 +26,34 @@ public class JshDao{
 		@Override
 		public AttendancePersonCommand mapRow(ResultSet rs, int rowNum) 
 				throws SQLException {
-			AttendancePersonCommand attendancePersonCommand = new AttendancePersonCommand(rs.getInt("m_id"), 
-					rs.getString("m_name"), 
-					rs.getString("subject_name"),
-					rs.getDate("subject_start"), 
-					rs.getDate("subject_end"),
-					rs.getString("subject_comment"), 
-					rs.getString("subject_status"),
-					rs.getInt("attendRate"));
+			AttendancePersonCommand attendancePersonCommand = new AttendancePersonCommand(
+					rs.getInt("M_ID"), 
+					rs.getInt("SUBJECT_id"),
+					rs.getString("SS_STATUS"),
+					rs.getDate("SS_DATE"),	
+					rs.getString("SUBJECT_NAME"),
+					rs.getDate("SUBJECT_START"), 
+					rs.getDate("SUBJECT_END"),
+					rs.getString("SUBJECT_STATE"),
+					rs.getString("SUBJECT_COMMENT"), 
+					rs.getString("M_EMAIL"),
+					rs.getString("M_NAME"),
+					rs.getInt("M_PASS"),
+					rs.getString("M_APP_U_NO"));
 			return attendancePersonCommand;
 		}
 	};	
 	
 	public int count(AttendancePersonCommand attendancePersonCommand) {
 		Integer count = jdbcTemplate.queryForObject(
-				"select count(*) from attendance where m_id = '1' ", Integer.class);
+				"select count(*) from attendance where m_id = 1 ", Integer.class);
+		System.out.println(count);
 		return count;
 	}
 	
 	public AttendancePersonCommand selectAllPerson() {
 		List<AttendancePersonCommand> results = jdbcTemplate.query(
-				"select * from STUDENT_SUBJECT natural join subjects natural join member ", attendPersonRowMapper);
+				"select * from student_subject natural join subjects natural join member ", attendPersonRowMapper);
 		return results.isEmpty()?null: results.get(0);
 	}
 }

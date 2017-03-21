@@ -21,12 +21,9 @@ public class JshController {
 	@RequestMapping(value="attendance/person", method = RequestMethod.GET)
 	public String attendPersonGet(AttendancePersonCommand attendancePersonCommand, Model model) {
 		attendancePersonCommand=jshDao.selectAllPerson();
-		System.out.println(attendancePersonCommand);
-		System.out.println(jshDao.selectAllPerson());
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
-		System.out.println(model);
 		int result = jshDao.count(attendancePersonCommand);
-		System.out.println(result);
+		System.out.println(attendancePersonCommand.getSs_Date());
 		return "attendance/attendancPerson";
 	}
 
