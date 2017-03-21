@@ -13,15 +13,13 @@ public class ClassList {
 	private int classStudents;
 	
 	public ClassList(){}
-	public ClassList(String className, Date classStartDate, Date classEndDate, String classTeacher, String classStat,
-			int classStudents) {
+	public ClassList(String className, Date classStartDate, Date classEndDate, String classTeacher, String classStat) {
 		super();
 		this.className = className;
 		this.classStartDate = classStartDate;
 		this.classEndDate = classEndDate;
 		this.classTeacher = classTeacher;
 		this.classStat = classStat;
-		this.classStudents = classStudents;
 	}
 	
 	public String getClassName() {

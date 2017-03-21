@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -38,7 +39,24 @@ public class KswDao{
 	public List<ClassList> getAllClass(){
 		List<ClassList> results = jdbcTemplate.query(
 				"SELECT * FROM SUBJECTS ", 
-				classListRowMapper);		
+				classListRowMapper);	
+				/*
+				"SELECT SUBJECT_NAME, SUBJECT_START, SUBJECT_END, SUBJECT_STATE, SUBJECT_STATE FROM SUBJECTS ", 
+				new RowMapper<ClassList>(){
+
+					@Override
+					public ClassList mapRow(ResultSet rs, int rowNum) throws SQLException {
+						ClassList classList = new ClassList(
+								rs.getString("className"),
+								rs.getDate("classStartDate"),
+								rs.getDate("classEndDate"),
+								rs.getString("classTeacher"),
+								rs.getString("classStat"));
+						return classList;
+					}
+					
+				});	
+				*/	
 		return results;
 	}
 

@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.servlet.ModelAndView;
 
 import bean.ClassList;
 import dao.KswDao;
@@ -21,10 +22,12 @@ public class KswController {
 	}
 
 	@RequestMapping(value = "/attendance/list", method = RequestMethod.GET)
-	public String classGetList(Model model) {
+	public ModelAndView classGetList(Model model) {
 		List<ClassList> list = kswDao.getAllClass();
-		model.addAttribute("list", list);
-		return "/attendance/attendanceClassList";
+		ModelAndView mav = new ModelAndView();
+		mav.addObject("list", list);
+		mav.setViewName("/attendance/attendanceClassList");
+		return mav;
 	}
 
 }
