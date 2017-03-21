@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import bean.Attendance;
 import bean.Subject;
 import command.AttendanceInsertCommand;
+import command.SubjectSearchCommand;
 
 
 
@@ -97,8 +98,36 @@ public class LggDao{
 			inSql += ids[i];
 		}
 		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where SUBJECT_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
-		System.out.println(sql + command.getTime());
 		return jdbcTemplate.update(sql, command.getTime(),subjectId);
+	}
+
+	public List<Subject> subjectList(SubjectSearchCommand command) {
+		String whereSql ="";
+		int tmp=0;
+		if(command.getSearchText()!=null){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " SUBJECT_NAME= ? ";
+		}
+		if(command.getState().length > 0){
+			String[] ids = command.getState();
+			String inSql="";
+			for (int i = 0; i < ids.length; i++) {
+				if (i!=0) inSql += ",";
+				inSql += ids[i];
+			}
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " SUBJECT_STATE in ("+inSql+") ";
+		}
+		
+		System.out.println(whereSql);
+		String sql = "select * "
+				+ "from  SUBJECTS "
+				+ "natural join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) "
+				+ whereSql;
+		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper,command.getSearchText());
+		return result;
 	}
 
 }
