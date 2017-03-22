@@ -1,5 +1,7 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLType;
@@ -10,13 +12,17 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import bean.Attendance;
 import bean.Subject;
 import command.AttendanceInsertCommand;
+import command.SubjectCommand;
 import command.SubjectSearchCommand;
 
 
@@ -128,6 +134,46 @@ public class LggDao{
 				+ whereSql;
 		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper);
 		return result;
+	}
+
+	public int subjectInsert(final Subject command) {
+		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
+						+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
+						+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
+				command.getSubject_name(),
+				command.getSubject_start(),
+				command.getSubject_end(),
+				command.getSubject_state(),
+				command.getSubject_comment()
+			);
+	}
+	public int subjectEdit(final Subject command) {
+		return jdbcTemplate.update(" update SUBJECTS set "
+						+ "SUBJECT_NAME=?,"
+						+ "SUBJECT_START=?,"
+						+ "SUBJECT_END=?,"
+						+ "SUBJECT_STATE=?,"
+						+ "SUBJECT_COMMENT=?"
+						+ " where SUBJECT_ID = ? ",
+						command.getSubject_name(),
+						command.getSubject_start(),
+						command.getSubject_end(),
+						command.getSubject_state(),
+						command.getSubject_comment(),
+						command.getSubject_id()
+			);
+	}
+
+	public int subjectInsert1(SubjectCommand command) {
+		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
+				+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
+				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
+		command.getSubject_name(),
+		command.getSubject_start(),
+		command.getSubject_end(),
+		command.getSubject_state(),
+		command.getSubject_comment()
+	);
 	}
 
 }

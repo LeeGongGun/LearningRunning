@@ -17,8 +17,7 @@ public class Subject {
 		super();
 	}
 
-	
-	
+
 	public Subject(int subject_id, String subject_name, Date subject_start, Date subject_end, String subject_state,
 			String subject_comment, int student_count) {
 		super();
