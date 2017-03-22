@@ -1,13 +1,15 @@
 package command;
 
+import java.util.Date;
+
 public class ClassListCommand {
 	
-	private String subject_id, subject_name, subject_start, subject_end, subject_state, subject_comment;
+	private String subject_name, subject_state, subject_comment;
+	private Date subject_start, subject_end;
 
-	public ClassListCommand(String subject_id, String subject_name, String subject_start, String subject_end,
-			String subject_state, String subject_comment) {
-		super();
-		this.subject_id = subject_id;
+	public ClassListCommand(){}
+	public ClassListCommand(String subject_name, Date subject_start, Date subject_end, String subject_state, String subject_comment) {
+		
 		this.subject_name = subject_name;
 		this.subject_start = subject_start;
 		this.subject_end = subject_end;
@@ -15,15 +17,6 @@ public class ClassListCommand {
 		this.subject_comment = subject_comment;
 	}	
 	
-	public String getSubject_id() {
-		return subject_id;
-	}
-
-	public void setSubject_id(String subject_id) {
-		this.subject_id = subject_id;
-	}
-
-
 	public String getSubject_name() {
 		return subject_name;
 	}
@@ -32,19 +25,19 @@ public class ClassListCommand {
 		this.subject_name = subject_name;
 	}
 
-	public String getSubject_start() {
+	public Date getSubject_start() {
 		return subject_start;
 	}
 
-	public void setSubject_start(String subject_start) {
+	public void setSubject_start(Date subject_start) {
 		this.subject_start = subject_start;
 	}
 
-	public String getSubject_end() {
+	public Date getSubject_end() {
 		return subject_end;
 	}
 
-	public void setSubject_end(String subject_end) {
+	public void setSubject_end(Date subject_end) {
 		this.subject_end = subject_end;
 	}
 

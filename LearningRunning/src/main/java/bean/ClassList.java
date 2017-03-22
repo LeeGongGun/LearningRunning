@@ -5,62 +5,73 @@ import java.util.Date;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 
 public class ClassList {
-	private String className;
-	private Date classStartDate;
-	private Date classEndDate;
-	private String classTeacher;
-	private String classStat;
-	private int classStudents;
+	private int subject_id;
+	private String subject_name;
+	private Date subject_start;
+	private Date subject_end;
+	private String subject_state;
+	private String subject_comment;
 	
 	public ClassList(){}
-	public ClassList(String className, Date classStartDate, Date classEndDate, String classTeacher, String classStat) {
+
+	public ClassList(int subject_id, String subject_name, Date subject_start, Date subject_end, String subject_state, String subject_comment) {
 		super();
-		this.className = className;
-		this.classStartDate = classStartDate;
-		this.classEndDate = classEndDate;
-		this.classTeacher = classTeacher;
-		this.classStat = classStat;
+		this.subject_id = subject_id;
+		this.subject_name = subject_name;
+		this.subject_start = subject_start;
+		this.subject_end = subject_end;
+		this.subject_state = subject_state;
+		this.subject_comment = subject_comment;
 	}
 	
-	public String getClassName() {
-		return className;
+	public int getSubject_id() {
+		return subject_id;
 	}
-	public void setClassName(String className) {
-		this.className = className;
+
+	public void setSubject_id(int subject_id) {
+		this.subject_id = subject_id;
 	}
-	public Date getClassStartDate() {
-		return classStartDate;
+
+	public String getSubject_name() {
+		return subject_name;
 	}
-	public void setClassStartDate(Date classStartDate) {
-		this.classStartDate = classStartDate;
+
+	public void setSubject_name(String subject_name) {
+		this.subject_name = subject_name;
 	}
-	public Date getClassEndDate() {
-		return classEndDate;
+
+	public Date getSubject_start() {
+		return subject_start;
 	}
-	public void setClassEndDate(Date classEndDate) {
-		this.classEndDate = classEndDate;
+
+	public void setSubject_start(Date subject_start) {
+		this.subject_start = subject_start;
 	}
-	public String getClassTeacher() {
-		return classTeacher;
+
+	public Date getSubject_end() {
+		return subject_end;
 	}
-	public void setClassTeacher(String classTeacher) {
-		this.classTeacher = classTeacher;
+
+	public void setSubject_end(Date subject_end) {
+		this.subject_end = subject_end;
 	}
-	public String getClassStat() {
-		return classStat;
+
+	public String getSubject_state() {
+		return subject_state;
 	}
-	public void setClassStat(String classStat) {
-		this.classStat = classStat;
+
+	public void setSubject_state(String subject_state) {
+		this.subject_state = subject_state;
 	}
-	public int getClassStudents() {
-		return classStudents;
+
+	public String getSubject_comment() {
+		return subject_comment;
 	}
-	public void setClassStudents(int classStudents) {
-		this.classStudents = classStudents;
+
+	public void setSubject_comment(String subject_comment) {
+		this.subject_comment = subject_comment;
 	}
-	public PreparedStatementSetter getNum() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+	
 	
 }

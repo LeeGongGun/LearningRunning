@@ -23,11 +23,11 @@
 				<th>인원수</th>
 				<th>상태</th>
 			</tr>
-			<c:forEach var="subject" items="${mav}">
+			<c:forEach var="subject" items="${list}">
 				<tr>
 					<td>${subject.subject_id}</td>
 					<td><a href="<c:url value="/attendance/insert/${subject.subject_id}"/>">${subject.subject_name}</a></td>
-					<td>${subject.student_count}</td>
+					<td>${subject.subject_comment}</td>
 					<td>${subject.subject_state}</td>
 				</tr>
 			</c:forEach>

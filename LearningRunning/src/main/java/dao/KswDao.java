@@ -11,22 +11,38 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import bean.ClassList;
+import command.ClassListCommand;
 
 
 
 public class KswDao{
+	
+	public KswDao() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	private JdbcTemplate jdbcTemplate;
 	
+	public KswDao(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	
-	private RowMapper<ClassList> classListRowMapper = new RowMapper<ClassList>() {
-		
+	private RowMapper<ClassList> boardRowMapper = new RowMapper<ClassList>() {
 		@Override
-		public ClassList mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ClassList classList = new ClassList();
-			return classList;
+		public ClassList mapRow(ResultSet rs, int rowNum) 
+				throws SQLException {
+			ClassList list = new ClassList(
+					rs.getInt("subject_id"),
+					rs.getString("subject_name"),
+					rs.getDate("subject_start"),
+					rs.getDate("subject_end"),
+					rs.getString("subject_state"),
+					rs.getString("subject_comment"));
+			return list;
 		}
 	};
 
@@ -38,25 +54,7 @@ public class KswDao{
 
 	public List<ClassList> getAllClass(){
 		List<ClassList> results = jdbcTemplate.query(
-				"SELECT * FROM SUBJECTS ", 
-				classListRowMapper);	
-				/*
-				"SELECT SUBJECT_NAME, SUBJECT_START, SUBJECT_END, SUBJECT_STATE, SUBJECT_STATE FROM SUBJECTS ", 
-				new RowMapper<ClassList>(){
-
-					@Override
-					public ClassList mapRow(ResultSet rs, int rowNum) throws SQLException {
-						ClassList classList = new ClassList(
-								rs.getString("className"),
-								rs.getDate("classStartDate"),
-								rs.getDate("classEndDate"),
-								rs.getString("classTeacher"),
-								rs.getString("classStat"));
-						return classList;
-					}
-					
-				});	
-				*/	
+				"select * from subjects ", boardRowMapper);
 		return results;
 	}
 
@@ -76,30 +74,5 @@ public class KswDao{
 		}
 		return count;
 	}
-	public List<ClassList> selectPage(String srch, 
-			int startPage, int limit) {
-		List<ClassList> results;
-		if(srch == null || srch.equals("")){
-			results = jdbcTemplate.query(
-				"select num, (select name from member where id = writer)"
-				+ "writer, subject, content, file, re_ref, re_lev, "
-				+ "re_seq, readcount, regdate from board limit ?,? ",
-				classListRowMapper, startPage, limit);
-		} else {
-			results = jdbcTemplate.query(
-				"select num, (select name from member where id = writer)"
-				+ "writer, subject, content, file, re_ref, re_lev, "
-				+ "re_seq, readcount, regdate from board where( "
-				+ "subject like '%?%' or "
-				+ "content like '%?%' or "
-				+ "writer like '%?%' ) limit ?,?", 
-				classListRowMapper, srch, srch, srch, startPage, limit);
-		}
-		return results;
-	}
-	public void boardDelete(ClassList classList) {
-		jdbcTemplate.update(
-				"delete from board where num = ?", 
-				classList.getNum());
-	}	
+	
 }
