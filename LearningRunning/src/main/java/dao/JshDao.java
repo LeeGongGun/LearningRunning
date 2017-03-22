@@ -27,33 +27,37 @@ public class JshDao{
 		public AttendancePersonCommand mapRow(ResultSet rs, int rowNum) 
 				throws SQLException {
 			AttendancePersonCommand attendancePersonCommand = new AttendancePersonCommand(
-					rs.getInt("M_ID"), 
-					rs.getInt("SUBJECT_id"),
-					rs.getString("SS_STATUS"),
-					rs.getDate("SS_DATE"),	
-					rs.getString("SUBJECT_NAME"),
-					rs.getDate("SUBJECT_START"), 
-					rs.getDate("SUBJECT_END"),
-					rs.getString("SUBJECT_STATE"),
-					rs.getString("SUBJECT_COMMENT"), 
-					rs.getString("M_EMAIL"),
-					rs.getString("M_NAME"),
-					rs.getInt("M_PASS"),
-					rs.getString("M_APP_U_NO"));
+					rs.getInt("m_id"), 
+					rs.getInt("subject_id"),
+					rs.getInt("attend_id"),
+					rs.getDate("start_time"),	
+					rs.getDate("end_time"),	
+					rs.getDate("stop_time"),	
+					rs.getDate("restart_time"),	
+					rs.getString("attend_status"),	
+					rs.getString("subject_name"),
+					rs.getDate("subject_start"), 
+					rs.getDate("subject_end"),
+					rs.getString("subject_state"),
+					rs.getString("subject_comment"), 
+					rs.getString("m_email"),
+					rs.getString("m_name"),
+					rs.getInt("m_pass"),
+					rs.getString("m_app_u_no"));
 			return attendancePersonCommand;
 		}
 	};	
-	
-	public int count(AttendancePersonCommand attendancePersonCommand) {
+		
+	public int count(int studentId ) {
 		Integer count = jdbcTemplate.queryForObject(
-				"select count(*) from attendance where m_id = 1 ", Integer.class);
+				"select count(*) from attendance where m_id = ? ", Integer.class, studentId);
 		System.out.println(count);
 		return count;
 	}
 	
-	public AttendancePersonCommand selectAllPerson() {
-		List<AttendancePersonCommand> results = jdbcTemplate.query(
-				"select * from student_subject natural join subjects natural join member ", attendPersonRowMapper);
-		return results.isEmpty()?null: results.get(0);
+	public List<AttendancePersonCommand> selectAllPerson(int studentId) {
+		String sql = "select * from attendance natural join subjects natural join member where m_id = ? ";
+		List<AttendancePersonCommand> results = jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
 	}
 }
