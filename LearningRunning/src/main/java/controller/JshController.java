@@ -33,10 +33,14 @@ public class JshController {
 	
 	@RequestMapping(value="/attendance/person/{id}", method = RequestMethod.GET)
 	public String attendPersonGet(@PathVariable("id") int studentId,Model model) {
+		String student =  jshDao.getStudentName(studentId);
+		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.selectAllPerson(studentId);
+//		String stuSubject = jshDao.getSubjectName(studentId);
+		model.addAttribute("student", student);
+		model.addAttribute("attendRate", attendRate);
+//		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-
-	
 }

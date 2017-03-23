@@ -207,11 +207,9 @@ public class AttendancePersonCommand {
 		this.m_app_u_no = m_app_u_no;
 	}
 	
-	
-
-
-	
-
+	public void getAttendRate(){
+		
+	}
 
 }
 

@@ -60,4 +60,36 @@ public class JshDao{
 		List<AttendancePersonCommand> results = jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
 		return results;
 	}
+
+	public String getStudentName(int studentId) {
+		String name = jdbcTemplate.queryForObject(
+				"select m_name from member where m_id = ? ", String.class, studentId);
+		return name;
+	}
+	
+	public String getSubjectName(int studentId) {
+		String name = jdbcTemplate.queryForObject(
+				"select subject_name from ATTENDANCE natural join subjects where m_id = ? ", 
+				String.class, studentId);
+		return name;
+	}
+	
+	public double getAttendRate(int studentId){
+		Integer studentAttend = jdbcTemplate.queryForObject(
+				"select count(*) from (select * from attendance where m_id = ? and "
+				+ "start_time between to_date((select  trunc(sysdate,'MM') from dual), 'YY/MM/DD') and "
+				+ "to_date((select last_day(sysdate) from dual), 'YY/MM/DD')) "
+				+ "where attend_status = '출석' or attend_status = '지각' or "
+				+ "ATTEND_STATUS='외출' ",
+				Integer.class, studentId);
+		
+		Integer mustAttend = jdbcTemplate.queryForObject("select count(*) from "
+				+ "(select * from attendance where m_id = ?) where start_time "
+				+ "between to_date((select  trunc(sysdate,'MM') from dual), 'YY/MM/DD') and "
+				+ "to_date((select last_day(sysdate) from dual), 'YY/MM/DD') ",
+				Integer.class, studentId);
+		
+		double result = ((double) studentAttend / (double) mustAttend) * 100;
+		return result;
+	}
 }
