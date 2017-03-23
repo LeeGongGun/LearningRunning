@@ -102,7 +102,8 @@ $(function(){
 		$("#subject_state").val("");
 		$("#subject_comment").val("");
 		
-	}
+	};
+	$(".selected").select2();
 	$(".search-table").on("mouseenter mouseleave",".hover-td",function(){
 		$("pre",this).toggle("fast");
 	});
@@ -141,11 +142,6 @@ $(function(){
       	<div class="form-group">
       	 	<label for="subjectId" class="col-sm-2 control-label">맴버</label>
          	<div class="col-sm-10">
-         		<select   class="form-control" style="width: 100%" name="m_id" id="m_id">
-					<c:forEach var="member" items="${memberList}">
-					<option value="${member.m_id }">${"("+member.m_email+")"member.m_name }</option>
-					</c:forEach>
-         		</select>
          	</div>
         </div>
       	<div class="form-group">
@@ -184,9 +180,15 @@ $(function(){
 <div class="main"><div class="main-div">
 	<h3 class="sub-title">선생님 관리</h3>
 	<div class="">
-	<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
   		입력
 	</button>
+	<select  class="selected" style="width: 50%" name="m_id" id="m_id">
+		<c:forEach var="member" items="${memberList}">
+		<option value="${member.m_id }">(${member.m_email }) ${member.m_name }</option>
+		</c:forEach>
+	</select>
+	
 	</div>
 	
 <div class="search-table">
