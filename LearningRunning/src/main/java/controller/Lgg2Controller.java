@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
+import bean.LearingMember;
 import bean.Subject;
 import bean.Teacher;
 import command.SubjectSearchCommand;
+import command.TeacherSearchCommand;
 import dao.LggDao;
 
 @Controller
@@ -31,7 +33,7 @@ public class Lgg2Controller {
 		this.lggDao = lggDao;
 	}
 	@RequestMapping(value = "/course")
-	public String subjectList(SubjectSearchCommand command, Model model) {
+	public String subjectList(SubjectSearchCommand command,Errors errors, Model model) {
 		List<Subject> subjectList = lggDao.subjectList(command);
 		model.addAttribute("subjectList", subjectList );
 		return "/admin/subList";
@@ -62,8 +64,10 @@ public class Lgg2Controller {
 	}
 
 	@RequestMapping(value = "/teacher")
-	public String teacherList(TeacherSearchCommand command, Model model) {
+	public String teacherList(TeacherSearchCommand command,Errors errors, Model model) {
 		List<Teacher> teacherList = lggDao.teacherList(command);
+		List<LearingMember> memberList = lggDao.memberOptions("teacher");
+		model.addAttribute("memberList", memberList );
 		model.addAttribute("teacherList", teacherList );
 		return "/admin/teacherList";
 	}

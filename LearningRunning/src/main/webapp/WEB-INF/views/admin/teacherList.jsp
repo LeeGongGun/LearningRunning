@@ -11,7 +11,7 @@ String rootPath = request.getContextPath();
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
-<title>입력</title>
+<title>선생님 입력</title>
 <script type="text/javascript">
 $(function(){
 	$('a[data-toggle="tooltip"]').tooltip();
@@ -133,16 +133,19 @@ $(function(){
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">반(과정) 입력</h4>
+        <h4 class="modal-title" id="myModalLabel">선생님 입력</h4>
       </div>
       <div class="modal-body" style="min-height: 350px">
       <form:form commandName="command" id="editFrm">
       	<input  type="hidden" id="mode" value="insert">
       	<div class="form-group">
-      	 	<label for="subjectId" class="col-sm-2 control-label">과정명</label>
+      	 	<label for="subjectId" class="col-sm-2 control-label">맴버</label>
          	<div class="col-sm-10">
-         		<input type="hidden" class="form-control" id="subject_id" name="subject_id" placeholder="아이디">
-         		<input type="text" class="form-control" id="subject_name" name="subject_name" placeholder="과정명" required="required">
+         		<select   class="form-control" style="width: 100%" name="m_id" id="m_id">
+					<c:forEach var="member" items="${memberList}">
+					<option value="${member.m_id }">${"("+member.m_email+")"member.m_name }</option>
+					</c:forEach>
+         		</select>
          	</div>
         </div>
       	<div class="form-group">
@@ -179,7 +182,7 @@ $(function(){
   </div>
 </div>
 <div class="main"><div class="main-div">
-	<h3 class="sub-title">반(과정)관리</h3>
+	<h3 class="sub-title">선생님 관리</h3>
 	<div class="">
 	<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
   		입력
@@ -191,22 +194,18 @@ $(function(){
 			<tr>
 
 				<th>번호</th>
-				<th>과정명</th>
-				<th>시작일</th>
+				<th>선생님 이름</th>
+				<th>email</th>
 				<th>종료일</th>
-				<th>인원수</th>
-				<th>상태</th>
 				<th>삭제</th>
 			</tr>
-			<c:forEach var="subject" items="${subjectList}">
+			<c:forEach var="teacher" items="${teacherList}">
 				<tr>
-					<td>${subject.subject_id}</td>
-					<td class="hover-td"><a href="javascript:">${subject.subject_name}</a><pre readonly="readonly">${subject.subject_comment}</pre></td>
-					<td>${subject.subject_start}</td>
-					<td>${subject.subject_end}</td>
-					<td>${subject.student_count}</td>
-					<td>${subject.subject_state}</td>
-					<td><button class="delBtn" data="${subject.subject_id}">삭제</button></td>
+					<td>${teacher.m_id}</td>
+					<td class="hover-td"><a href="javascript:">${teacher.m_name}</a></td>
+					<td>${teacher.m_email}</td>
+					<td>${teacher.auth_end_date}</td>
+					<td><button class="delBtn" data="${teacher.m_id}">삭제</button></td>
 				</tr>
 			</c:forEach>
 		</table>
