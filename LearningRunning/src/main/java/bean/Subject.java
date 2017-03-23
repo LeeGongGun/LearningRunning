@@ -2,6 +2,8 @@ package bean;
 
 import java.sql.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class Subject {
 	int subject_id;
 	String subject_name;
@@ -12,7 +14,7 @@ public class Subject {
 	int student_count;
 	
 	
-	
+	@Autowired
 	public Subject() {
 		super();
 	}

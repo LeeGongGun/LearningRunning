@@ -3,10 +3,13 @@ package controller;
 import java.sql.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.Subject;
-import command.SubjectCommand;
+import bean.Teacher;
 import command.SubjectSearchCommand;
 import dao.LggDao;
 
@@ -31,53 +34,63 @@ public class Lgg2Controller {
 	public String subjectList(SubjectSearchCommand command, Model model) {
 		List<Subject> subjectList = lggDao.subjectList(command);
 		model.addAttribute("subjectList", subjectList );
-		return "/course/subList";
+		return "/admin/subList";
 	}
 	@RequestMapping(value = "/course/insert", method = RequestMethod.POST)
-	public String subjectInsert(SubjectCommand command,
+	public String subjectInsert(Subject command,
+			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
-		int rs = lggDao.subjectInsert1(command);
+		int rs = lggDao.subjectInsert(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-//	@RequestMapping(value = "/course/insert", method = RequestMethod.POST)
-//	public String subjectInsert(
-//			@RequestParam(value="subject_name") String subject_name,
-//			@RequestParam(value="subject_start",required=false)@DateTimeFormat(pattern="yyyy-MM-dd") Date subject_start,
-//			@RequestParam(value="subject_end",required=false)@DateTimeFormat(pattern="yyyy-MM-dd") Date subject_end,
-//			@RequestParam(value="subject_state",required=false) String subject_state,
-//			@RequestParam(value="subject_comment",required=false) String subject_comment,
-//			Model model) {
-//		Subject command = new Subject();
-//		command.setSubject_name(subject_name);
-//		command.setSubject_start(subject_start);
-//		command.setSubject_end(subject_end);
-//		command.setSubject_state(subject_state);
-//		command.setSubject_comment(subject_comment);
-//		int rs = lggDao.subjectInsert(command);
-//		model.addAttribute("json", "{\"data\": "+rs+"}");
-//		return "/ajax/ajaxDefault";
-//	}
 	@RequestMapping(value = "/course/edit", method = RequestMethod.POST)
-	public String subjectEdit(
-			@RequestParam(value="subject_id") int subject_id,
-			@RequestParam(value="subject_name") String subject_name,
-			@RequestParam(value="subject_start",required=false)@DateTimeFormat(pattern="yyyy-MM-dd") Date subject_start,
-			@RequestParam(value="subject_end",required=false)@DateTimeFormat(pattern="yyyy-MM-dd") Date subject_end,
-			@RequestParam(value="subject_state",required=false) String subject_state,
-			@RequestParam(value="subject_comment",required=false) String subject_comment,
+	public String subjectEdit(Subject command,
+			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
-		Subject command = new Subject();
-		command.setSubject_id(subject_id);
-		command.setSubject_name(subject_name);
-		command.setSubject_start(subject_start);
-		command.setSubject_end(subject_end);
-		command.setSubject_state(subject_state);
-		command.setSubject_comment(subject_name);
 		int rs = lggDao.subjectEdit(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
+	@RequestMapping(value = "/course/delete")
+	public String subjectDelete(int subject_id, Model model) {
+		System.out.println(subject_id);
+		int delOk = lggDao.subjectDelete(subject_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
 
+	@RequestMapping(value = "/teacher")
+	public String teacherList(TeacherSearchCommand command, Model model) {
+		List<Teacher> teacherList = lggDao.teacherList(command);
+		model.addAttribute("teacherList", teacherList );
+		return "/admin/teacherList";
+	}
+	@RequestMapping(value = "/teacher/insert", method = RequestMethod.POST)
+	public String teacherInsert(Teacher command,
+			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
+			Model model) {
+		int rs = lggDao.teacherInsert(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/teacher/edit", method = RequestMethod.POST)
+	public String teacherEdit(Teacher command,
+			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
+			Model model) {
+		int rs = lggDao.teacherEdit(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		System.out.println(rs);
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/teacher/delete")
+	public String teacherDelete(int teacher_id, Model model) {
+		System.out.println(teacher_id);
+		int delOk = lggDao.teacherDelete(teacher_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	
 }

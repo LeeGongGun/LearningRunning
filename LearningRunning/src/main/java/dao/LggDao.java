@@ -18,12 +18,14 @@ import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 import bean.Attendance;
 import bean.Subject;
+import bean.Teacher;
 import command.AttendanceInsertCommand;
-import command.SubjectCommand;
 import command.SubjectSearchCommand;
+import controller.TeacherSearchCommand;
 
 
 
@@ -59,6 +61,21 @@ public class LggDao{
 					rs.getInt("STUDENT_COUNT")
 				);
 			return beanSubject;
+		}		
+	};
+	private RowMapper<Teacher> teacherRowMapper = new RowMapper<Teacher>() {
+		@Override
+		public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Teacher beanTeacher = new Teacher(
+					rs.getInt("M_ID"),
+					rs.getInt("AUTH_MANAGER"),
+					rs.getDate("AUTH_END_DATE"),
+					rs.getString("AUTH_ENAME"),
+					rs.getString("AUTH_KNAME"),
+					rs.getString("M_EMAIL"),
+					rs.getString("M_NAME")
+				);
+			return beanTeacher;
 		}		
 	};
 	
@@ -136,18 +153,25 @@ public class LggDao{
 		return result;
 	}
 
-	public int subjectInsert(final Subject command) {
-		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
-						+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
-						+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
-				command.getSubject_name(),
-				command.getSubject_start(),
-				command.getSubject_end(),
-				command.getSubject_state(),
-				command.getSubject_comment()
-			);
+	public int studentCountBySubject(int subjectId) {
+		List<Integer> result = jdbcTemplate.query("SELECT count(*) FROM STUDENT_SUBJECT where SUBJECT_ID = ? ",
+				new RowMapper<Integer>(){
+					@Override
+					public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+						Integer cnt = rs.getInt(1);
+						return cnt;
+					}
+				},subjectId);
+		return result.isEmpty()?0:result.get(0);
 	}
-	public int subjectEdit(final Subject command) {
+	@Transactional
+	public int subjectDelete(int subjectId) {
+		int cnt = jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
+		int cnt1 = jdbcTemplate.update("DELETE FROM SUBJECTS WHERE SUBJECT_ID = ? ",subjectId);
+		return cnt1;
+	}
+
+	public int subjectEdit(Subject command) {
 		return jdbcTemplate.update(" update SUBJECTS set "
 						+ "SUBJECT_NAME=?,"
 						+ "SUBJECT_START=?,"
@@ -164,7 +188,10 @@ public class LggDao{
 			);
 	}
 
-	public int subjectInsert1(SubjectCommand command) {
+	
+	
+	
+	public int subjectInsert(Subject command) {
 		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
 				+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
 				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
@@ -175,5 +202,27 @@ public class LggDao{
 		command.getSubject_comment()
 	);
 	}
+
+	public List<Teacher> teacherList(TeacherSearchCommand command) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int teacherInsert(Teacher command) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int teacherEdit(Teacher command) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int teacherDelete(int teacher_id) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+
 
 }

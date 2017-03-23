@@ -14,6 +14,7 @@ String rootPath = request.getContextPath();
 <title>입력</title>
 <script type="text/javascript">
 $(function(){
+	$('a[data-toggle="tooltip"]').tooltip();
 	$("#insert").click(function(){ 
 		okCnt = 0;
 		mode = $("#mode").val();
@@ -29,7 +30,7 @@ $(function(){
 		if(mode=='insert'){
 			frm.attr("action","<%=rootPath%>/course/insert");
 		}else if(mode=="edit"){
-			frm.attr("action","${rootPath}/course/edit");
+			frm.attr("action","<%=rootPath%>/course/edit");
 			okText = "수정";
 			
 		}else{
@@ -56,8 +57,70 @@ $(function(){
 		};
 		
 	});
+	$(".search-table").on("click",".hover-td",function(){
+		if($.isEmptyObject(this)) return false;
+		$("#mode").val("edit");
+		$("#insert").text("수정");
+		$("#subject_id").val($(this).prev().text());
+		$("#subject_name").val($("a",this).text());
+		$("#subject_start").val($(this).next().text());
+		$("#subject_end").val($(this).nextAll(":eq(1)").text());
+		$("#subject_state").val($(this).nextAll(":eq(3)").text());
+		$("#subject_comment").val($("pre",this).text());
+		//clearFrm();
+		$('#myModal').modal();
+
+	});
+	$(".search-table").on("click",".delBtn",function(){
+			sId = $(this).attr("data");
+		if(confirm(sId+"번 과정을 삭제하시겠습니까?")){
+			$.ajax({
+		        url:"<%=rootPath%>/course/delete",
+		        type:'post',
+		        data: {subject_id:sId},
+		        success: function(json){
+		        	if(json.data>0) {
+		        		alert("삭제성공하였습니다.");
+		        		location.reload();
+		        	}
+		        		
+		        },
+		        error : function(request, status, error) { 
+		        	alert(sId+"번 삭제 실패\n문제가 있습니다.");
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		    });
+		}
+	});
+	function clearFrm(){
+		$("#mode").val("insert");
+		$("#insert").text("입력");
+		$("#subject_id").val("");
+		$("#subject_name").val("");
+		$("#subject_start").val("");
+		$("#subject_end").val("");
+		$("#subject_state").val("");
+		$("#subject_comment").val("");
+		
+	}
+	$(".search-table").on("mouseenter mouseleave",".hover-td",function(){
+		$("pre",this).toggle("fast");
+	});
 });
 </script>
+<style type="text/css">
+.hover-td{
+	position : relative;
+}
+.hover-td pre{
+	position : absolute;
+	left:200px;
+	z-index:1;
+	width:auto;
+	height:auto;
+	display: none;
+}
+</style>
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
@@ -65,7 +128,7 @@ $(function(){
 
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -78,7 +141,7 @@ $(function(){
       	<div class="form-group">
       	 	<label for="subjectId" class="col-sm-2 control-label">과정명</label>
          	<div class="col-sm-10">
-         		<input type="text" class="form-control" id="subject_id" name="subject_id" placeholder="아이디">
+         		<input type="hidden" class="form-control" id="subject_id" name="subject_id" placeholder="아이디">
          		<input type="text" class="form-control" id="subject_name" name="subject_name" placeholder="과정명" required="required">
          	</div>
         </div>
@@ -133,15 +196,17 @@ $(function(){
 				<th>종료일</th>
 				<th>인원수</th>
 				<th>상태</th>
+				<th>삭제</th>
 			</tr>
 			<c:forEach var="subject" items="${subjectList}">
 				<tr>
 					<td>${subject.subject_id}</td>
-					<td><a href="<c:url value="/attendance/insert/${subject.subject_id}"/>">${subject.subject_name}</a></td>
+					<td class="hover-td"><a href="javascript:">${subject.subject_name}</a><pre readonly="readonly">${subject.subject_comment}</pre></td>
 					<td>${subject.subject_start}</td>
 					<td>${subject.subject_end}</td>
 					<td>${subject.student_count}</td>
 					<td>${subject.subject_state}</td>
+					<td><button class="delBtn" data="${subject.subject_id}">삭제</button></td>
 				</tr>
 			</c:forEach>
 		</table>
