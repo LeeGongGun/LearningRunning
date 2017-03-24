@@ -1,10 +1,15 @@
 package controller;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -17,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
-import bean.LearingMember;
+import bean.authMember;
 import bean.Subject;
 import bean.Teacher;
 import command.SubjectSearchCommand;
@@ -63,35 +68,40 @@ public class Lgg2Controller {
 		return "/ajax/ajaxDefault";
 	}
 
-	@RequestMapping(value = "/teacher")
-	public String teacherList(TeacherSearchCommand command,Errors errors, Model model) {
-		List<Teacher> teacherList = lggDao.teacherList(command);
-		List<LearingMember> memberList = lggDao.memberOptions("teacher");
-		model.addAttribute("memberList", memberList );
-		model.addAttribute("teacherList", teacherList );
-		return "/admin/teacherList";
+	@RequestMapping(value = "/auth", method = RequestMethod.GET)
+	public String authDefault(Model model) {
+		return "/admin/authList";
 	}
-	@RequestMapping(value = "/teacher/insert", method = RequestMethod.POST)
-	public String teacherInsert(Teacher command,
+	@RequestMapping(value = "/auth", method = RequestMethod.POST)
+	public String authList(@RequestParam(value="auth_ename",required=false) String auth_ename,Model model) {
+		List<authMember> memberList = lggDao.authList(auth_ename);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(memberList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/auth/insert", method = RequestMethod.POST)
+	public String authInsert(@RequestParam(value="m_ids",required=false) List<Integer> m_ids,@RequestParam(value="auth_ename",required=false) String auth_ename,
 			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
-		int rs = lggDao.teacherInsert(command);
+		int rs = lggDao.authInsert(m_ids,auth_ename);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/teacher/edit", method = RequestMethod.POST)
-	public String teacherEdit(Teacher command,
+	@RequestMapping(value = "/auth/delete")
+	public String authDelete(@RequestParam(value="m_id",required=false) List<Integer> m_ids,String auth_ename,
 			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
-		int rs = lggDao.teacherEdit(command);
-		model.addAttribute("json", "{\"data\": "+rs+"}");
-		System.out.println(rs);
-		return "/ajax/ajaxDefault";
-	}
-	@RequestMapping(value = "/teacher/delete")
-	public String teacherDelete(int teacher_id, Model model) {
-		System.out.println(teacher_id);
-		int delOk = lggDao.teacherDelete(teacher_id);
+		int delOk = lggDao.authDelete(m_ids,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
