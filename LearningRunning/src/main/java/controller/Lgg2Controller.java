@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.authMember;
@@ -90,17 +91,25 @@ public class Lgg2Controller {
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/auth/insert", method = RequestMethod.POST)
-	public String authInsert(@RequestParam(value="m_ids",required=false) List<Integer> m_ids,@RequestParam(value="auth_ename",required=false) String auth_ename,
+	@ResponseBody
+	public String authInsert(
+			@RequestParam(value="m_id[]") List<Integer> m_ids,
+			@RequestParam(value="auth_ename") String auth_ename,
+			@RequestParam(value="auth_end_date",required=false) String auth_end_date,
 			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
-		int rs = lggDao.authInsert(m_ids,auth_ename);
+		int auth_manager_id = 1;//세션 대체
+		int rs = lggDao.authInsert(m_ids,auth_ename,auth_manager_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/auth/delete")
-	public String authDelete(@RequestParam(value="m_id",required=false) List<Integer> m_ids,String auth_ename,
+	@ResponseBody
+	public String authDelete(@RequestParam(value="m_id[]") List<Integer> m_ids,
+			@RequestParam(value="auth_ename") String auth_ename,
 			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
 			Model model) {
+		int auth_manager_id = 1;//세션 대체
 		int delOk = lggDao.authDelete(m_ids,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";

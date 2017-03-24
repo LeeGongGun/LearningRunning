@@ -14,48 +14,7 @@ String rootPath = request.getContextPath();
 <title>권한 관리</title>
 <script type="text/javascript">
 $(function(){
-	$("#insert").click(function(){ 
-		okCnt = 0;
-		mode = $("#mode").val();
-		frm = $("#editFrm");
-		console.log(frm.serialize());
-		$( ':input[required]', frm ).each( function () {
-		    if ( $(this).val().trim() == '' ) {
-		        $(this).focus();
-		        okCnt++;
-		    }
-		});
-		okText = "입력";
-		if(mode=='insert'){
-			frm.attr("action","<%=rootPath%>/course/insert");
-		}else if(mode=="edit"){
-			frm.attr("action","<%=rootPath%>/course/edit");
-			okText = "수정";
-			
-		}else{
-			return;
-		}
-		if(okCnt==0){
-			$.ajax({
-		        url:"",
-		        type:'post',
-		        data: frm.serialize(),
-		        success: function(json){
-		        	if(json.data>0) {
-		        		alert(okText+"성공하였습니다.");
-		        		location.reload();
-		        	}
-		        		
-		        },
-		        error : function(request, status, error) { 
-		        	alert(okText+"내용을 확인해주세요");
-		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-		        } 
-		        
-		    });
-		};
-		
-	});
+
 	$("#not-members,#auth-members").on("click","tr.list-tr input",function(e){
 		e.preventdefault();
 	});
@@ -69,15 +28,53 @@ $(function(){
 	$("#btnInsert").click(insertAuth);
 	$("#btnDel").click(delAuth);
 	function insertAuth(){
-		arr = $("#not-members  [name='m_id']:checked");
-		console.log($("#not-members  [name='m_id']:checked").val());
+		obj = $("#not-members  [name='m_id']:checked");
+		arr =[];
+		obj.each(function(i){
+			arr.push($(this).val());
+		});
+		if(arr.length>0){
+			$.ajax({
+		        url:"<%=rootPath%>/auth/insert",
+		        type:'post',
+		        data: {
+		        		m_id : arr,
+		        		auth_ename : $("#auth_ename").val(),
+		        		auth_end_date : $("#auth_end_date").val(),
+		        	},
+		        success: function(json){
+		        	if(json.data>0) getAuthList();
+		        },
+		        error : function(request, status, error) { 
+		        	//alert(okText+"내용을 확인해주세요");
+		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		        
+		    });
+		}		
 	}
 	function delAuth(){
 		obj = $("#auth-members  [name='m_id']:checked");
 		arr =[];
 		obj.each(function(i){
 			arr.push($(this).val());
-		});		
+		});
+		if(arr.length>0){
+			$.ajax({
+		        url:"<%=rootPath%>/auth/delete",
+		        type:'post',
+		        data: {m_id : arr,auth_ename : $("#auth_ename").val()},
+		        success: function(json){
+		        	if(json.data>0) getAuthList();
+		        },
+		        error : function(request, status, error) { 
+		        	//alert(okText+"내용을 확인해주세요");
+		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		        
+		    });
+		}		
+		
 	}
 	function trClick(color,obj){
 		chkbox = $("input[name='m_id']",obj);
@@ -138,13 +135,13 @@ $(function(){
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
 <div class="main"><div class="main-div">
 	<h3 class="sub-title">권한 관리</h3>
-	<div class="">
-  		<select   class="form-control" style="width: 100%" name="auth_ename" id="auth_ename">
+	<div class="form-inline">
+  		<select   class="form-control " name="auth_ename" id="auth_ename">
   			<option value="student">학생</option>
   			<option value="teacher">선생님</option>
   			<option value="admin">관리자</option>
   		</select>
-		
+  		<input type="date" class="form-control form-inline" id="auth_end_date" name="auth_end_date" placeholder="종료일">
 	</div>
 <div class="search-table row">
 	<div class="col-sm-5">

@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLType;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -218,14 +219,40 @@ public class LggDao{
 	);
 	}
 
-	public int authInsert(List<Integer> m_ids, String auth_ename) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int authInsert(List<Integer> m_ids, String auth_ename,int auth_manager_id) {
+		String inSql = "";
+		String auth_kname = "";
+		for (int i = 0; i < m_ids.size(); i++) {
+			if (i!=0) inSql += ",";
+			inSql += m_ids.get(i).toString();
+		}
+		if (auth_ename.equals("")) {
+			return 0 ;			
+		}else if (auth_ename.equals("teacher")) {
+			auth_kname = "선생님";
+		}else if (auth_ename.equals("student")) {
+			auth_kname = "학생";
+		}else if (auth_ename.equals("admin")) {
+			auth_kname = "관리자";
+		}else{
+			return 0 ;
+		}
+		
+		int result = jdbcTemplate.update("insert into MEMBER_AUTH "
+				+ "(M_ID,AUTH_ENAME,AUTH_KNAME,AUTH_MANAGER)"
+				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) "
+				);
+		return result;
 	}
 
 	public int authDelete(List<Integer> m_ids, String auth_ename) {
-		// TODO Auto-generated method stub
-		return 0;
+		String inSql = "";
+		for (int i = 0; i < m_ids.size(); i++) {
+			if (i!=0) inSql += ",";
+			inSql += m_ids.get(i).toString();
+		}
+		int result = jdbcTemplate.update("DELETE FROM MEMBER_AUTH WHERE m_id in ("+inSql+") and auth_ename = ? ",auth_ename);
+		return result;
 	}
 
 	public List<authMember> authList(String auth_ename) {
