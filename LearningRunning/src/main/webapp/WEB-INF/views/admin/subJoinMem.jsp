@@ -15,16 +15,17 @@ String rootPath = request.getContextPath();
 <script type="text/javascript">
 $(function(){
 
-	$("#not-members,#auth-members").on("click","tr.list-tr input",function(e){
+	$("#not-members,#con-members").on("click","tr.list-tr input",function(e){
 		e.preventdefault();
 	});
+	$("#subject_id").select2();
 	$("#not-members").on("click","tr.list-tr",function(){
 		trClick("#44b6d9",this);
 	});
-	$("#auth-members").on("click","tr.list-tr",function(){
+	$("#con-members").on("click","tr.list-tr",function(){
 		trClick("#ed9c2a",this);
 	});
-	$("#auth_ename").change(getAuthList);
+	$("#auth_ename,#subject_id").change(getMemberList);
 	$("#btnInsert").click(insertAuth);
 	$("#btnDel").click(delAuth);
 	function insertAuth(){
@@ -35,15 +36,15 @@ $(function(){
 		});
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/auth/insert",
+		        url:"<%=rootPath%>/subJoinMem/insert",
 		        type:'post',
 		        data: {
-		        		m_id : arr,
-		        		auth_ename : $("#auth_ename").val(),
-		        		auth_end_date : $("#auth_end_date").val(),
+	        		m_id : arr,
+	        		subject_id : $("#subject_id").val(),
+	        		auth_ename : $("#auth_ename").val()
 		        	},
 		        success: function(json){
-		        	if(json.data>0) getAuthList();
+		        	if(json.data>0) getMemberList();
 		        },
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
@@ -54,7 +55,7 @@ $(function(){
 		}		
 	}
 	function delAuth(){
-		obj = $("#auth-members  [name='m_id']:checked");
+		obj = $("#con-members  [name='m_id']:checked");
 		arr =[];
 		obj.each(function(i){
 			arr.push($(this).val());
@@ -62,11 +63,15 @@ $(function(){
 		console.log($.param({m_id : arr,auth_ename : $("#auth_ename").val()}));
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/auth/delete",
+		        url:"<%=rootPath%>/subJoinMem/delete",
 		        type:'post',
-		        data: {m_id : arr,auth_ename : $("#auth_ename").val()},
+		        data: {
+		        	m_id : arr,
+	        		subject_id : $("#subject_id").val(),
+					auth_ename : $("#auth_ename").val()
+				},
 		        success: function(json){
-		        	if(json.data>0) getAuthList();
+		        	if(json.data>0) getMemberList();
 		        },
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
@@ -87,35 +92,32 @@ $(function(){
 		}
 		console.log(chkbox.is(":checked"));
 	}
-	function getAuthList(){
+	function getMemberList(){
 		$.ajax({
-	        url:"<%=rootPath%>/auth",
+	        url:"<%=rootPath%>/subJoinMem",
 	        type:'post',
-	        data: {auth_ename: $("#auth_ename").val()},
+	        data: {
+        		subject_id : $("#subject_id").val(),
+	        	auth_ename: $("#auth_ename").val()
+	        },
 	        success: function(json){
 	        	notTag = "";
-	        	authTag = "";
+	        	conTag = "";
 				$(json.data).each(function(i,item){
-					if ($.isEmptyObject(item.auth_ename)) {
+					if (item.subject_id==0) {
 						notTag +="<tr class='list-tr'>";
 						notTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"' readonly/></td>";
 						notTag +="<td>"+item.m_name+"</td>";
-						notTag +="<td>"+item.m_email+"</td>";
-						usingText = (item.m_app_u_no=="")?"미확인":"확인";
-						notTag +="<td>"+usingText+"</td>";
 						notTag +="</tr>";						
 					} else {
-						authTag +="<tr class='list-tr'>";
-						authTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"'readonly/></td>";
-						authTag +="<td>"+item.m_name+"</td>";
-						authTag +="<td>"+item.m_email+"</td>";
-						usingText = (item.m_app_u_no=="")?"미확인":"확인";
-						authTag +="<td>"+usingText+"</td>";
-						authTag +="</tr>";
+						conTag +="<tr class='list-tr'>";
+						conTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"'readonly/></td>";
+						conTag +="<td>"+item.m_name+"</td>";
+						conTag +="</tr>";
 					}
 				});
 				$("table#not-members>tbody").empty().append(notTag);
-				$("table#auth-members>tbody").empty().append(authTag);
+				$("table#con-members>tbody").empty().append(conTag);
 	        		
 	        },
 	        error : function(request, status, error) { 
@@ -126,7 +128,7 @@ $(function(){
 	    });
 		
 	}
-	getAuthList();
+	getMemberList();
 	
 });
 </script>
@@ -134,14 +136,18 @@ $(function(){
 <body>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
 <div class="main"><div class="main-div">
-	<h3 class="sub-title">권한 관리</h3>
+	<h3 class="sub-title">반(과정)-학생,선생 등록</h3>
 	<div class="form-inline">
   		<select   class="form-control " name="auth_ename" id="auth_ename">
   			<option value="student">학생</option>
   			<option value="teacher">선생님</option>
-  			<option value="admin">관리자</option>
   		</select>
-  		<input type="date" class="form-control form-inline" id="auth_end_date" name="auth_end_date" placeholder="종료일">
+  		<select   class="form-control " name="subject_id" id="subject_id">
+			<c:forEach var="subject" items="${subjectList}">
+  			<option value="${subject.subject_id }">${subject.subject_name}-${subject.subject_state}</option>
+			</c:forEach>
+  		</select>
+		
 	</div>
 <div class="search-table row">
 	<div class="col-sm-5">
@@ -151,8 +157,6 @@ $(function(){
 
 				<th>번호</th>
 				<th>이름</th>
-				<th>email</th>
-				<th>인증</th>
 			</tr>
 			</thead>
 			<tbody>
@@ -164,14 +168,12 @@ $(function(){
 		<button class="btn btn-warning btn-block" id="btnDel"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>  삭제</button>
 	</div>
 	<div class="col-sm-5">
-		<table  class="table table-striped table-bordered" cellspacing="0" width="100%" id="auth-members">
+		<table  class="table table-striped table-bordered" cellspacing="0" width="100%" id="con-members">
 			<thead>
 			<tr>
 
 				<th>번호</th>
 				<th>이름</th>
-				<th>email</th>
-				<th>인증</th>
 			</tr>
 			</thead>
 			<tbody>

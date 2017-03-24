@@ -1,6 +1,6 @@
 package bean;
 
-public class authMember {
+public class SubMember {
 	int m_id;
 	String m_email;
 	String m_name;
@@ -9,7 +9,7 @@ public class authMember {
 	
 	
 	
-	public authMember(int m_id, String m_email, String m_name,String auth_ename, String m_app_u_no) {
+	public SubMember(int m_id, String m_email, String m_name,String auth_ename, String m_app_u_no) {
 		super();
 		this.m_id = m_id;
 		this.m_email = m_email;

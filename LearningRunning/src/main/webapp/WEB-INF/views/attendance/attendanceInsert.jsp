@@ -78,6 +78,7 @@ $(function(){
 		<input type="hidden" id="state" name="state">
 		<input type="hidden" id="time" name="time">
 		<table  class="table table-striped table-bordered" cellspacing="0" width="100%">
+			<thead>
 			<tr>
 
 				<th class="m_no">
@@ -91,6 +92,8 @@ $(function(){
 				<th><button class="btn btn-default" id="btnRestart">제입실</button><input type="time" id="restart" class="form-control"  /></th>
 				<th><button class="btn btn-default" id="btnEnd">퇴실</button><input type="time" id="end" class="form-control"  /></th>
 			</tr>
+			</thead>
+			<tbody>
 			<c:forEach var="attendance" items="${aList}">
 				<tr>
 					<td>
@@ -113,6 +116,7 @@ $(function(){
 					</td>
 				</tr>
 			</c:forEach>
+			</tbody>
 		</table>
   	</form:form>
 </div>	

@@ -44,7 +44,7 @@ $(function(){
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert(okText+"성공하였습니다.");
-		        		location.reload();
+		        		getSubjectList();
 		        	}
 		        		
 		        },
@@ -81,7 +81,7 @@ $(function(){
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert("삭제성공하였습니다.");
-		        		location.reload();
+		        		getSubjectList();
 		        	}
 		        		
 		        },
@@ -106,6 +106,40 @@ $(function(){
 	$(".search-table").on("mouseenter mouseleave",".hover-td",function(){
 		$("pre",this).toggle("fast");
 	});
+	function getSubjectList(){
+		$.ajax({
+	        url:"<%=rootPath%>/course",
+	        type:'post',
+	        data: $("#editFrm").serialize(),
+	        success: function(json){
+	        	conTag = "";
+				$(json.data).each(function(i,item){
+						conTag +="<tr>";
+						conTag +="<td>"+item.subject_id+"</td>";
+						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.subject_name+"</a><pre>"+item.subject_comment+"</pre></td>";
+						conTag +="<td>"+item.subject_start+"</td>";
+						conTag +="<td>"+item.subject_end+"</td>";
+						conTag +="<td>"+item.student_count+"</td>";
+						conTag +="<td>"+item.m_name+"</td>";
+						conTag +="<td>"+item.subject_state+"</td>";
+						conTag +="<td><button class=\"delBtn\" data=\""+item.subject_id+"\">삭제</button></td>";
+						conTag +="</tr>";
+				});
+				$("table#sub-table>tbody").empty().append(conTag);
+				clearFrm();
+				$('#myModal').modal("hide");
+				
+	        		
+	        },
+	        error : function(request, status, error) { 
+	        	//alert(okText+"내용을 확인해주세요");
+	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+	        } 
+	        
+	    });
+		
+	}
+	getSubjectList();
 });
 </script>
 <style type="text/css">
@@ -187,7 +221,8 @@ $(function(){
 	</div>
 	
 <div class="search-table">
-		<table  class="table table-striped table-bordered" cellspacing="0" width="100%">
+		<table  class="table table-striped table-bordered" id="sub-table" cellspacing="0" width="100%">
+			<thead>
 			<tr>
 
 				<th>번호</th>
@@ -198,17 +233,8 @@ $(function(){
 				<th>상태</th>
 				<th>삭제</th>
 			</tr>
-			<c:forEach var="subject" items="${subjectList}">
-				<tr>
-					<td>${subject.subject_id}</td>
-					<td class="hover-td"><a href="javascript:">${subject.subject_name}</a><pre readonly="readonly">${subject.subject_comment}</pre></td>
-					<td>${subject.subject_start}</td>
-					<td>${subject.subject_end}</td>
-					<td>${subject.student_count}</td>
-					<td>${subject.subject_state}</td>
-					<td><button class="delBtn" data="${subject.subject_id}">삭제</button></td>
-				</tr>
-			</c:forEach>
+			</thead>
+			<tbody></tbody>
 		</table>
 </div>	
 
