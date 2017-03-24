@@ -62,16 +62,22 @@ public class JshDao{
 	}
 
 	public String getStudentName(int studentId) {
-		String name = jdbcTemplate.queryForObject(
+		String result = jdbcTemplate.queryForObject(
 				"select m_name from member where m_id = ? ", String.class, studentId);
-		return name;
+		return result;
+	}
+	
+	public String getStudentEmail(int studentId) {
+		String result = jdbcTemplate.queryForObject(
+				"select m_email from member where m_id = ? ", String.class, studentId);
+		return result;
 	}
 	
 	public String getSubjectName(int studentId) {
-		String name = jdbcTemplate.queryForObject(
-				"select subject_name from ATTENDANCE natural join subjects where m_id = ? ", 
+		String result = jdbcTemplate.queryForObject(
+				"select distinct subject_name from ATTENDANCE natural join subjects where m_id = ? ", 
 				String.class, studentId);
-		return name;
+		return result;
 	}
 	
 	public double getAttendRate(int studentId){
@@ -92,4 +98,16 @@ public class JshDao{
 		double result = ((double) studentAttend / (double) mustAttend) * 100;
 		return result;
 	}
+	
+	public List<AttendancePersonCommand> searchPersonPeriod (int studentId) {
+		String sql = "select * from attendance natural join subjects natural join member where m_id = ? ";
+		List<AttendancePersonCommand> results = jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
+	} 
 }
+
+
+//select * from (select * from attendance where attend_status = '출석' or attend_status = '지각' or
+//ATTEND_STATUS='외출') natural join subjects natural join member where m_id = 5 and start_time 
+//between to_date('2017/03/01', 'YY/MM/DD') and 
+//to_date('2017/03/31', 'YY/MM/DD');
