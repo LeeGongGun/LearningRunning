@@ -1,18 +1,20 @@
 package bean;
 
-public class LearingMember {
+public class authMember {
 	int m_id;
 	String m_email;
 	String m_name;
+	String auth_ename;
 	boolean m_app_u_no;
 	
 	
 	
-	public LearingMember(int m_id, String m_email, String m_name, String m_app_u_no) {
+	public authMember(int m_id, String m_email, String m_name,String auth_ename, String m_app_u_no) {
 		super();
 		this.m_id = m_id;
 		this.m_email = m_email;
 		this.m_name = m_name;
+		this.auth_ename = auth_ename;
 		this.m_app_u_no = (m_app_u_no==null || m_app_u_no.equals(""))?false:true;
 	}
 	
@@ -34,6 +36,14 @@ public class LearingMember {
 	public void setM_name(String m_name) {
 		this.m_name = m_name;
 	}
+	public String getAuth_ename() {
+		return auth_ename;
+	}
+
+	public void setAuth_ename(String auth_ename) {
+		this.auth_ename = auth_ename;
+	}
+
 	public boolean isM_app_u_no() {
 		return m_app_u_no;
 	}

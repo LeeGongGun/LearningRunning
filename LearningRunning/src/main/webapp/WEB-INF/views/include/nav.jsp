@@ -12,6 +12,7 @@ $(function(){
 
 		}
 	});
+	/*
 	var img_array = [1, 2, 3, 4, 5],
     interval = 7000;
 	 var i = 0;
@@ -27,10 +28,9 @@ $(function(){
                 $(this).fadeIn("slow"); // 1000 = 1초
             });
         }, interval);
-		
+	*/	
 });
 </script>
-    
 	<div class="title-div">
 		<ul class="nav nav-pills ">
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
@@ -55,8 +55,8 @@ $(function(){
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/student">학생관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/teacher">선생관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/connect">과정(반) 연결</a></li>
+		          <li><a href="<%=request.getContextPath()%>/auth">권한 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/course">과정(반)관리</a></li>
 		        </ul>
             </li>

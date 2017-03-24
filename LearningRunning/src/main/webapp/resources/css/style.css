@@ -89,7 +89,7 @@ input:checked + .slider:before {
 #datepicker-div{position: relative;}
 .div-high{padding:3px 30px;background-color: rgba(255,255,255,0.4);}
 
-.VideoPane-bg{width:100%;min-height:100%;height: auto;position: absolute;z-index: -1;background-color:rgba(255,255,255,0);margin:0;top:0;left:0;background-size: cover;
+.VideoPane-bg{width:100%;min-height:100%;height: auto;position: absolute;z-index: -1;background-color:rgba(160, 214, 214,1);margin:0;top:0;left:0;background-size: cover;
     background-repeat: background-repeat;
     background-position: 0 0;
     background-attachment: fixed;}

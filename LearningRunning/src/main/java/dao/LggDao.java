@@ -21,7 +21,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import bean.Attendance;
-import bean.LearingMember;
+import bean.authMember;
 import bean.Subject;
 import bean.Teacher;
 import command.AttendanceInsertCommand;
@@ -80,13 +80,14 @@ public class LggDao{
 		}		
 	};
 	
-	private RowMapper<LearingMember> memberRowMapper = new RowMapper<LearingMember>() {
+	private RowMapper<authMember> memberRowMapper = new RowMapper<authMember>() {
 		@Override
-		public LearingMember mapRow(ResultSet rs, int rowNum) throws SQLException {
-			LearingMember beanMember = new LearingMember(
+		public authMember mapRow(ResultSet rs, int rowNum) throws SQLException {
+			authMember beanMember = new authMember(
 					rs.getInt("M_ID"),
 					rs.getString("M_EMAIL"),
 					rs.getString("M_NAME"),
+					rs.getString("AUTH_ENAME"),
 					rs.getString("M_APP_U_NO")
 				);
 			return beanMember;
@@ -217,54 +218,19 @@ public class LggDao{
 	);
 	}
 
-	public List<Teacher> teacherList(TeacherSearchCommand command) {
-		String whereSql ="";
-		int tmp=0;
-		if(command.getSearchText()!=null){
-			whereSql += (tmp==0)?" where ":" and ";
-			tmp++;
-			whereSql += " M_NAME like '%"+command.getSearchText()+"%' ";
-		}
-//		if(command.getState()!=null && command.getState().length > 0){
-//			String[] ids = command.getState();
-//			String inSql="";
-//			for (int i = 0; i < ids.length; i++) {
-//				if (i!=0) inSql += ",";
-//				inSql += ids[i];
-//			}
-//			whereSql += (tmp==0)?" where ":" and ";
-//			tmp++;
-//			whereSql += " SUBJECT_STATE in ("+inSql+") ";
-//		}
-		
-//		System.out.println(whereSql);
-		String sql = "select * from "
-				+ " ( SELECT * FROM MEMBER_AUTH where AUTH_ENAME='teacher' )"
-				+ " NATURAL JOIN (select * from MEMBER "+whereSql+") ";
-				
-		List<Teacher> result = jdbcTemplate.query(sql,teacherRowMapper);
-		return result;
-	}
-
-	public int teacherInsert(Teacher command) {
+	public int authInsert(List<Integer> m_ids, String auth_ename) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public int teacherEdit(Teacher command) {
+	public int authDelete(List<Integer> m_ids, String auth_ename) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	public int teacherDelete(int teacher_id) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	public List<LearingMember> memberOptions(String notInAuth) {
-		String sql = "select * from MEMBER "
-				+ " where m_id not in (select m_id from MEMBER_auth where AUTH_ENAME='"+notInAuth+"') ";
-		List<LearingMember> result = jdbcTemplate.query(sql,memberRowMapper);
+	public List<authMember> authList(String auth_ename) {
+		String sql = "select * from  MEMBER left outer join (select * from MEMBER_AUTH where auth_ename=?) USING(M_ID)  ";
+		List<authMember> result = jdbcTemplate.query(sql,memberRowMapper,auth_ename);
 		return result;
 	}
 
