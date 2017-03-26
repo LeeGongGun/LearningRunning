@@ -1,7 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,16 +27,34 @@ $(function() {
     yearSuffix: '년'
   });
 });
-function pageGo(page) {
-	document.getElementById("page").value = page;
-	document.getElementById("frm").submit();
+
+function periodSrch(){
+	location.href = "<c:url value='/attendance/person/1' />";
 }
-function goBoard(){
-	location.href = "<c:url value='/boardList' />";
+
+function beLate(){
+	location.href = "<c:url value='/attendance/beLate/1' />";
 }
+function goOut(){
+	location.href = "<c:url value='/attendance/goOut/1' />";
+}
+function leaveEarly(){
+	location.href = "<c:url value='/attendance/leaveEarly/1' />";
+}
+function absent(){
+	location.href = "<c:url value='/attendance/absent/1' />";
+}
+
 </script>
 
 <style>
+.date{
+	width : 100%;
+	margin-left : 200px;
+	margin-top : 100px;
+	margin-bottom : -70px;
+}
+
 .periodSerch{
 
 margin : 200px;
@@ -48,20 +68,23 @@ margin : 200px;
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/include/nav.jsp"%>
-	<div class="btn btn-primary" id="insert">
+	<div class = "date">
 	<form:form commandName="PersonSearch" id="frm">
 		<p>
 			<label>from:
-			<input type="text" name="from" id="from" value="${from }" />
+			<input type="text" name="from" id="from" value = ${from }/>
 			</label>
 			~ <label>to: 
-			<input type="text" name="to" id="to" value="${to }" />
+			<input type="text" name="to" id="to" value = ${to } />
 			</label>
-			<input type="submit" value="기간별 조회">
-			<input type="button" value="지각 조회" onclick="goBoard();">
-			<input type="button" value="외출 조회" onclick="goBoard();">			
+			<input type="submit" value="기간별 조회" onclick = "periodSrch();">
 		</p>
 	</form:form>
+	<input type="submit" value="지각 조회" onclick = "beLate();">
+	<input type="submit" value="외출 조회" onclick = "goOut();">
+	<input type="submit" value="조퇴 조회" onclick = "leaveEarly();">
+	<input type="submit" value="결석 조회" onclick = "absent();">
+	
 	</div>
 	
 	

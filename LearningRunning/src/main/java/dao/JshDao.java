@@ -1,7 +1,9 @@
 package dao;
 
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -75,7 +77,7 @@ public class JshDao{
 	
 	public String getSubjectName(int studentId) {
 		String result = jdbcTemplate.queryForObject(
-				"select distinct subject_name from ATTENDANCE natural join subjects where m_id = ? ", 
+				"select distinct subject_name from attendance natural join subjects where m_id = ? ", 
 				String.class, studentId);
 		return result;
 	}
@@ -85,8 +87,7 @@ public class JshDao{
 				"select count(*) from (select * from attendance where m_id = ? and "
 				+ "start_time between to_date((select  trunc(sysdate,'MM') from dual), 'YY/MM/DD') and "
 				+ "to_date((select last_day(sysdate) from dual), 'YY/MM/DD')) "
-				+ "where attend_status = '출석' or attend_status = '지각' or "
-				+ "ATTEND_STATUS='외출' ",
+				+ "where attend_status in ('출석','외출','지각','조퇴') ",
 				Integer.class, studentId);
 		
 		Integer mustAttend = jdbcTemplate.queryForObject("select count(*) from "
@@ -99,11 +100,50 @@ public class JshDao{
 		return result;
 	}
 	
-	public List<AttendancePersonCommand> searchPersonPeriod (int studentId) {
-		String sql = "select * from attendance natural join subjects natural join member where m_id = ? ";
-		List<AttendancePersonCommand> results = jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+	
+	//기간별 조회
+	public List<AttendancePersonCommand> searchPersonPeriod (int studentId, String strFrom, String strTo) {
+		String sql = "select * from attendance natural join subjects natural join member where m_id = ? and"
+				+ " start_time between to_date(?, 'YY/MM/DD') and to_date(?, 'YY/MM/DD')";
+		System.out.println(strFrom);
+		List<AttendancePersonCommand> results = 
+				jdbcTemplate.query(sql, attendPersonRowMapper, studentId, strFrom, strTo);
 		return results;
 	} 
+	
+	//결석, 외출, 지각, 조퇴 조회
+	//결석
+	public List<AttendancePersonCommand> absent(int studentId){
+		String sql = "select * from (select * from attendance natural join subjects natural join member"
+				+ " where attend_status = '결석' ) where m_id = ? ";
+		List<AttendancePersonCommand> results= jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
+	}
+	
+	//외출
+	public List<AttendancePersonCommand> goOut(int studentId){
+		String sql = "select * from (select * from attendance natural join subjects natural join member"
+				+ " where attend_status = '외출' ) where m_id = ? ";
+		List<AttendancePersonCommand> results= jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
+	}
+	
+	//지각
+	public List<AttendancePersonCommand> beLate(int studentId){
+		String sql = "select * from (select * from attendance natural join subjects natural join member "
+				+ "where attend_status = '지각' ) where m_id = ? ";
+		List<AttendancePersonCommand> results= jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
+	}
+	
+	
+	//조퇴
+	public List<AttendancePersonCommand> leaveEarly(int studentId){
+		String sql = "select * from (select * from attendance natural join subjects natural join member"
+				+ " where attend_status = '조퇴' ) where m_id = ? ";
+		List<AttendancePersonCommand> results= jdbcTemplate.query(sql, attendPersonRowMapper, studentId);
+		return results;
+	}
 }
 
 
