@@ -26,6 +26,7 @@ import bean.AuthMember;
 import bean.SubJoinMem;
 import bean.Subject;
 import command.AttendanceInsertCommand;
+import command.SubjectSearchCommand;
 import dao.LggDao;
 @Controller
 public class LggController {
@@ -39,6 +40,9 @@ public class LggController {
 	public String home(Locale locale, Model model) {
 		return "home";
 	}
+	
+	
+	//attendance
 	@RequestMapping(value = "/attendance/subList", method = RequestMethod.GET)
 	public String attendanceSubjectList(Model model) {
 		int teacherId = 2;
@@ -66,6 +70,10 @@ public class LggController {
 		
 		return "/ajax/ajaxDefault";
 	}
+	
+	
+	
+	//subject
 	@RequestMapping(value = "/course/insert", method = RequestMethod.POST)
 	public String subjectInsert(Subject command,
 			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
@@ -90,7 +98,30 @@ public class LggController {
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
-
+	@RequestMapping(value = "/course" , method = RequestMethod.GET)
+	public String subjectListDefault(SubjectSearchCommand command,Errors errors, Model model) {
+		return "/admin/subList";
+	}
+	@RequestMapping(value = "/course", method = RequestMethod.POST)
+	public String subjectList(SubjectSearchCommand command,Errors errors, Model model) {
+		List<Subject> subjectList = lggDao.subjectList(command);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(subjectList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	
+	//auth
 	@RequestMapping(value = "/auth", method = RequestMethod.GET)
 	public String authDefault(Model model) {
 		return "/admin/authList";
@@ -134,6 +165,11 @@ public class LggController {
 		return "/ajax/ajaxDefault";
 	}
 
+	
+	
+	
+	
+	
 	//반-학생(선생)
 	@RequestMapping(value = "/subJoinMem", method = RequestMethod.GET)
 	public String subJoinMemDefault(Model model) {
@@ -184,5 +220,6 @@ public class LggController {
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
+
 	
 }

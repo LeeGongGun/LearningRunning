@@ -1,34 +1,23 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
-import java.sql.Types;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlTypeValue;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 import bean.Attendance;
-import bean.SubJoinMem;
 import bean.AuthMember;
+import bean.SubJoinMem;
 import bean.Subject;
-import bean.Teacher;
 import command.AttendanceInsertCommand;
+import command.MemberSearchCommand;
 import command.SubjectSearchCommand;
-import command.TeacherSearchCommand;
 
 
 
@@ -51,6 +40,38 @@ public class LggDao{
 			return beanAttendance;
 		}		
 	};
+
+//	private RowMapper<Teacher> teacherRowMapper = new RowMapper<Teacher>() {
+//		@Override
+//		public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
+//			Teacher beanTeacher = new Teacher(
+//					rs.getInt("M_ID"),
+//					rs.getInt("AUTH_MANAGER"),
+//					rs.getDate("AUTH_END_DATE"),
+//					rs.getString("AUTH_ENAME"),
+//					rs.getString("AUTH_KNAME"),
+//					rs.getString("M_EMAIL"),
+//					rs.getString("M_NAME")
+//				);
+//			return beanTeacher;
+//		}		
+//	};
+	
+
+	
+	
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+	
+	public List<Attendance> tempAttendanceList(int subjectId) {
+		String sql = "select * from TEMP_ATTENDANCE "
+				+ "natural join MEMBER  where SUBJECT_ID = ? ";
+		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subjectId);
+		return result;
+	}
+	
 	private RowMapper<Subject> subjectRowMapper = new RowMapper<Subject>() {
 		@Override
 		public Subject mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -66,60 +87,6 @@ public class LggDao{
 			return beanSubject;
 		}		
 	};
-	private RowMapper<Teacher> teacherRowMapper = new RowMapper<Teacher>() {
-		@Override
-		public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Teacher beanTeacher = new Teacher(
-					rs.getInt("M_ID"),
-					rs.getInt("AUTH_MANAGER"),
-					rs.getDate("AUTH_END_DATE"),
-					rs.getString("AUTH_ENAME"),
-					rs.getString("AUTH_KNAME"),
-					rs.getString("M_EMAIL"),
-					rs.getString("M_NAME")
-				);
-			return beanTeacher;
-		}		
-	};
-	
-	private RowMapper<SubJoinMem> subJoinMemRowMapper = new RowMapper<SubJoinMem>() {
-		@Override
-		public SubJoinMem mapRow(ResultSet rs, int rowNum) throws SQLException {
-			SubJoinMem beanSubJoinMem = new SubJoinMem(
-					rs.getInt("M_ID"),
-					rs.getInt("SUBJECT_ID"),
-					rs.getString("M_NAME"),
-					rs.getString("SUBJECT_NAME")
-				);
-			return beanSubJoinMem;
-		}		
-	};
-	private RowMapper<AuthMember> memberRowMapper = new RowMapper<AuthMember>() {
-		@Override
-		public AuthMember mapRow(ResultSet rs, int rowNum) throws SQLException {
-			AuthMember beanMember = new AuthMember(
-					rs.getInt("M_ID"),
-					rs.getString("M_EMAIL"),
-					rs.getString("M_NAME"),
-					rs.getString("AUTH_ENAME"),
-					rs.getString("M_APP_U_NO")
-				);
-			return beanMember;
-		}		
-	};
-	
-	
-	@Autowired
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
-	public List<Attendance> tempAttendanceList(int subjectId) {
-		String sql = "select * from TEMP_ATTENDANCE "
-				+ "natural join MEMBER  where SUBJECT_ID = ? ";
-		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subjectId);
-		return result;
-	}
 	public List<Subject> teachersSubject(int teacherId) {
 		String sql = "select * "
 				+ "from (select SUBJECT_ID from TEACHER_SUBJECT where M_ID = ?) "
@@ -194,7 +161,7 @@ public class LggDao{
 	}
 	@Transactional
 	public int subjectDelete(int subjectId) {
-		int cnt = jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
+		jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
 		int cnt1 = jdbcTemplate.update("DELETE FROM SUBJECTS WHERE SUBJECT_ID = ? ",subjectId);
 		return cnt1;
 	}
@@ -223,12 +190,12 @@ public class LggDao{
 		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
 				+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
 				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
-		command.getSubject_name(),
-		command.getSubject_start(),
-		command.getSubject_end(),
-		command.getSubject_state(),
-		command.getSubject_comment()
-	);
+				command.getSubject_name(),
+				command.getSubject_start(),
+				command.getSubject_end(),
+				command.getSubject_state(),
+				command.getSubject_comment()
+				);
 	}
 
 	public int authInsert(List<Integer> m_ids, String auth_ename,int auth_manager_id) {
@@ -263,6 +230,21 @@ public class LggDao{
 		int result = jdbcTemplate.update("DELETE FROM MEMBER_AUTH WHERE m_id in ("+inSql+") and auth_ename = ? ",auth_ename);
 		return result;
 	}
+	
+	private RowMapper<AuthMember> memberRowMapper = new RowMapper<AuthMember>() {
+		@Override
+		public AuthMember mapRow(ResultSet rs, int rowNum) throws SQLException {
+			AuthMember beanMember = new AuthMember(
+					rs.getInt("M_ID"),
+					rs.getString("M_EMAIL"),
+					rs.getString("M_NAME"),
+					rs.getString("M_PASS"),
+					rs.getString("AUTH_ENAME"),
+					rs.getString("M_APP_U_NO")
+				);
+			return beanMember;
+		}		
+	};
 
 	public List<AuthMember> authList(String auth_ename) {
 		String sql = "select * from  MEMBER left outer join (select * from MEMBER_AUTH where auth_ename=?) USING(M_ID)  ";
@@ -280,6 +262,19 @@ public class LggDao{
 		return result;
 	}
 
+	private RowMapper<SubJoinMem> subJoinMemRowMapper = new RowMapper<SubJoinMem>() {
+		@Override
+		public SubJoinMem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			SubJoinMem beanSubJoinMem = new SubJoinMem(
+					rs.getInt("M_ID"),
+					rs.getInt("SUBJECT_ID"),
+					rs.getString("M_NAME"),
+					rs.getString("SUBJECT_NAME")
+				);
+			return beanSubJoinMem;
+		}		
+	};
+	
 	public List<SubJoinMem> subJoinMemList(Integer subject_id, String auth_ename) {
 		String tableName = "";
 		if(auth_ename.equals("student")){
@@ -341,6 +336,75 @@ public class LggDao{
 		}
 		int result = jdbcTemplate.update("DELETE FROM "+tableName+" WHERE m_id in ("+inSql+") and subject_id = ? ",subject_id);
 		return result;
+	}
+
+	
+	private RowMapper<AuthMember> member2RowMapper = new RowMapper<AuthMember>() {
+		@Override
+		public AuthMember mapRow(ResultSet rs, int rowNum) throws SQLException {
+			AuthMember beanMember = new AuthMember(
+					rs.getInt("M_ID"),
+					rs.getString("M_EMAIL"),
+					rs.getString("M_NAME"),
+					rs.getString("M_PASS"),
+					rs.getString("M_APP_U_NO")
+				);
+			return beanMember;
+		}		
+	};
+
+	public List<AuthMember> memberList(MemberSearchCommand command) {
+		String whereSql ="";
+		int tmp=0;
+		if(command.getSearchText()!=null){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " SUBJECT_NAME like '%"+command.getSearchText()+"%' ";
+		}
+//		if(command.getState()!=null && command.getState().length > 0){
+//			String[] ids = command.getState();
+//			String inSql="";
+//			for (int i = 0; i < ids.length; i++) {
+//				if (i!=0) inSql += ",";
+//				inSql += ids[i];
+//			}
+//			whereSql += (tmp==0)?" where ":" and ";
+//			tmp++;
+//			whereSql += " SUBJECT_STATE in ("+inSql+") ";
+//		}
+
+		String sql = "select * from  MEMBER  "
+				+ whereSql;
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper);
+		return result;	}
+
+	public int memberInsert(AuthMember command) {
+		return jdbcTemplate.update(" INSERT INTO MEMBER "
+				+ "(M_ID,M_EMAIL,M_NAME,M_PASS) "
+				+ " VALUES(SEQUENCE_MEMBER.NEXTVAL,?,?,?) ",
+				command.getM_email(),
+				command.getM_name(),
+				command.getM_pass()
+				);
+	}
+
+	public int memberEdit(AuthMember command) {
+		return jdbcTemplate.update(" update MEMBER set "
+				+ "M_EMAIL=?,"
+				+ "M_NAME=?,"
+				+ "M_PASS=?"
+				+ " where SUBJECT_ID = ? ",
+				command.getM_email(),
+				command.getM_name(),
+				command.getM_pass(),
+				command.getM_id()
+	);
+	}
+
+	public int memberDelete(int m_id) {
+//		jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
+		int cnt1 = jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
+		return cnt1;
 	}
 
 

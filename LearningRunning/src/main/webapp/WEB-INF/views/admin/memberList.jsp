@@ -20,17 +20,18 @@ $(function(){
 		mode = $("#mode").val();
 		frm = $("#editFrm");
 		console.log(frm.serialize());
-		$( ':input[required]', frm ).each( function () {
+		$($(':input[required]', frm ).get().reverse()).each( function () {
 		    if ( $(this).val().trim() == '' ) {
 		        $(this).focus();
 		        okCnt++;
+		        return;
 		    }
 		});
 		okText = "입력";
 		if(mode=='insert'){
-			frm.attr("action","<%=rootPath%>/course/insert");
+			frm.attr("action","<%=rootPath%>/member/insert");
 		}else if(mode=="edit"){
-			frm.attr("action","<%=rootPath%>/course/edit");
+			frm.attr("action","<%=rootPath%>/member/edit");
 			okText = "수정";
 			
 		}else{
@@ -44,7 +45,7 @@ $(function(){
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert(okText+"성공하였습니다.");
-		        		getSubjectList();
+		        		getMemberList();
 		        	}
 		        		
 		        },
@@ -61,13 +62,10 @@ $(function(){
 		if($.isEmptyObject(this)) return false;
 		$("#mode").val("edit");
 		$("#insert").text("수정");
-		$("#subject_id").val($(this).prev().text());
-		$("#subject_name").val($("a",this).text());
-		$("#subject_start").val($(this).next().text());
-		$("#subject_end").val($(this).nextAll(":eq(1)").text());
-		$("#subject_state").val($(this).nextAll(":eq(3)").text());
-		$("#subject_comment").val($("pre",this).text());
-		//clearFrm();
+		$("#m_id").val($(this).prev().text());
+		$("#m_name").val($("a",this).text());
+		$("#m_email").val($(this).next().text());
+		$("#m_pass").val($(this).next().next().text());
 		$('#myModal').modal();
 
 	});
@@ -75,13 +73,13 @@ $(function(){
 			sId = $(this).attr("data");
 		if(confirm(sId+"번 과정을 삭제하시겠습니까?")){
 			$.ajax({
-		        url:"<%=rootPath%>/course/delete",
+		        url:"<%=rootPath%>/member/delete",
 		        type:'post',
-		        data: {subject_id:sId},
+		        data: {m_id:sId},
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert("삭제성공하였습니다.");
-		        		getSubjectList();
+		        		getMemberList();
 		        	}
 		        		
 		        },
@@ -95,33 +93,26 @@ $(function(){
 	function clearFrm(){
 		$("#mode").val("insert");
 		$("#insert").text("입력");
-		$("#subject_id").val("");
-		$("#subject_name").val("");
-		$("#subject_start").val("");
-		$("#subject_end").val("");
-		$("#subject_state").val("");
-		$("#subject_comment").val("");
+		$("#m_id").val("");
+		$("#m_name").val("");
+		$("#m_pass").val("");
+		$("#m_email").val("");
 		
 	}
-	$(".search-table").on("mouseenter mouseleave",".hover-td",function(){
-		$("pre",this).toggle("fast");
-	});
-	function getSubjectList(){
+	function getMemberList(){
 		$.ajax({
-	        url:"<%=rootPath%>/course",
+	        url:"<%=rootPath%>/member",
 	        type:'post',
-	        data: $("#editFrm").serialize(),
+	        data: $("#searchFrm").serialize(),
 	        success: function(json){
 	        	conTag = "";
 				$(json.data).each(function(i,item){
 						conTag +="<tr>";
-						conTag +="<td>"+item.subject_id+"</td>";
-						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.subject_name+"</a><pre>"+item.subject_comment+"</pre></td>";
-						conTag +="<td>"+item.subject_start+"</td>";
-						conTag +="<td>"+item.subject_end+"</td>";
-						conTag +="<td>"+item.student_count+"</td>";
-						conTag +="<td>"+item.subject_state+"</td>";
-						conTag +="<td><button class=\"delBtn\" data=\""+item.subject_id+"\">삭제</button></td>";
+						conTag +="<td>"+item.m_id+"</td>";
+						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
+						conTag +="<td>"+item.m_email+"</td>";
+						conTag +="<td>"+item.m_pass+"</td>";
+						conTag +="<td><button class=\"delBtn\" data=\""+item.m_id+"\">삭제</button></td>";
 						conTag +="</tr>";
 				});
 				$("table#sub-table>tbody").empty().append(conTag);
@@ -138,21 +129,12 @@ $(function(){
 	    });
 		
 	}
-	getSubjectList();
+	getMemberList();
 });
 </script>
 <style type="text/css">
-.hover-td{
-	position : relative;
-}
-.hover-td pre{
-	position : absolute;
-	left:200px;
-	z-index:1;
-	width:auto;
-	height:auto;
-	display: none;
-}
+.hover-td{cursor: pointer;}
+.search-div{ float: right;position: relative;top: -46px;}
 </style>
 </head>
 <body>
@@ -166,40 +148,28 @@ $(function(){
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">반(과정) 입력</h4>
+        <h4 class="modal-title" id="myModalLabel">member 입력</h4>
       </div>
-      <div class="modal-body" style="min-height: 350px">
+      <div class="modal-body" style="min-height: 150px">
       <form:form commandName="command" id="editFrm">
       	<input  type="hidden" id="mode" value="insert">
       	<div class="form-group">
-      	 	<label for="subjectId" class="col-sm-2 control-label">과정명</label>
+      	 	<label for="m_id" class="col-sm-2 control-label">member</label>
          	<div class="col-sm-10">
-         		<input type="hidden" class="form-control" id="subject_id" name="subject_id" placeholder="아이디">
-         		<input type="text" class="form-control" id="subject_name" name="subject_name" placeholder="과정명" required="required">
+         		<input type="hidden" class="form-control" id="m_id" name="m_id" placeholder="아이디">
+         		<input type="text" class="form-control" id="m_name" name="m_name" placeholder="member명" required="required">
          	</div>
         </div>
       	<div class="form-group">
-      	 <label for="subjectStart" class="col-sm-2 control-label">시작,종료</label>
-         	<div class="col-sm-10 form-inline">
-         		<input type="date" class="form-control " id="subject_start" name="subject_start" placeholder="시작일">
-         		-
-         		<input type="date" class="form-control" id="subject_end" name="subject_end" placeholder="종료일">
+      	 	<label for="m_email" class="col-sm-2 control-label">email</label>
+         	<div class="col-sm-10">
+         		<input type="email" class="form-control" id="m_email" name="m_email" placeholder="email" required="required">
          	</div>
         </div>
-      	<div class="form-group ">
-      	 <label for="subjectComment" class="col-sm-2 control-label">상태</label>
-         	<div class="col-sm-10 form-inline">
-         		<select   class="form-control" style="width: 100%" name="subject_state" id="subject_state">
-         			<option value="예정">예정</option>
-         			<option value="진행중">진행중</option>
-         			<option value="종료">종료</option>
-         		</select>
-         	</div>
-        </div>
-      	<div class="form-group ">
-      	 <label for="subjectComment" class="col-sm-2 control-label">commant</label>
-         	<div class="col-sm-10 form-inline">
-         		<textarea rows="10"  class="form-control" style="width: 100%" name="subject_comment" id="subject_comment"></textarea>
+      	<div class="form-group">
+      	 	<label for="m_pass" class="col-sm-2 control-label">password</label>
+         	<div class="col-sm-10">
+         		<input type="text" class="form-control" id="m_pass" name="m_pass" placeholder="password" required="required">
          	</div>
         </div>
         </form:form>
@@ -212,24 +182,26 @@ $(function(){
   </div>
 </div>
 <div class="main"><div class="main-div">
-	<h3 class="sub-title">반(과정)관리</h3>
-	<div class="">
-	<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+	<h3 class="sub-title">member 관리</h3>
+	<div class="search-div form-inline">
+	<input type="text" class="form-control" id="searchText" name="searchText" placeholder="검색어">
+	<button type="button" class="btn btn-primary" id="searchBtn">
+  		검색
+	</button>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
   		입력
 	</button>
 	</div>
 	
 <div class="search-table">
-		<table  class="table table-striped table-bordered" id="sub-table" cellspacing="0" width="100%">
+		<table  class="table table-striped table-bordered table-hover" id="sub-table" cellspacing="0" width="100%">
 			<thead>
 			<tr>
 
 				<th>번호</th>
-				<th>과정명</th>
-				<th>시작일</th>
-				<th>종료일</th>
-				<th>인원수</th>
-				<th>상태</th>
+				<th>member명</th>
+				<th>email</th>
+				<th>비밀번호</th>
 				<th>삭제</th>
 			</tr>
 			</thead>

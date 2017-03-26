@@ -1,20 +1,36 @@
 package bean;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class AuthMember {
 	int m_id;
 	String m_email;
 	String m_name;
+	String m_pass;
 	String auth_ename;
 	boolean m_app_u_no;
 	
 	
-	
-	public AuthMember(int m_id, String m_email, String m_name,String auth_ename, String m_app_u_no) {
+	@Autowired
+	public AuthMember() {
+		super();
+	}
+	public AuthMember(int m_id, String m_email, String m_name,String m_pass, String auth_ename, String m_app_u_no) {
 		super();
 		this.m_id = m_id;
 		this.m_email = m_email;
 		this.m_name = m_name;
+		this.m_pass = m_pass;
 		this.auth_ename = auth_ename;
+		this.m_app_u_no = (m_app_u_no==null || m_app_u_no.equals(""))?false:true;
+	}
+	public AuthMember(int m_id, String m_email, String m_name,String m_pass, String m_app_u_no) {
+		super();
+		this.m_id = m_id;
+		this.m_email = m_email;
+		this.m_name = m_name;
+		this.m_pass = m_pass;
+		this.auth_ename = "";
 		this.m_app_u_no = (m_app_u_no==null || m_app_u_no.equals(""))?false:true;
 	}
 	
@@ -35,6 +51,12 @@ public class AuthMember {
 	}
 	public void setM_name(String m_name) {
 		this.m_name = m_name;
+	}
+	public String getM_pass() {
+		return m_pass;
+	}
+	public void setM_pass(String m_pass) {
+		this.m_pass = m_pass;
 	}
 	public String getAuth_ename() {
 		return auth_ename;

@@ -2,7 +2,7 @@ package bean;
 
 public class AuthInfo {
 	private int m_id;
-	private String m_email,M_NAME;
+	private String m_email,m_name;
 	boolean admin,teacher,student;
 	
 	
@@ -20,11 +20,11 @@ public class AuthInfo {
 	public void setM_email(String m_email) {
 		this.m_email = m_email;
 	}
-	public String getM_NAME() {
-		return M_NAME;
+	public String getM_name() {
+		return m_name;
 	}
-	public void setM_NAME(String m_NAME) {
-		M_NAME = m_NAME;
+	public void setM_name(String m_name) {
+		this.m_name = m_name;
 	}
 	public boolean isAdmin() {
 		return admin;

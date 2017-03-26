@@ -55,6 +55,7 @@ $(function(){
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
+		          <li><a href="<%=request.getContextPath()%>/member">member 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/subJoinMem">반-학생,선생 등록</a></li>
 		          <li><a href="<%=request.getContextPath()%>/auth">권한 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/course">반(과정)관리</a></li>
