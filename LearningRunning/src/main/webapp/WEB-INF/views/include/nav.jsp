@@ -35,30 +35,30 @@ $(function(){
 		<ul class="nav nav-pills ">
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/attendance/subList">츨결입력</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/attendance/subList">츨결입력</a></li>
 		          <li><a href="<%=request.getContextPath()%>/attendance/list">반별 출결보기</a></li>
 		          <li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">상담관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/counsel/insert">상담관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/counsel/list">상담 보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/insert">상담관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/list">상담 보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">성적관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/score/insert">성적관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/score/listA">반별성적보기</a></li>
-		          <li><a href="<%=request.getContextPath()%>/score/listB">개인별성적보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/score/insert">성적관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/score/listA">반별성적보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/score/listB">개인별성적보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/member">member 관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/subJoinMem">반-학생,선생 등록</a></li>
-		          <li><a href="<%=request.getContextPath()%>/auth">권한 관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/course">반(과정)관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/member">member 관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/subJoinMem">반-학생,선생 등록</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/auth">권한 관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/course">반(과정)관리</a></li>
 		        </ul>
             </li>
           </ul>
