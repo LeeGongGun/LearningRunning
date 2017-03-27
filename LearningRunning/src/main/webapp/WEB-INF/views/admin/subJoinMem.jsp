@@ -36,7 +36,7 @@ $(function(){
 		});
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/subJoinMem/insert",
+		        url:"<%=rootPath%>/admin/subJoinMem/insert",
 		        type:'post',
 		        data: {
 	        		m_id : arr,
@@ -63,7 +63,7 @@ $(function(){
 		console.log($.param({m_id : arr,auth_ename : $("#auth_ename").val()}));
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/subJoinMem/delete",
+		        url:"<%=rootPath%>/admin/subJoinMem/delete",
 		        type:'post',
 		        data: {
 		        	m_id : arr,
@@ -94,7 +94,7 @@ $(function(){
 	}
 	function getMemberList(){
 		$.ajax({
-	        url:"<%=rootPath%>/subJoinMem",
+	        url:"<%=rootPath%>/admin/subJoinMem",
 	        type:'post',
 	        data: {
         		subject_id : $("#subject_id").val(),

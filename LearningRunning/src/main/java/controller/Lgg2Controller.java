@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.sql.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -41,51 +42,11 @@ public class Lgg2Controller {
 	public void setLggDao(LggDao lggDao) {
 		this.lggDao = lggDao;
 	}
-	@RequestMapping(value = "/member" , method = RequestMethod.GET)
-	public String memberDefault(MemberSearchCommand command,Errors errors, Model model) {
-		return "/admin/memberList";
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String home(Locale locale, Model model) {
+		return "home";
 	}
-	@RequestMapping(value = "/member", method = RequestMethod.POST)
-	public String memberList(MemberSearchCommand command,Errors errors, Model model) {
-		List<AuthMember> subjectList = lggDao.memberList(command);
-		String json = "";
-		try {
-			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			json = ow.writeValueAsString(subjectList);
-		} catch (JsonGenerationException e) {
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		model.addAttribute("json", "{\"data\": "+json+"}");
-		return "/ajax/ajaxDefault";
-	}
-	@RequestMapping(value = "/member/insert", method = RequestMethod.POST)
-	public String memberInsert(AuthMember command,
-			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
-			Model model) {
-		int rs = lggDao.memberInsert(command);
-		model.addAttribute("json", "{\"data\": "+rs+"}");
-		return "/ajax/ajaxDefault";
-	}
-	@RequestMapping(value = "/member/edit", method = RequestMethod.POST)
-	public String memberEdit(AuthMember command,
-			Errors errors,//command 객체에 null이 포함가능할경우 반드시 써줄것
-			Model model) {
-		int rs = lggDao.memberEdit(command);
-		model.addAttribute("json", "{\"data\": "+rs+"}");
-		System.out.println(rs);
-		return "/ajax/ajaxDefault";
-	}
-	@RequestMapping(value = "/member/delete")
-	public String memberDelete(int m_id, Model model) {
-		System.out.println(m_id);
-		int delOk = lggDao.memberDelete(m_id);
-		model.addAttribute("json", "{\"data\": "+delOk+"}");
-		return "/ajax/ajaxDefault";
-	}
+
 	
 	
 }

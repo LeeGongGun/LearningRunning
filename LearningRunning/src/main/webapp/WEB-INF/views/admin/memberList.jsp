@@ -29,9 +29,9 @@ $(function(){
 		});
 		okText = "입력";
 		if(mode=='insert'){
-			frm.attr("action","<%=rootPath%>/member/insert");
+			frm.attr("action","<%=rootPath%>/admin/member/insert");
 		}else if(mode=="edit"){
-			frm.attr("action","<%=rootPath%>/member/edit");
+			frm.attr("action","<%=rootPath%>/admin/member/edit");
 			okText = "수정";
 			
 		}else{
@@ -73,7 +73,7 @@ $(function(){
 			sId = $(this).attr("data");
 		if(confirm(sId+"번 과정을 삭제하시겠습니까?")){
 			$.ajax({
-		        url:"<%=rootPath%>/member/delete",
+		        url:"<%=rootPath%>/admin/member/delete",
 		        type:'post',
 		        data: {m_id:sId},
 		        success: function(json){
@@ -101,7 +101,7 @@ $(function(){
 	}
 	function getMemberList(){
 		$.ajax({
-	        url:"<%=rootPath%>/member",
+	        url:"<%=rootPath%>/admin/member",
 	        type:'post',
 	        data: $("#searchFrm").serialize(),
 	        success: function(json){

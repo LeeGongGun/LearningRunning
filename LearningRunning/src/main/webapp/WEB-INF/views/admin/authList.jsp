@@ -35,7 +35,7 @@ $(function(){
 		});
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/auth/insert",
+		        url:"<%=rootPath%>/admin/auth/insert",
 		        type:'post',
 		        data: {
 		        		m_id : arr,
@@ -62,7 +62,7 @@ $(function(){
 		console.log($.param({m_id : arr,auth_ename : $("#auth_ename").val()}));
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/auth/delete",
+		        url:"<%=rootPath%>/admin/auth/delete",
 		        type:'post',
 		        data: {m_id : arr,auth_ename : $("#auth_ename").val()},
 		        success: function(json){
@@ -89,7 +89,7 @@ $(function(){
 	}
 	function getAuthList(){
 		$.ajax({
-	        url:"<%=rootPath%>/auth",
+	        url:"<%=rootPath%>/admin/auth",
 	        type:'post',
 	        data: {auth_ename: $("#auth_ename").val()},
 	        success: function(json){

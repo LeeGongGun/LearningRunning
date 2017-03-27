@@ -28,9 +28,9 @@ $(function(){
 		});
 		okText = "입력";
 		if(mode=='insert'){
-			frm.attr("action","<%=rootPath%>/course/insert");
+			frm.attr("action","<%=rootPath%>/admin/course/insert");
 		}else if(mode=="edit"){
-			frm.attr("action","<%=rootPath%>/course/edit");
+			frm.attr("action","<%=rootPath%>/admin/course/edit");
 			okText = "수정";
 			
 		}else{
@@ -75,7 +75,7 @@ $(function(){
 			sId = $(this).attr("data");
 		if(confirm(sId+"번 과정을 삭제하시겠습니까?")){
 			$.ajax({
-		        url:"<%=rootPath%>/course/delete",
+		        url:"<%=rootPath%>/admin/course/delete",
 		        type:'post',
 		        data: {subject_id:sId},
 		        success: function(json){
@@ -108,7 +108,7 @@ $(function(){
 	});
 	function getSubjectList(){
 		$.ajax({
-	        url:"<%=rootPath%>/course",
+	        url:"<%=rootPath%>/admin/course",
 	        type:'post',
 	        data: $("#editFrm").serialize(),
 	        success: function(json){
