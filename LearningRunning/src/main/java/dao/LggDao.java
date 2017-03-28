@@ -376,7 +376,8 @@ public class LggDao{
 		String sql = "select * from  MEMBER  "
 				+ whereSql;
 		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper);
-		return result;	}
+		return result;
+		}
 
 	public int memberInsert(AuthMember command) {
 		return jdbcTemplate.update(" INSERT INTO MEMBER "
@@ -405,6 +406,14 @@ public class LggDao{
 //		jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
 		int cnt1 = jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
 		return cnt1;
+	}
+
+	public AuthMember selectByEmailAndPass(String email, String password) {
+		String sql = "select * from  MEMBER  "
+				+ "where m_email = ? and m_pass = ?";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,email,password);
+		return result.isEmpty()?null:result.get(0);
+
 	}
 
 

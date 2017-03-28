@@ -61,6 +61,7 @@ $(function(){
 		          <li><a href="<%=request.getContextPath()%>/admin/course">반(과정)관리</a></li>
 		        </ul>
             </li>
+		    <li><a href="<%=request.getContextPath()%>/logout">logout</a></li>
           </ul>
           		
 	</div>

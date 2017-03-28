@@ -8,6 +8,13 @@ public class AuthInfo {
 	
 	
 	
+	
+	public AuthInfo(int m_id, String m_email, String m_name) {
+		super();
+		this.m_id = m_id;
+		this.m_email = m_email;
+		this.m_name = m_name;
+	}
 	public int getM_id() {
 		return m_id;
 	}

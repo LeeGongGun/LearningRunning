@@ -65,13 +65,14 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 		<!--<property name="maxUploadSize" value="100000" />-->
  
 	</bean>
-	<!--  <mvc:interceptors>
+	<!-- <mvc:interceptors>
 		<mvc:interceptor>
-			<mvc:mapping path="/edit/**"/>
-			<mvc:mapping path="/member/**"/>
-			<mvc:mapping path="/board/**" />
+			<mvc:mapping path="/"/>
+			<mvc:mapping path="/student/**"/>
+			<mvc:mapping path="/teacher/**"/>
+			<mvc:mapping path="/admin/**" />
 			<bean class="interceptor.AuthCheckInterceptor"></bean>
 		</mvc:interceptor>
-	</mvc:interceptors>-->
+	</mvc:interceptors> -->
 	
 </beans>
