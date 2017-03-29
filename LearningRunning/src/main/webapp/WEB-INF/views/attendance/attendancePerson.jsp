@@ -29,20 +29,20 @@ $(function() {
 });
 
 function periodSrch(){
-	location.href = "<c:url value='/attendance/person/1' />";
+	location.href = "<c:url value='/attendance/person/${memberId}' />";
 }
 
 function beLate(){
-	location.href = "<c:url value='/attendance/beLate/1' />";
+	location.href = "<c:url value='/attendance/beLate/${memberId}' />";
 }
 function goOut(){
-	location.href = "<c:url value='/attendance/goOut/1' />";
+	location.href = "<c:url value='/attendance/goOut/${memberId}' />";
 }
 function leaveEarly(){
-	location.href = "<c:url value='/attendance/leaveEarly/1' />";
+	location.href = "<c:url value='/attendance/leaveEarly/${memberId}' />";
 }
 function absent(){
-	location.href = "<c:url value='/attendance/absent/1' />";
+	location.href = "<c:url value='/attendance/absent/${memberId}' />";
 }
 
 </script>
@@ -72,10 +72,10 @@ margin : 200px;
 	<form:form commandName="PersonSearch" id="frm">
 		<p>
 			<label>from:
-			<input type="text" name="from" id="from" value = ${from }/>
+			<input type="text" name="from" id="from" value="${from }" />
 			</label>
 			~ <label>to: 
-			<input type="text" name="to" id="to" value = ${to } />
+			<input type="text" name="to" id="to" value="${to }" />
 			</label>
 			<input type="submit" value="기간별 조회" onclick = "periodSrch();">
 		</p>
@@ -86,7 +86,6 @@ margin : 200px;
 	<input type="submit" value="결석 조회" onclick = "absent();">
 	
 	</div>
-	
 	
 	<div class="main">
 		<div class="main-div">
@@ -114,7 +113,6 @@ margin : 200px;
 						</tr>
 					</c:forEach>
 					<tr>
-						<td>수강 일수 : </td>
 				</table>
 			</table>
 		</div>

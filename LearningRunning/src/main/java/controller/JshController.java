@@ -1,5 +1,6 @@
 package controller;
 
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -12,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
-import bean.PersonSearch;
+import bean.PersonSubList;
 import command.AttendancePersonCommand;
+import command.PersonSearch;
 import dao.JshDao;
 
 @Controller
@@ -21,29 +23,50 @@ import dao.JshDao;
 public class JshController {
 	private JshDao jshDao;
 	private MultipartResolver multipartResolver;
+	private PrintWriter writer = null;
+
 	public void setJshDao(JshDao jshDao) {
 		this.jshDao = jshDao;
 	}
-	
-	@RequestMapping(value="/attendance/person", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/attendance/person", method = RequestMethod.GET)
 	public String attendPersonSubListGet(Model model) {
-		int id = 5;
-		List<AttendancePersonCommand> attendancePersonCommand = jshDao.selectAllPerson(id);
-		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
+		int id = 1;
+		List<PersonSubList> personSubList = jshDao.selectSubPerson(id);
+		String stuSubject = jshDao.getSubjectName(id);
+		double attendRate = jshDao.getAttendRate(id);
+		model.addAttribute("attendRate", attendRate);
+		model.addAttribute("subject", stuSubject);
+		model.addAttribute("personSubList", personSubList);
 		return "attendance/attendancePersonSubList";
 	}
-	
-	@RequestMapping(value="/attendance/person/{id}", method = RequestMethod.GET)
-	public String attendPersonGet(@PathVariable("id") int studentId, 
-			Model model , 
-			PersonSearch personsearch) {
+
+	@RequestMapping(value = "/attendance/person/{id}", method = RequestMethod.GET)
+	public String attendPersonGet(@PathVariable("id") int studentId, Model model, PersonSearch personsearch) {
 		
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+		List<PersonSubList> personSubList =jshDao.selectSubPerson(studentId);
+		model.addAttribute("personSubList", personSubList);
+		
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.selectAllPerson(studentId);
 		String stuSubject = jshDao.getSubjectName(studentId);
 		
+		int countAll = jshDao.count(studentId);
+		int attendAll = jshDao.attendCount(studentId);
+		int late = jshDao.lateCount(studentId);
+		int goOut = jshDao.goOutCount(studentId);
+		int absentCount = jshDao.absentCount(studentId);
+		int leaveEarlyCount = jshDao.leaveEarlyCount(studentId);
+
+		model.addAttribute("countAll", countAll);
+		model.addAttribute("attendAll", attendAll);
+		model.addAttribute("late", late);
+		model.addAttribute("goOut", goOut);
+		model.addAttribute("absentCount", absentCount);
+		model.addAttribute("leaveEarlyCount", leaveEarlyCount);
+
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
@@ -52,50 +75,84 @@ public class JshController {
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
-	@RequestMapping(value="/attendance/person/{id}", method = RequestMethod.POST)
-	public String attendPersonPost(@PathVariable("id") int studentId, 
-			@RequestParam(value="from", required=false) String strFrom,
-			@RequestParam(value="to", required=false) String strTo,
-			Model model) {
 
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+	@RequestMapping(value = "/attendance/person/{id}", method = RequestMethod.POST)
+	public String attendPersonPost(@PathVariable("id") int studentId,
+			@RequestParam(value = "from", required = false) String strFrom,
+			@RequestParam(value = "to", required = false) String strTo, Model model) {
+
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
-		
 
+		int fromForCondition = Integer.parseInt(strFrom);
+		int toForCondition = Integer.parseInt(strTo);
+		
 		List<AttendancePersonCommand> attendancePersonCommand = 
 				jshDao.searchPersonPeriod(studentId, strFrom, strTo);
+		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
+		
+//		if (fromForCondition < toForCondition) {
+//			List<AttendancePersonCommand> attendancePersonCommand = 
+//					jshDao.searchPersonPeriod(studentId, strFrom, strTo);
+//			model.addAttribute("attendancePersonCommand", attendancePersonCommand);
+//			
+//		} else {
+//			writer.println("<script type='text/javascript'>");
+//			writer.println("alert('Àß¸øµÈ ÀÔ·ÂÀÔ´Ï´Ù.');");
+//			writer.println("history.back();");
+//			writer.println("</script>");
+//			writer.flush();
+//			List<AttendancePersonCommand> attendancePersonCommand = jshDao.selectAllPerson(studentId);
+//			model.addAttribute("attendancePersonCommand", attendancePersonCommand);
+//
+//		}
+		
 		
 		String stuSubject = jshDao.getSubjectName(studentId);
-				
+
+		int countAll = jshDao.count(studentId);
+		int attendAll = jshDao.attendCount(studentId);
+		int late = jshDao.lateCount(studentId);
+		int goOut = jshDao.goOutCount(studentId);
+		int absentCount = jshDao.absentCount(studentId);
+		int leaveEarlyCount = jshDao.leaveEarlyCount(studentId);
+
+		model.addAttribute("countAll", countAll);
+		model.addAttribute("attendAll", attendAll);
+		model.addAttribute("late", late);
+		model.addAttribute("goOut", goOut);
+		model.addAttribute("absentCount", absentCount);
+		model.addAttribute("leaveEarlyCount", leaveEarlyCount);
+
 		model.addAttribute("from", strFrom);
 		model.addAttribute("to", strTo);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
 		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
-		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
-	public Date transDate(String d){
+
+	public Date transDate(String d) {
 		Date date = null;
-		if(d != null){
-			SimpleDateFormat transFormat; 
+		if (d != null) {
+			SimpleDateFormat transFormat;
 			transFormat = new SimpleDateFormat("yyMMdd");
-			try { date = transFormat.parse(d);
-			} catch (Exception e) { e.printStackTrace(); }
+			try {
+				date = transFormat.parse(d);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return date;
 	}
-	
-	//Áö°¢
-	@RequestMapping(value="/attendance/beLate/{id}", method = RequestMethod.GET)
-	public String belatePost(
-			@PathVariable("id") int studentId, Model model , PersonSearch personsearch) {
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+
+	// ï¿½ï¿½ï¿½ï¿½
+	@RequestMapping(value = "/attendance/beLate/{id}", method = RequestMethod.GET)
+	public String belateGet(@PathVariable("id") int studentId, Model model, PersonSearch personsearch) {
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		String stuSubject = jshDao.getSubjectName(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.beLate(studentId);
@@ -107,20 +164,19 @@ public class JshController {
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
-	//¿ÜÃâ
-	@RequestMapping(value="/attendance/goOut/{id}", method = RequestMethod.GET)
-	public String goOutPost(
-			@PathVariable("id") int studentId, Model model,
-			@RequestParam(value="from", required=false) String strFrom,
-			@RequestParam(value="to", required=false) String strTo) {
-		
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+
+	// ï¿½ï¿½ï¿½ï¿½
+	@RequestMapping(value = "/attendance/goOut/{id}", method = RequestMethod.GET)
+	public String goOutGet(@PathVariable("id") int studentId, Model model,
+			@RequestParam(value = "from", required = false) String strFrom,
+			@RequestParam(value = "to", required = false) String strTo) {
+
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		String stuSubject = jshDao.getSubjectName(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.goOut(studentId);
-		
+
 		model.addAttribute("from", strFrom);
 		model.addAttribute("to", strTo);
 		model.addAttribute("student", student);
@@ -130,16 +186,15 @@ public class JshController {
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
-	//Á¶Åð
-	@RequestMapping(value="/attendance/leaveEarly/{id}", method = RequestMethod.GET)
-	public String attendPersonPost(
-			@PathVariable("id") int studentId, Model model , PersonSearch personsearch,
-			@RequestParam(value="from", required=false) String strFrom,
-			@RequestParam(value="to", required=false) String strTo) {
-		
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+
+	// ï¿½ï¿½ï¿½ï¿½
+	@RequestMapping(value = "/attendance/leaveEarly/{id}", method = RequestMethod.GET)
+	public String attendPersonGet(@PathVariable("id") int studentId, Model model, PersonSearch personsearch,
+			@RequestParam(value = "from", required = false) String strFrom,
+			@RequestParam(value = "to", required = false) String strTo) {
+
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		String stuSubject = jshDao.getSubjectName(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.leaveEarly(studentId);
@@ -153,18 +208,18 @@ public class JshController {
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
-	//°á¼®
-	@RequestMapping(value="/attendance/absent/{id}", method = RequestMethod.GET)
-	public String absentPost(
-			@PathVariable("id") int studentId, Model model , PersonSearch personsearch) {
-		
-		String student =  jshDao.getStudentName(studentId);
-		String studentEmail =  jshDao.getStudentEmail(studentId);
+
+	// ï¿½á¼®
+	@RequestMapping(value = "/attendance/absent/{id}", method = RequestMethod.GET)
+	public String absentGet(@PathVariable("id") int studentId, Model model, PersonSearch personsearch) {
+		String memberId = jshDao.getMemberId(studentId);
+		String student = jshDao.getStudentName(studentId);
+		String studentEmail = jshDao.getStudentEmail(studentId);
 		String stuSubject = jshDao.getSubjectName(studentId);
 		double attendRate = jshDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = jshDao.absent(studentId);
-		
+
+		model.addAttribute("memberId", memberId);
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
@@ -173,6 +228,5 @@ public class JshController {
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
 	}
-	
 
 }

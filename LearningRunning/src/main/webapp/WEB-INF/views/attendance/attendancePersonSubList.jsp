@@ -27,13 +27,13 @@
 						<th>상태</th>
 						<th>출석률</th>
 					</tr>
-					<c:forEach var="subject" items="${attendancePersonCommand}">
+					<c:forEach var="subject" items="${personSubList}">
 						<tr>
 							<td>${subject.subject_id}</td>
 							<td><a
 								href="<c:url value="/attendance/person/${subject.m_id}"/>">${subject.subject_name}</a></td>
 							<td>${subject.subject_state}</td>
-							<td></td>
+							<td>${attendRate }</td>
 						</tr>
 					</c:forEach>
 				</table>

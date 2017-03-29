@@ -3,7 +3,6 @@ package dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import bean.PersonSubList;
 import command.AttendancePersonCommand;
 
 
@@ -49,12 +49,77 @@ public class JshDao{
 			return attendancePersonCommand;
 		}
 	};	
-		
+	
+	private RowMapper<PersonSubList> personSubListRowMapper = new RowMapper<PersonSubList>() {
+		@Override
+		public PersonSubList mapRow(ResultSet rs, int rowNum) 
+				throws SQLException {
+			PersonSubList personSubList = new PersonSubList(
+					rs.getInt("m_id"),
+					rs.getInt("subject_id"),
+					rs.getString("subject_name"),
+					rs.getString("subject_state"),
+					rs.getString("m_email"),
+					rs.getString("m_name")
+					);
+			return personSubList;
+		}
+	};	
+	
+	//수업 일수 세기
 	public int count(int studentId ) {
 		Integer count = jdbcTemplate.queryForObject(
 				"select count(*) from attendance where m_id = ? ", Integer.class, studentId);
+		return count;
+	}
+	
+	//총 출석
+	public int attendCount(int studentId ) {
+		Integer count = jdbcTemplate.queryForObject(
+				"select count(*) from (select * from attendance where attend_status = '출석') "
+				+ "where m_id = ? ", Integer.class, studentId);
+		return count;
+	}
+		
+	//지각
+	public int lateCount(int studentId ) {
+		Integer count = jdbcTemplate.queryForObject(
+				"select count(*) from (select * from attendance where attend_status = '지각') "
+				+ "where m_id = ? ", Integer.class, studentId);
 		System.out.println(count);
 		return count;
+	}
+	
+	//외출
+	public int goOutCount(int studentId ) {
+		Integer count = jdbcTemplate.queryForObject(
+			"select count(*) from (select * from attendance where attend_status = '외출') "
+			+ "where m_id = ? ", Integer.class, studentId);
+		return count;
+	}
+	
+	//결석
+	public int absentCount(int studentId ) {
+		Integer count = jdbcTemplate.queryForObject(
+			"select count(*) from (select * from attendance where attend_status = '결석') "
+			+ "where m_id = ? ", Integer.class, studentId);
+		return count;
+	}
+	
+	//조퇴
+	public int leaveEarlyCount(int studentId ) {
+		Integer count = jdbcTemplate.queryForObject(
+			"select count(*) from (select * from attendance where attend_status = '조퇴') "
+			+ "where m_id = ? ", Integer.class, studentId);
+		return count;
+	}
+	
+	//attendancepersonSubList 페이지용 Dao
+	public List<PersonSubList> selectSubPerson(int studentId) {
+		String sql = "select distinct m_id, subject_id, subject_name, subject_state, m_email, m_name from "
+				+ "attendance natural join subjects natural join member where m_id = ? ";
+		List<PersonSubList> results = jdbcTemplate.query(sql, personSubListRowMapper, studentId);
+		return results;
 	}
 	
 	public List<AttendancePersonCommand> selectAllPerson(int studentId) {
@@ -82,6 +147,13 @@ public class JshDao{
 		return result;
 	}
 	
+	public String getMemberId(int studentId) {
+		String result = jdbcTemplate.queryForObject(
+				"select distinct m_id from attendance natural join subjects where m_id = ? ", 
+				String.class, studentId);
+		return result;
+	}
+	
 	public double getAttendRate(int studentId){
 		Integer studentAttend = jdbcTemplate.queryForObject(
 				"select count(*) from (select * from attendance where m_id = ? and "
@@ -105,7 +177,6 @@ public class JshDao{
 	public List<AttendancePersonCommand> searchPersonPeriod (int studentId, String strFrom, String strTo) {
 		String sql = "select * from attendance natural join subjects natural join member where m_id = ? and"
 				+ " start_time between to_date(?, 'YY/MM/DD') and to_date(?, 'YY/MM/DD')";
-		System.out.println(strFrom);
 		List<AttendancePersonCommand> results = 
 				jdbcTemplate.query(sql, attendPersonRowMapper, studentId, strFrom, strTo);
 		return results;
@@ -145,9 +216,3 @@ public class JshDao{
 		return results;
 	}
 }
-
-
-//select * from (select * from attendance where attend_status = '출석' or attend_status = '지각' or
-//ATTEND_STATUS='외출') natural join subjects natural join member where m_id = 5 and start_time 
-//between to_date('2017/03/01', 'YY/MM/DD') and 
-//to_date('2017/03/31', 'YY/MM/DD');
