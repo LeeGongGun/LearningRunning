@@ -73,7 +73,7 @@ public class LggController {
 	//subject
 	@RequestMapping(value = "/admin/course/insert", method = RequestMethod.POST)
 	public String subjectInsert(Subject command,
-			Errors errors,//command °´Ã¼¿¡ nullÀÌ Æ÷ÇÔ°¡´ÉÇÒ°æ¿ì ¹Ýµå½Ã ½áÁÙ°Í
+			Errors errors,//command ï¿½ï¿½Ã¼ï¿½ï¿½ nullï¿½ï¿½ ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ ï¿½Ýµï¿½ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½
 			Model model) {
 		int rs = lggDao.subjectInsert(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
@@ -81,7 +81,7 @@ public class LggController {
 	}
 	@RequestMapping(value = "/admin/course/edit", method = RequestMethod.POST)
 	public String subjectEdit(Subject command,
-			Errors errors,//command °´Ã¼¿¡ nullÀÌ Æ÷ÇÔ°¡´ÉÇÒ°æ¿ì ¹Ýµå½Ã ½áÁÙ°Í
+			Errors errors,//command ï¿½ï¿½Ã¼ï¿½ï¿½ nullï¿½ï¿½ ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ ï¿½Ýµï¿½ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½
 			Model model) {
 		int rs = lggDao.subjectEdit(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
@@ -146,7 +146,7 @@ public class LggController {
 			@RequestParam(value="auth_ename") String auth_ename,
 			@RequestParam(value="auth_end_date",required=false) String auth_end_date,
 			Model model) {
-		int auth_manager_id = 1;//¼¼¼Ç ´ëÃ¼
+		int auth_manager_id = 1;//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 		int rs = lggDao.authInsert(m_ids,auth_ename,auth_manager_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -156,7 +156,7 @@ public class LggController {
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int auth_manager_id = 1;//¼¼¼Ç ´ëÃ¼
+		int auth_manager_id = 1;//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 		int delOk = lggDao.authDelete(m_ids,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -167,7 +167,7 @@ public class LggController {
 	
 	
 	
-	//¹Ý-ÇÐ»ý(¼±»ý)
+	//ï¿½ï¿½-ï¿½Ð»ï¿½(ï¿½ï¿½ï¿½ï¿½)
 	@RequestMapping(value = "/admin/subJoinMem", method = RequestMethod.GET)
 	public String subJoinMemDefault(Model model) {
 		List<Subject> subjectList = lggDao.simpleSubjectList();
@@ -201,7 +201,7 @@ public class LggController {
 			@RequestParam(value="subject_id") String subject_id,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int stuJoinSub_manager_id = 1;//¼¼¼Ç ´ëÃ¼
+		int stuJoinSub_manager_id = 1;//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 		int rs = lggDao.subJoinMemInsert(m_ids,subject_id,auth_ename);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -212,7 +212,7 @@ public class LggController {
 			@RequestParam(value="subject_id") String subject_id,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int stuJoinSub_manager_id = 1;//¼¼¼Ç ´ëÃ¼
+		int stuJoinSub_manager_id = 1;//ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼
 		int delOk = lggDao.subJoinMemDelete(m_ids,subject_id,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -223,7 +223,7 @@ public class LggController {
 	public String memberDefault(MemberSearchCommand command,Errors errors, Model model) {
 		return "/admin/memberList";
 	}
-	@RequestMapping(value = "/member", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/member", method = RequestMethod.POST)
 	public String memberList(MemberSearchCommand command,Errors errors, Model model) {
 		List<AuthMember> subjectList = lggDao.memberList(command);
 		String json = "";
@@ -242,7 +242,7 @@ public class LggController {
 	}
 	@RequestMapping(value = "/admin/member/insert", method = RequestMethod.POST)
 	public String memberInsert(AuthMember command,
-			Errors errors,//command °´Ã¼¿¡ nullÀÌ Æ÷ÇÔ°¡´ÉÇÒ°æ¿ì ¹Ýµå½Ã ½áÁÙ°Í
+			Errors errors,//command ï¿½ï¿½Ã¼ï¿½ï¿½ nullï¿½ï¿½ ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ ï¿½Ýµï¿½ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½
 			Model model) {
 		int rs = lggDao.memberInsert(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
@@ -250,7 +250,7 @@ public class LggController {
 	}
 	@RequestMapping(value = "/admin/member/edit", method = RequestMethod.POST)
 	public String memberEdit(AuthMember command,
-			Errors errors,//command °´Ã¼¿¡ nullÀÌ Æ÷ÇÔ°¡´ÉÇÒ°æ¿ì ¹Ýµå½Ã ½áÁÙ°Í
+			Errors errors,//command ï¿½ï¿½Ã¼ï¿½ï¿½ nullï¿½ï¿½ ï¿½ï¿½ï¿½Ô°ï¿½ï¿½ï¿½ï¿½Ò°ï¿½ï¿½ ï¿½Ýµï¿½ï¿½ ï¿½ï¿½ï¿½Ù°ï¿½
 			Model model) {
 		int rs = lggDao.memberEdit(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");

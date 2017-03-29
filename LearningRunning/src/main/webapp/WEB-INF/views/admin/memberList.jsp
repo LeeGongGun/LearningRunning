@@ -58,6 +58,12 @@ $(function(){
 		};
 		
 	});
+	$("#searchText").keydown(function(e){
+		if(e.which == 13){
+			getList($("#searchText").val());
+		}
+	});
+	
 	$(".search-table").on("click",".hover-td",function(){
 		if($.isEmptyObject(this)) return false;
 		$("#mode").val("edit");
@@ -99,6 +105,7 @@ $(function(){
 		$("#m_email").val("");
 		
 	}
+	
 	function getMemberList(){
 		$.ajax({
 	        url:"<%=rootPath%>/admin/member",
