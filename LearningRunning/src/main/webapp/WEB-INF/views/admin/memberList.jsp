@@ -105,6 +105,23 @@ $(function(){
 		$("#m_email").val("");
 		
 	}
+	function getList(sText){
+		$("#sub-table tr").each(function(){
+			tr = this;
+			sum = 0;
+			$("td",tr).each(function(){
+				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
+					sum++;
+				}
+			});
+			if ( sum > 0 ) {
+				$(tr).show();
+			}else{
+				$(tr).hide();
+			}
+		});
+	}
+	
 	
 	function getMemberList(){
 		$.ajax({
