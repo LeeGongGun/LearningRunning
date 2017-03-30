@@ -1,7 +1,5 @@
 package bean;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 
 public class Attendance {

@@ -13,22 +13,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import bean.Attendance;
 import bean.AuthMember;
-import bean.SubJoinMem;
-import bean.Subject;
+import bean.ClassJoinMem;
+import bean.Classes;
+import bean.TempAttendance;
 import command.AttendanceInsertCommand;
 import command.MemberSearchCommand;
-import command.SubjectSearchCommand;
+import command.ClassesSearchCommand;
 
 
 
 public class LggDao{
 	private JdbcTemplate jdbcTemplate;
 	private DataSource dataSource;
+	@Autowired
+	public void setDataSource(DataSource dataSource) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+
 	private RowMapper<Attendance> attendanceRowMapper = new RowMapper<Attendance>() {
 		@Override
 		public Attendance mapRow(ResultSet rs, int rowNum) throws SQLException {
 			Attendance beanAttendance = new Attendance(
-					rs.getInt("subject_id"),
+					rs.getInt("class_id"),
 					rs.getInt("m_id"),
 					rs.getString("m_name"),
 					rs.getTimestamp("start_time"),
@@ -40,63 +46,55 @@ public class LggDao{
 			return beanAttendance;
 		}		
 	};
-
-//	private RowMapper<Teacher> teacherRowMapper = new RowMapper<Teacher>() {
-//		@Override
-//		public Teacher mapRow(ResultSet rs, int rowNum) throws SQLException {
-//			Teacher beanTeacher = new Teacher(
-//					rs.getInt("M_ID"),
-//					rs.getInt("AUTH_MANAGER"),
-//					rs.getDate("AUTH_END_DATE"),
-//					rs.getString("AUTH_ENAME"),
-//					rs.getString("AUTH_KNAME"),
-//					rs.getString("M_EMAIL"),
-//					rs.getString("M_NAME")
-//				);
-//			return beanTeacher;
-//		}		
-//	};
-	
-
-	
-	
-	@Autowired
-	public void setDataSource(DataSource dataSource) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-	}
-	
-	public List<Attendance> tempAttendanceList(int subjectId) {
-		String sql = "select * from TEMP_ATTENDANCE "
-				+ "natural join MEMBER  where SUBJECT_ID = ? ";
-		List<Attendance> result = jdbcTemplate.query(sql,attendanceRowMapper,subjectId);
-		return result;
-	}
-	
-	private RowMapper<Subject> subjectRowMapper = new RowMapper<Subject>() {
+	private RowMapper<TempAttendance> tempAttendanceRowMapper = new RowMapper<TempAttendance>() {
 		@Override
-		public Subject mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Subject beanSubject = new Subject(
-					rs.getInt("SUBJECT_ID"),
-					rs.getString("SUBJECT_NAME"),
-					rs.getDate("SUBJECT_START"),
-					rs.getDate("SUBJECT_END"),
-					rs.getString("SUBJECT_STATE"),
-					rs.getString("SUBJECT_COMMENT"),
-					rs.getInt("STUDENT_COUNT")
-				);
-			return beanSubject;
+		public TempAttendance mapRow(ResultSet rs, int rowNum) throws SQLException {
+			TempAttendance beanAttendance = new TempAttendance(
+					rs.getInt("TEMP_ID"),
+					rs.getInt("ClASS_ID"),
+					rs.getInt("M_ID"),
+					rs.getDate("CHECK_TIME"),
+					rs.getString("STATUS")
+					
+			);
+			return beanAttendance;
 		}		
 	};
-	public List<Subject> teachersSubject(int teacherId) {
+
+	
+	
+	public List<TempAttendance> tempAttendanceList(int class_id) {
+		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? ) "
+				+ "natural join MEMBER  ";
+		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id);
+		return result;
+	}
+	
+	private RowMapper<Classes> classRowMapper = new RowMapper<Classes>() {
+		@Override
+		public Classes mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Classes beanClasses = new Classes(
+					rs.getInt("CLASS_ID"),
+					rs.getString("CLASS_NAME"),
+					rs.getDate("CLASS_START"),
+					rs.getDate("CLASS_END"),
+					rs.getString("CLASS_STATE"),
+					rs.getString("CLASS_COMMENT"),
+					rs.getInt("STUDENT_COUNT")
+				);
+			return beanClasses;
+		}		
+	};
+	public List<Classes> teachersClasses(int teacherId) {
 		String sql = "select * "
-				+ "from (select SUBJECT_ID from TEACHER_SUBJECT where M_ID = ?) "
-				+ "natural join SUBJECTS "
-				+ "natural join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) ";
-		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper,teacherId);
+				+ "from (select CLASS_ID from MEMBER_CLASS where M_ID = ?) "
+				+ "natural join CLASSES "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY AUTH_ENAME,CLASS_ID) using(CLASS_ID)";
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper,teacherId);
 		return result;
 	}
 
-	public int attendInsert(AttendanceInsertCommand command,int subjectId) {
+	public int attendInsert(AttendanceInsertCommand command,int class_id) {
 		String state = command.getState();
 		String cName = "";
 		if (state.equals("start")) {
@@ -116,17 +114,17 @@ public class LggDao{
 			if (i!=0) inSql += ",";
 			inSql += ids[i];
 		}
-		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where SUBJECT_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
-		return jdbcTemplate.update(sql, command.getTime(),subjectId);
+		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where CLASS_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
+		return jdbcTemplate.update(sql, command.getTime(),class_id);
 	}
 
-	public List<Subject> subjectList(SubjectSearchCommand command) {
+	public List<Classes> classList(ClassesSearchCommand command) {
 		String whereSql ="";
 		int tmp=0;
 		if(command.getSearchText()!=null){
 			whereSql += (tmp==0)?" where ":" and ";
 			tmp++;
-			whereSql += " SUBJECT_NAME like '%"+command.getSearchText()+"%' ";
+			whereSql += " CLASS_NAME like '%"+command.getSearchText()+"%' ";
 		}
 		if(command.getState()!=null && command.getState().length > 0){
 			String[] ids = command.getState();
@@ -137,64 +135,64 @@ public class LggDao{
 			}
 			whereSql += (tmp==0)?" where ":" and ";
 			tmp++;
-			whereSql += " SUBJECT_STATE in ("+inSql+") ";
+			whereSql += " CLASS_STATE in ("+inSql+") ";
 		}
 		
 		String sql = "select * "
-				+ "from  SUBJECTS "
-				+ "left outer join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID) USING(SUBJECT_ID)  "
+				+ "from  CLASSES "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' group by CLASS_ID ) USING(CLASS_ID)  "
 				+ whereSql;
-		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper);
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 	}
 
-	public int studentCountBySubject(int subjectId) {
-		List<Integer> result = jdbcTemplate.query("SELECT count(*) FROM STUDENT_SUBJECT where SUBJECT_ID = ? ",
+	public int studentCountByClasses(int class_id) {
+		List<Integer> result = jdbcTemplate.query("SELECT count(*) FROM STUDENT_CLASS where CLASS_ID = ? ",
 				new RowMapper<Integer>(){
 					@Override
 					public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 						Integer cnt = rs.getInt(1);
 						return cnt;
 					}
-				},subjectId);
+				},class_id);
 		return result.isEmpty()?0:result.get(0);
 	}
 	@Transactional
-	public int subjectDelete(int subjectId) {
-		jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
-		int cnt1 = jdbcTemplate.update("DELETE FROM SUBJECTS WHERE SUBJECT_ID = ? ",subjectId);
+	public int classDelete(int class_id) {
+		jdbcTemplate.update("delete from MEMBER_CLASS where CLASS_ID = ? ",class_id);
+		int cnt1 = jdbcTemplate.update("delete from CLASSES where CLASS_ID = ? ",class_id);
 		return cnt1;
 	}
 
-	public int subjectEdit(Subject command) {
-		return jdbcTemplate.update(" update SUBJECTS set "
-						+ "SUBJECT_NAME=?,"
-						+ "SUBJECT_START=?,"
-						+ "SUBJECT_END=?,"
-						+ "SUBJECT_STATE=?,"
-						+ "SUBJECT_COMMENT=?"
-						+ " where SUBJECT_ID = ? ",
-						command.getSubject_name(),
-						command.getSubject_start(),
-						command.getSubject_end(),
-						command.getSubject_state(),
-						command.getSubject_comment(),
-						command.getSubject_id()
+	public int classEdit(Classes command) {
+		return jdbcTemplate.update(" update CLASSES set "
+						+ "CLASS_NAME=?,"
+						+ "CLASS_START=?,"
+						+ "CLASS_END=?,"
+						+ "CLASS_STATE=?,"
+						+ "CLASS_COMMENT=?"
+						+ " where CLASS_ID = ? ",
+						command.getClass_name(),
+						command.getClass_start(),
+						command.getClass_end(),
+						command.getClass_state(),
+						command.getClass_comment(),
+						command.getClass_id()
 			);
 	}
 
 	
 	
 	
-	public int subjectInsert(Subject command) {
-		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
-				+ "(SUBJECT_ID,SUBJECT_NAME,SUBJECT_START,SUBJECT_END,SUBJECT_STATE,SUBJECT_COMMENT) "
-				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?,?,?,?) ",
-				command.getSubject_name(),
-				command.getSubject_start(),
-				command.getSubject_end(),
-				command.getSubject_state(),
-				command.getSubject_comment()
+	public int classInsert(Classes command) {
+		return jdbcTemplate.update(" INSERT INTO CLASSES "
+				+ "(CLASS_ID,CLASS_NAME,CLASS_START,CLASS_END,CLASS_STATE,CLASS_COMMENT) "
+				+ " VALUES(SEQUENCE_CLASS.NEXTVAL,?,?,?,?,?) ",
+				command.getClass_name(),
+				command.getClass_start(),
+				command.getClass_end(),
+				command.getClass_state(),
+				command.getClass_comment()
 				);
 	}
 
@@ -252,39 +250,35 @@ public class LggDao{
 		return result;
 	}
 
-	public List<Subject> simpleSubjectList() {
+	public List<Classes> simpleClassList() {
 		String whereSql = "";
 		String sql = "select * "
-				+ "from  SUBJECTS "
-				+ "left outer join (select SUBJECT_ID,count(*) as STUDENT_COUNT from STUDENT_SUBJECT GROUP BY SUBJECT_ID)  USING(SUBJECT_ID) "
+				+ "from  CLASSES "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY M_ID,CLASS_ID)  USING(CLASS_ID) "
 				+ whereSql;
-		List<Subject> result = jdbcTemplate.query(sql,subjectRowMapper);
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 	}
 
-	private RowMapper<SubJoinMem> subJoinMemRowMapper = new RowMapper<SubJoinMem>() {
+	private RowMapper<ClassJoinMem> classJoinMemRowMapper = new RowMapper<ClassJoinMem>() {
 		@Override
-		public SubJoinMem mapRow(ResultSet rs, int rowNum) throws SQLException {
-			SubJoinMem beanSubJoinMem = new SubJoinMem(
+		public ClassJoinMem mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ClassJoinMem beanClassJoinMem = new ClassJoinMem(
 					rs.getInt("M_ID"),
-					rs.getInt("SUBJECT_ID"),
+					rs.getInt("CLASS_ID"),
 					rs.getString("M_NAME"),
-					rs.getString("SUBJECT_NAME")
+					rs.getString("CLASS_NAME")
 				);
-			return beanSubJoinMem;
+			return beanClassJoinMem;
 		}		
 	};
 	
-	public List<SubJoinMem> subJoinMemList(Integer subject_id, String auth_ename) {
+	public List<ClassJoinMem> classJoinMemList(Integer class_id, String auth_ename) {
 		String tableName = "";
-		if(auth_ename.equals("student")){
-			tableName = "STUDENT_SUBJECT";
-		}else if (auth_ename.equals("teacher")) {
-			tableName = "TEACHER_SUBJECT";
-		}else{
+		if(auth_ename.equals("") || auth_ename==null){
 			return null;
 		}
-		if(subject_id==null){
+		if(class_id==null){
 			return null;
 		}
 			
@@ -292,41 +286,31 @@ public class LggDao{
 			
 		String sql = " select * from  MEMBER "
 				+ " natural join (select * from member_auth where auth_ename='"+auth_ename+"')"
-				+ " left outer join (select * from "+tableName+" where subject_id="+subject_id+"  ) USING(M_ID) "
-				+ " left outer join subjects USING(SUBJECT_ID) ";
-		List<SubJoinMem> result = jdbcTemplate.query(sql,subJoinMemRowMapper);
+				+ " left outer join (select * from MEMBER_CLASS where class_id="+class_id+" and AUTH_ENAME='"+auth_ename+"'  ) USING(M_ID) "
+				+ " left outer join classes USING(CLASS_ID) ";
+		List<ClassJoinMem> result = jdbcTemplate.query(sql,classJoinMemRowMapper);
 		return result;
 		
 	}
 
-	public int subJoinMemInsert(List<Integer> m_ids, String subject_id, String auth_ename) {
+	public int classJoinMemInsert(List<Integer> m_ids, String class_id, String auth_ename) {
 		String intoSql = "";
 		String tableName = "";
 		String dateName = "";
-		if(auth_ename.equals("student")){
-			tableName = "STUDENT_SUBJECT";
-			dateName = "SS_DATE";
-		}else if (auth_ename.equals("teacher")) {
-			tableName = "TEACHER_SUBJECT";
-			dateName = "TS_DATE";
-		}else{
+		if(auth_ename.equals("") || auth_ename==null){
 			return 0;
 		}
 		
 		for (int i = 0;i<m_ids.size() ;i++) {
-			intoSql += "into "+tableName+" (M_ID,SUBJECT_ID,"+dateName+") values("+m_ids.get(i)+","+subject_id+",SYSDATE) ";
+			intoSql += "into MEMBER_CLASS (M_ID,CLASS_ID,AUTH_ENAME,END_DATE) values("+m_ids.get(i)+","+class_id+",'"+auth_ename+"',SYSDATE) ";
 		}
 		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
 		return result;
 	}
 
-	public int subJoinMemDelete(List<Integer> m_ids, String subject_id, String auth_ename) {
+	public int classJoinMemDelete(List<Integer> m_ids, String class_id, String auth_ename) {
 		String tableName = "";
-		if(auth_ename.equals("student")){
-			tableName = "STUDENT_SUBJECT";
-		}else if (auth_ename.equals("teacher")) {
-			tableName = "TEACHER_SUBJECT";
-		}else{
+		if(auth_ename.equals("") || auth_ename==null){
 			return 0;
 		}
 		String inSql = "";
@@ -334,7 +318,7 @@ public class LggDao{
 			if (i!=0) inSql += ",";
 			inSql += m_ids.get(i).toString();
 		}
-		int result = jdbcTemplate.update("DELETE FROM "+tableName+" WHERE m_id in ("+inSql+") and subject_id = ? ",subject_id);
+		int result = jdbcTemplate.update("delete from MEMBER_CLASS where M_ID in ("+inSql+") and CLASS_ID = ? and AUTH_ENAME = ? ",class_id,auth_ename);
 		return result;
 	}
 
@@ -359,7 +343,7 @@ public class LggDao{
 		if(command.getSearchText()!=null){
 			whereSql += (tmp==0)?" where ":" and ";
 			tmp++;
-			whereSql += " SUBJECT_NAME like '%"+command.getSearchText()+"%' ";
+			whereSql += " CLASS_NAME like '%"+command.getSearchText()+"%' ";
 		}
 //		if(command.getState()!=null && command.getState().length > 0){
 //			String[] ids = command.getState();
@@ -370,7 +354,7 @@ public class LggDao{
 //			}
 //			whereSql += (tmp==0)?" where ":" and ";
 //			tmp++;
-//			whereSql += " SUBJECT_STATE in ("+inSql+") ";
+//			whereSql += " CLASS_STATE in ("+inSql+") ";
 //		}
 
 		String sql = "select * from  MEMBER  "
@@ -394,26 +378,39 @@ public class LggDao{
 				+ "M_EMAIL=?,"
 				+ "M_NAME=?,"
 				+ "M_PASS=?"
-				+ " where SUBJECT_ID = ? ",
+				+ " where M_ID = ? ",
 				command.getM_email(),
 				command.getM_name(),
 				command.getM_pass(),
 				command.getM_id()
 	);
 	}
-
+	
+	@Transactional
 	public int memberDelete(int m_id) {
-//		jdbcTemplate.update("DELETE FROM STUDENT_SUBJECT WHERE SUBJECT_ID = ? ",subjectId);
-		int cnt1 = jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
-		return cnt1;
+		jdbcTemplate.update("DELETE FROM MEMBER_CLASS WHERE M_ID = ? ",m_id);
+		return jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
 	}
 
-	public AuthMember selectByEmailAndPass(String email, String password) {
+	public AuthMember memberByEmailAndPass(String email, String password) {
 		String sql = "select * from  MEMBER  "
 				+ "where m_email = ? and m_pass = ?";
 		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,email,password);
 		return result.isEmpty()?null:result.get(0);
 
+	}
+	
+	public List<String> memberAuthList(Integer m_id) {
+		String sql = "select * from  MEMBER_auth  "
+				+ "where m_id = ? ";
+		List<String> result = jdbcTemplate.query(sql,new RowMapper<String>(){
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				String auth = rs.getString(1);
+				return auth;
+			}
+		},m_id);
+		return result;
 	}
 
 

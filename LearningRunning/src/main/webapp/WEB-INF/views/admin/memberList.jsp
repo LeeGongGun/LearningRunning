@@ -14,7 +14,10 @@ String rootPath = request.getContextPath();
 <title>입력</title>
 <script type="text/javascript">
 $(function(){
-	$('a[data-toggle="tooltip"]').tooltip();
+	$("#modalOn").click(function(){
+		clearFrm();
+		$('#myModal').modal("show");
+	});
 	$("#insert").click(function(){ 
 		okCnt = 0;
 		mode = $("#mode").val();
@@ -76,8 +79,13 @@ $(function(){
 
 	});
 	$(".search-table").on("click",".delBtn",function(){
-			sId = $(this).attr("data");
-		if(confirm(sId+"번 과정을 삭제하시겠습니까?")){
+		sId = $(this).parents("tr").find("td:eq(1)").text()
+			+"("
+			+$(this).parents("tr").find("td:eq(2)").text()
+			+")";
+		console.log(sId);
+		return false;
+		if(confirm(sId+"님을 삭제하시겠습니까?")){
 			$.ajax({
 		        url:"<%=rootPath%>/admin/member/delete",
 		        type:'post',
@@ -212,7 +220,7 @@ $(function(){
 	<button type="button" class="btn btn-primary" id="searchBtn">
   		검색
 	</button>
-	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+	<button type="button" class="btn btn-primary" id="modalOn">
   		입력
 	</button>
 	</div>

@@ -18,14 +18,14 @@ $(function(){
 	$("#not-members,#con-members").on("click","tr.list-tr input",function(e){
 		e.preventdefault();
 	});
-	$("#subject_id").select2();
+	//$("#class_id").select2();
 	$("#not-members").on("click","tr.list-tr",function(){
 		trClick("#44b6d9",this);
 	});
 	$("#con-members").on("click","tr.list-tr",function(){
 		trClick("#ed9c2a",this);
 	});
-	$("#auth_ename,#subject_id").change(getMemberList);
+	$("#auth_ename,#class_id").change(getMemberList);
 	$("#btnInsert").click(insertAuth);
 	$("#btnDel").click(delAuth);
 	function insertAuth(){
@@ -36,11 +36,11 @@ $(function(){
 		});
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/admin/subJoinMem/insert",
+		        url:"<%=rootPath%>/admin/classJoinMem/insert",
 		        type:'post',
 		        data: {
 	        		m_id : arr,
-	        		subject_id : $("#subject_id").val(),
+	        		class_id : $("#class_id").val(),
 	        		auth_ename : $("#auth_ename").val()
 		        	},
 		        success: function(json){
@@ -63,11 +63,11 @@ $(function(){
 		console.log($.param({m_id : arr,auth_ename : $("#auth_ename").val()}));
 		if(arr.length>0){
 			$.ajax({
-		        url:"<%=rootPath%>/admin/subJoinMem/delete",
+		        url:"<%=rootPath%>/admin/classJoinMem/delete",
 		        type:'post',
 		        data: {
 		        	m_id : arr,
-	        		subject_id : $("#subject_id").val(),
+	        		class_id : $("#class_id").val(),
 					auth_ename : $("#auth_ename").val()
 				},
 		        success: function(json){
@@ -94,17 +94,17 @@ $(function(){
 	}
 	function getMemberList(){
 		$.ajax({
-	        url:"<%=rootPath%>/admin/subJoinMem",
+	        url:"<%=rootPath%>/admin/classJoinMem",
 	        type:'post',
 	        data: {
-        		subject_id : $("#subject_id").val(),
+        		class_id : $("#class_id").val(),
 	        	auth_ename: $("#auth_ename").val()
 	        },
 	        success: function(json){
 	        	notTag = "";
 	        	conTag = "";
 				$(json.data).each(function(i,item){
-					if (item.subject_id==0) {
+					if (item.class_id==0) {
 						notTag +="<tr class='list-tr'>";
 						notTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"' readonly/></td>";
 						notTag +="<td>"+item.m_name+"</td>";
@@ -142,9 +142,9 @@ $(function(){
   			<option value="student">학생</option>
   			<option value="teacher">선생님</option>
   		</select>
-  		<select   class="form-control " name="subject_id" id="subject_id">
-			<c:forEach var="subject" items="${subjectList}">
-  			<option value="${subject.subject_id }">${subject.subject_name}-${subject.subject_state}</option>
+  		<select   class="form-control " name="class_id" id="class_id">
+			<c:forEach var="classes" items="${classList}">
+  			<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
 			</c:forEach>
   		</select>
 		

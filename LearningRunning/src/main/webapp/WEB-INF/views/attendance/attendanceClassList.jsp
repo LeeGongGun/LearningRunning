@@ -23,12 +23,12 @@
 				<th>인원수</th>
 				<th>상태</th>
 			</tr>
-			<c:forEach var="subject" items="${list}">
+			<c:forEach var="classes" items="${list}">
 				<tr>
-					<td>${subject.subject_id}</td>
-					<td><a href="<c:url value="/attendance/insert/${subject.subject_id}"/>">${subject.subject_name}</a></td>
-					<td>${subject.subject_comment}</td>
-					<td>${subject.subject_state}</td>
+					<td>${classes.class_id}</td>
+					<td><a href="<c:url value="/attendance/insert/${classes.class_id}"/>">${classes.class_name}</a></td>
+					<td>${classes.class_comment}</td>
+					<td>${classes.class_state}</td>
 				</tr>
 			</c:forEach>
 		</table>

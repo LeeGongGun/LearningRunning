@@ -1,8 +1,6 @@
 package command;
 
-import java.sql.Date;
-
-public class SubjectSearchCommand {
+public class ClassesSearchCommand {
 	String[] state;
 	String searchText;
 	public String[] getState() {
