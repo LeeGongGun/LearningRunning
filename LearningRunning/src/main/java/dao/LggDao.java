@@ -121,9 +121,14 @@ public class LggDao{
 	}
 	public List<Classes> classList(int m_id) {
 		String sql = "select * "
-				+ "from  MEMBER_CLASS where M_ID=? "
-				+ "natural join CLASSES ";
-		List<Classes> result = jdbcTemplate.query(sql,classRowMapper,m_id);
+				+ "from (SELECT * FROM MEMBER_CLASS where M_ID="+m_id+") "
+				+ "natural join CLASSES "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 출석 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='출석' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 결석 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='결석' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 조퇴 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='조퇴' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 외출 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='외출' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 지각 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='지각' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) ";
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 
 	}
@@ -559,23 +564,6 @@ public class LggDao{
 		return result;
 	}
 	
-	public double getAttendRate(int studentId){
-		Integer studentAttend = jdbcTemplate.queryForObject(
-				"select count(*) from (select * from attendance where m_id = ? and "
-				+ "start_time between to_date((select  trunc(sysdate,'MM') from dual), 'YY/MM/DD') and "
-				+ "to_date((select last_day(sysdate) from dual), 'YY/MM/DD')) "
-				+ "where attend_status in ('출석','외출','지각','조퇴') ",
-				Integer.class, studentId);
-		
-		Integer mustAttend = jdbcTemplate.queryForObject("select count(*) from "
-				+ "(select * from attendance where m_id = ?) where start_time "
-				+ "between to_date((select  trunc(sysdate,'MM') from dual), 'YY/MM/DD') and "
-				+ "to_date((select last_day(sysdate) from dual), 'YY/MM/DD') ",
-				Integer.class, studentId);
-		
-		double result = ((double) studentAttend / (double) mustAttend) * 100;
-		return result;
-	}
 	
 	
 	//기간별 조회

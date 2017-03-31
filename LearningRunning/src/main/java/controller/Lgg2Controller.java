@@ -90,8 +90,6 @@ public class Lgg2Controller {
 		int id = 1;
 		List<Classes> personSubList = lggDao.classList(id);
 		String stuSubject = lggDao.getSubjectName(id);
-		double attendRate = lggDao.getAttendRate(id);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("subject", stuSubject);
 		model.addAttribute("personSubList", personSubList);
 		return "attendance/attendancePersonSubList";
@@ -105,7 +103,6 @@ public class Lgg2Controller {
 		
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = lggDao.selectAllPerson(studentId);
 		String stuSubject = lggDao.getSubjectName(studentId);
 		
@@ -126,7 +123,6 @@ public class Lgg2Controller {
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
@@ -139,7 +135,6 @@ public class Lgg2Controller {
 
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 
 		int fromForCondition = Integer.parseInt(strFrom);
 		int toForCondition = Integer.parseInt(strTo);
@@ -185,7 +180,6 @@ public class Lgg2Controller {
 		model.addAttribute("to", strTo);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		return "attendance/attendancePerson";
 	}
@@ -210,12 +204,10 @@ public class Lgg2Controller {
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
 		String stuSubject = lggDao.getSubjectName(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = lggDao.beLate(studentId);
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
@@ -230,14 +222,12 @@ public class Lgg2Controller {
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
 		String stuSubject = lggDao.getSubjectName(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = lggDao.goOut(studentId);
 
 		model.addAttribute("from", strFrom);
 		model.addAttribute("to", strTo);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
@@ -252,14 +242,12 @@ public class Lgg2Controller {
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
 		String stuSubject = lggDao.getSubjectName(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = lggDao.leaveEarly(studentId);
 		model.addAttribute("from", strFrom);
 		model.addAttribute("to", strTo);
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
@@ -272,14 +260,12 @@ public class Lgg2Controller {
 		String student = lggDao.getStudentName(studentId);
 		String studentEmail = lggDao.getStudentEmail(studentId);
 		String stuSubject = lggDao.getSubjectName(studentId);
-		double attendRate = lggDao.getAttendRate(studentId);
 		List<AttendancePersonCommand> attendancePersonCommand = lggDao.absent(studentId);
 
 		model.addAttribute("memberId", memberId);
 		model.addAttribute("PersonSearch", personsearch);
 		model.addAttribute("student", student);
 		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("attendRate", attendRate);
 		model.addAttribute("stuSubject", stuSubject);
 		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
 		return "attendance/attendancePerson";
