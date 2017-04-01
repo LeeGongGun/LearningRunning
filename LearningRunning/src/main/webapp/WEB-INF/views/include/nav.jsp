@@ -42,8 +42,8 @@ $(function(){
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">상담관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/insert">상담관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/list">상담 보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/counselManage">상담관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/counselDetail">상담 보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">성적관리<span class="caret"></span></a>
