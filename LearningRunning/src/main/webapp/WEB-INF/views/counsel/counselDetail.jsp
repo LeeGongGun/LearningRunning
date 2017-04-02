@@ -35,7 +35,7 @@
 	<%@ include file="/WEB-INF/views/include/nav.jsp"%>
 	<div class="main">
 		<div class="main-div">
-			<h3 class="sub-title">출석반선택</h3>
+			<h3 class="sub-title">상담 관리</h3>
 			<div class="search-table">
 				<input type="date" class="fromBox"
 					id="from_date" name="auth_end_date" placeholder="종료일">

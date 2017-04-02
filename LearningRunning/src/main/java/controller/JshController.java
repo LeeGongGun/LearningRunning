@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import bean.ClassList;
+import bean.CounselManager;
 import bean.PersonSubList;
 import command.AttendancePersonCommand;
 import command.PersonSearch;
@@ -33,12 +34,19 @@ public class JshController {
 
 	@RequestMapping(value = "/teacher/counsel/counselManage", method = RequestMethod.GET)
 	public String counselGetList(Model model) {
+		int teacherId = 2;
+		List<CounselManager> counselManager = jshDao.getCounselAll(teacherId);
+		model.addAttribute("counselManager", counselManager);
 		return "/counsel/counselManage";
+	}
+	
+	@RequestMapping(value = "/teacher/counsel/counselWrite", method = RequestMethod.GET)
+	public String getCounselForm(Model model) {
+		return "/counsel/counselWrite";
 	}
 	
 	@RequestMapping(value = "/teacher/counsel/counselDetail", method = RequestMethod.GET)
 	public String cunslDtailGetList(Model model) {
 		return "/counsel/counselDetail";
 	}
-
 }
