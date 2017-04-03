@@ -14,6 +14,7 @@ String rootPath = request.getContextPath();
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@ include file="/WEB-INF/views/include/head.jsp"%>
 <style>
+#personAttendTable{background-color: #fff;}
 </style>
 <title>학생 페이지</title>
 </head>
@@ -33,7 +34,7 @@ String rootPath = request.getContextPath();
 					<input type="button" value="기간별 조회"  class="btn btn-default" id="searchBtn">
 			</form:form>
 
-			<table class="table table-striped table-bordered" cellspacing="0" width="100%">
+			<table class="table table-striped table-bordered" cellspacing="0" width="100%" >
 					<tr>
 						<th>${authMember.m_name }님 환영합니다.</th>
 						<th colspan="3">수강 과목 : ${ClassAttend.class_name }</th>
@@ -46,18 +47,22 @@ String rootPath = request.getContextPath();
 						<th>지각 : ${ClassAttend.lateings }</th>
 						<th>조퇴 : ${ClassAttend.outComings }</th>
 					</tr>
-					<table class="table table-striped table-bordered" cellspacing="0" width="100%" id="personAttendTable">
-						<thaed>
-						<tr>
-							<th>수강날짜</th>
-							<th>출 결</th>
-						</tr>
-						</thaed>
+					
+			</table>
+					<table class="table table-hover table-bordered" cellspacing="0" width="100%" id="personAttendTable">
+						<thead>
+							<tr>
+								<th>수강날짜</th>
+								<th>입실</th>
+								<th>퇴실</th>
+								<th>외출</th>
+								<th>복귀</th>
+								<th>출결</th>
+							</tr>
+						</thead>
 						<tbody>
 						</tbody>
-					<tr>
-				</table>
-			</table>
+					</table>
 		</div>
 	</div>
 <%@ include file="/WEB-INF/views/include/foot.jsp" %>
@@ -94,14 +99,16 @@ $(function() {
 	        	conTag = "";
 				$(json.data).each(function(i,item){
 						conTag +="<tr>";
-						conTag +="<td>"+item.m_id+"</td>";
-						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
-						conTag +="<td>"+item.m_email+"</td>";
-						conTag +="<td>"+item.m_pass+"</td>";
-						conTag +="<td><button class=\"delBtn\" data=\""+item.m_id+"\">삭제</button></td>";
+						conTag +="<td>"+item.attend_date+"</td>";
+						conTag +="<td>"+((item.start_time==null)?"":item.start_time)+"</td>";
+						conTag +="<td>"+((item.end_time==null)?"":item.end_time)+"</td>";
+						conTag +="<td>"+((item.stop_time==null)?"":item.stop_time)+"</td>";
+						conTag +="<td>"+((item.restart_time==null)?"":item.restart_time)+"</td>";
+						conTag +="<td>"+item.attend_status+"</td>";
 						conTag +="</tr>";
+
 				});
-				$("table#sub-table>tbody").empty().append(conTag);
+				$("#personAttendTable>tbody").empty().append(conTag);
 				
 	        		
 	        },

@@ -1,23 +1,24 @@
 package command;
 
 import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class PersonSearch {
-	@DateTimeFormat(pattern="yyyy/MM/dd")
-	Date from,to;
+	String from,to;
 	int m_id,class_id;
-	public Date getFrom() {
+	public String getFrom() {
 		return from;
 	}
-	public void setFrom(Date from) {
+	public void setFrom(String from) {
 		this.from = from;
 	}
-	public Date getTo() {
+	public String getTo() {
 		return to;
 	}
-	public void setTo(Date to) {
+	public void setTo(String to) {
 		this.to = to;
 	}
 	public int getM_id() {
@@ -32,7 +33,6 @@ public class PersonSearch {
 	public void setClass_id(int class_id) {
 		this.class_id = class_id;
 	}
-	
 }
 
  

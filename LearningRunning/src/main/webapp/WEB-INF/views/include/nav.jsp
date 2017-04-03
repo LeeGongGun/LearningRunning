@@ -31,6 +31,7 @@ $(function(){
 	*/	
 });
 </script>
+<div id="datepicker-div"></div>	
 	<div class="title-div">
 		<ul class="nav nav-pills ">
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
@@ -77,4 +78,3 @@ $(function(){
 	<!--        <p class="text-muted">COPYRIGHT© 2017 BY Lee Gong Gun. ALL RIGHTS RESERVED.</p>-->
 	<!--      </div>-->
 	</div>
-<div id="datepicker-div"></div>	

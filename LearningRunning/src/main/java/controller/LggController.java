@@ -1,7 +1,15 @@
 package controller;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,8 +50,16 @@ public class LggController {
 	public String attendPersonGet(@PathVariable("class_id") int class_id,@PathVariable("m_id") int m_id, Model model ) {
 		ClassAttend ClassAttend = lggDao.memberClassAttendList(class_id,m_id);
 		AuthMember authMmember = lggDao.selectMember(m_id);
+
+		Calendar cal = Calendar.getInstance ( ); 
+		Date from = cal.getTime();
+		cal.add ( cal.MONTH, -2 ); 
+		Date to = cal.getTime();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
 		model.addAttribute("ClassAttend", ClassAttend);
 		model.addAttribute("authMember", authMmember);
+		model.addAttribute("from", format.format(from));
+		model.addAttribute("to", format.format(to));
 		return "attendance/attendancePerson";
 	}
 
@@ -52,8 +68,21 @@ public class LggController {
 			PersonSearch command,
 			Errors errors,
 			Model model) {
-	List<Attendance> rs = lggDao.memberAttendList(command); 
-		model.addAttribute("json", "{\"data\": "+rs+"}");
+
+		List<Attendance> rs = lggDao.memberAttendList(command); 
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("json", "{\"data\": "+json+"}");
 		return "/ajax/ajaxDefault";
 	}
 

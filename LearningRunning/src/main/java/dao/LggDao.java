@@ -249,7 +249,7 @@ public class LggDao{
 	
 	
 	public List<Attendance> memberAttendList(PersonSearch command) {
-		String sql = "select * from ATTENDANCE where M_ID = ? and CLASS_ID=? and ATTEND_DATE between to_date(?,'yyyy/MM/dd') and to_date(?,'yyyy/MM/dd') ";
+		String sql = "select * from ATTENDANCE where M_ID = ? and CLASS_ID=? and ATTEND_DATE between ? and ? order by ATTEND_DATE desc";
 		List<Attendance> results = 
 				jdbcTemplate.query(sql, attendPersonRowMapper, command.getM_id(), command.getClass_id(), command.getFrom(), command.getTo());
 		return results;
