@@ -10,11 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import bean.Attendance;
-import bean.Classes;
 import bean.CounselManager;
-import bean.PersonSubList;
-import command.AttendancePersonCommand;
 
 public class JshDao {
 	private JdbcTemplate jdbcTemplate;
