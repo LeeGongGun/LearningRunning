@@ -22,15 +22,15 @@ String rootPath = request.getContextPath();
 	<div class="main">
 		<div class="main-div">
 			<form:form commandName="command" id="searchFrm">
-				<p>
+				<input type="hidden" name="m_id" value="${ClassAttend.m_id }">
+				<input type="hidden" name="class_id" value="${ClassAttend.class_id }">
 					<label>
-					<input type="text" name="from" id="from" class="datetimepicker form-control" placeholder="~부터"/>
+					<input type="text" name="from" id="from" class="datetimepicker form-control" placeholder="from" readonly/>
 					</label>
 					~ <label> 
-					<input type="text" name="to" id="to" class="datetimepicker form-control" placeholder="~까지"/>
+					<input type="text" name="to" id="to"  class="datetimepicker form-control" placeholder="to" readonly/>
 					</label>
 					<input type="button" value="기간별 조회"  class="btn btn-default" id="searchBtn">
-				</p>
 			</form:form>
 
 			<table class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -69,7 +69,7 @@ $(function() {
 	.datetimepicker({
 		language:  'ko',
 		container: "#datepicker-div",
-		format: "yyyy-mm-dd",
+		format: "yyyy/mm/dd",
 		todayHighlight:  true,
         autoclose: true,
         useCurrent: false,
@@ -79,7 +79,7 @@ $(function() {
 	.datetimepicker({
 		language:  'ko',
 		container: "#datepicker-div",
-		format: "yyyy-mm-dd",
+		format: "yyyy/mm/dd",
 		todayHighlight:  true,
         autoclose: true,
         useCurrent: false,
@@ -87,7 +87,8 @@ $(function() {
 	.datetimepicker("update", new Date());
 	function getAttendList(){
 		$.ajax({
-	        type:'post',
+			url:"<%=rootPath%>/memberAttendList",
+			type:'post',
 	        data: $("#searchFrm").serialize(),
 	        success: function(json){
 	        	conTag = "";

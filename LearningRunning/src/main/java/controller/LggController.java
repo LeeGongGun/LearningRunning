@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestParam;	
 import org.springframework.web.multipart.MultipartResolver;
 
+import bean.Attendance;
 import bean.AuthMember;
 import bean.ClassAttend;
 import command.AttendancePersonCommand;
@@ -36,7 +39,7 @@ public class LggController {
 	}
 
 	@RequestMapping(value = "/attendance/person/{class_id}/{m_id}", method = RequestMethod.GET)
-	public String attendPersonGet(@PathVariable("class_id") int class_id,@PathVariable("m_id") int m_id, Model model, PersonSearch personsearch) {
+	public String attendPersonGet(@PathVariable("class_id") int class_id,@PathVariable("m_id") int m_id, Model model ) {
 		ClassAttend ClassAttend = lggDao.memberClassAttendList(class_id,m_id);
 		AuthMember authMmember = lggDao.selectMember(m_id);
 		model.addAttribute("ClassAttend", ClassAttend);
@@ -44,11 +47,14 @@ public class LggController {
 		return "attendance/attendancePerson";
 	}
 
-	@RequestMapping(value = "/attendance/person/{class_id}/{m_id}", method = RequestMethod.POST)
-	public String attendPersonPost(@PathVariable("class_id") int class_id,@PathVariable("m_id") int m_id,
-			PersonSearch command, Model model) {
-		
-		return "attendance/attendancePerson";
+	@RequestMapping(value = "/memberAttendList", method = RequestMethod.POST)
+	public String attendPersonPost(
+			PersonSearch command,
+			Errors errors,
+			Model model) {
+	List<Attendance> rs = lggDao.memberAttendList(command); 
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
 	}
 
 

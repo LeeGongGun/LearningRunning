@@ -19,11 +19,11 @@ public class ClassAttend {
 		this.m_id = m_id;
 		this.class_name = class_name;
 		this.class_state = class_state;
-		this.attendings = attendings;
-		this.noAttendings = noAttendings;
-		this.outings = outings;
-		this.lateings = lateings;
-		this.outComings = outComings;
+		this.attendings = (attendings==null)?"0":attendings;
+		this.noAttendings = (noAttendings==null)?"0":noAttendings;
+		this.outings = (outings==null)?"0":outings;
+		this.lateings = (lateings==null)?"0":lateings;
+		this.outComings = (outComings==null)?"0":outComings;
 	}
 	public ClassAttend(int class_id, String class_name, String class_state, String attendings,
 			String noAttendings, String outings, String lateings, String outComings) {
@@ -31,11 +31,11 @@ public class ClassAttend {
 		this.class_id = class_id;
 		this.class_name = class_name;
 		this.class_state = class_state;
-		this.attendings = attendings;
-		this.noAttendings = noAttendings;
-		this.outings = outings;
-		this.lateings = lateings;
-		this.outComings = outComings;
+		this.attendings = (attendings==null)?"0":attendings;
+		this.noAttendings = (noAttendings==null)?"0":noAttendings;
+		this.outings = (outings==null)?"0":outings;
+		this.lateings = (lateings==null)?"0":lateings;
+		this.outComings = (outComings==null)?"0":outComings;
 	}
 	public int getClass_id() {
 		return class_id;

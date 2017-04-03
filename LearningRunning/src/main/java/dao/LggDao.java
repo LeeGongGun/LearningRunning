@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,6 +18,7 @@ import bean.ClassJoinMem;
 import bean.Classes;
 import bean.TempAttendance;
 import command.AttendancePersonCommand;
+import command.PersonSearch;
 
 
 
@@ -178,28 +180,21 @@ public class LggDao{
 	
 	//jsh
 	
-	private RowMapper<AttendancePersonCommand> attendPersonRowMapper = new RowMapper<AttendancePersonCommand>() {
+	private RowMapper<Attendance> attendPersonRowMapper = new RowMapper<Attendance>() {
 		@Override
-		public AttendancePersonCommand mapRow(ResultSet rs, int rowNum) 
+		public Attendance mapRow(ResultSet rs, int rowNum) 
 				throws SQLException {
-			AttendancePersonCommand attendancePersonCommand = new AttendancePersonCommand(
-					rs.getInt("m_id"), 
-					rs.getInt("subject_id"),
+			Attendance attendancePersonCommand = new Attendance(
 					rs.getInt("attend_id"),
-					rs.getDate("start_time"),	
-					rs.getDate("end_time"),	
-					rs.getDate("stop_time"),	
-					rs.getDate("restart_time"),	
-					rs.getString("attend_status"),	
-					rs.getString("subject_name"),
-					rs.getDate("subject_start"), 
-					rs.getDate("subject_end"),
-					rs.getString("subject_state"),
-					rs.getString("subject_comment"), 
-					rs.getString("m_email"),
-					rs.getString("m_name"),
-					rs.getInt("m_pass"),
-					rs.getString("m_app_u_no"));
+					rs.getInt("class_id"),
+					rs.getInt("m_id"),
+					rs.getDate("attend_date"),
+					rs.getString("attend_status"),
+					rs.getString("start_time"),
+					rs.getString("end_time"),
+					rs.getString("stop_time"),
+					rs.getString("restart_time")
+				);
 			return attendancePersonCommand;
 		}
 	};	
@@ -253,12 +248,10 @@ public class LggDao{
 	}
 	
 	
-	//기간별 조회
-	public List<AttendancePersonCommand> searchPersonPeriod (int studentId, String strFrom, String strTo) {
-		String sql = "select * from attendance natural join subjects natural join member where m_id = ? and"
-				+ " start_time between to_date(?, 'YY/MM/DD') and to_date(?, 'YY/MM/DD')";
-		List<AttendancePersonCommand> results = 
-				jdbcTemplate.query(sql, attendPersonRowMapper, studentId, strFrom, strTo);
+	public List<Attendance> memberAttendList(PersonSearch command) {
+		String sql = "select * from ATTENDANCE where M_ID = ? and CLASS_ID=? and ATTEND_DATE between to_date(?,'yyyy/MM/dd') and to_date(?,'yyyy/MM/dd') ";
+		List<Attendance> results = 
+				jdbcTemplate.query(sql, attendPersonRowMapper, command.getM_id(), command.getClass_id(), command.getFrom(), command.getTo());
 		return results;
 	} 
 	
