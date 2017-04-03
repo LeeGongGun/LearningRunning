@@ -4,87 +4,35 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<% 
+String fileDir = request.getRealPath("/resources/uploads/");
+String rootPath = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@ include file="/WEB-INF/views/include/head.jsp"%>
-<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all" />
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-<script src="http://code.jquery.com/ui/1.8.18/jquery-ui.min.js" type="text/javascript"></script>
-<script>
-$(function() {
-  $( "#from, #to" ).datepicker({
-    dateFormat: 'yymmdd',
-    prevText: '이전 달',
-    nextText: '다음 달',
-    monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-    monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-    dayNames: ['일','월','화','수','목','금','토'],
-    dayNamesShort: ['일','월','화','수','목','금','토'],
-    dayNamesMin: ['일','월','화','수','목','금','토'],
-    showMonthAfterYear: true,
-    yearSuffix: '년'
-  });
-});
-
-function periodSrch(){
-	location.href = "<c:url value='/attendance/person/${memberId}' />";
-}
-
-function beLate(){
-	location.href = "<c:url value='/attendance/beLate/${memberId}' />";
-}
-function goOut(){
-	location.href = "<c:url value='/attendance/goOut/${memberId}' />";
-}
-function leaveEarly(){
-	location.href = "<c:url value='/attendance/leaveEarly/${memberId}' />";
-}
-function absent(){
-	location.href = "<c:url value='/attendance/absent/${memberId}' />";
-}
-
-</script>
-
 <style>
-.date{
-	width : 100%;
-	margin-left : 200px;
-	margin-top : 100px;
-	margin-bottom : -70px;
-}
-
-.periodSerch{
-
-margin : 200px;
-
-}
-.personDetail{
-	width : 40px auto;
-}
 </style>
 <title>학생 페이지</title>
 </head>
 <body>
 	<%@ include file="/WEB-INF/views/include/nav.jsp"%>
-	<div class = "date">
-	<form:form commandName="PersonSearch" id="frm">
-		<p>
-			<label>from:
-			<input type="text" name="from" id="from" value="${from }" />
-			</label>
-			~ <label>to: 
-			<input type="text" name="to" id="to" value="${to }" />
-			</label>
-			<input type="submit" value="기간별 조회" onclick = "periodSrch();">
-		</p>
-	</form:form>
-	
-	</div>
-	
 	<div class="main">
 		<div class="main-div">
+			<form:form commandName="command" id="searchFrm">
+				<p>
+					<label>
+					<input type="text" name="from" id="from" class="datetimepicker form-control" placeholder="~부터"/>
+					</label>
+					~ <label> 
+					<input type="text" name="to" id="to" class="datetimepicker form-control" placeholder="~까지"/>
+					</label>
+					<input type="button" value="기간별 조회"  class="btn btn-default" id="searchBtn">
+				</p>
+			</form:form>
+
 			<table class="table table-striped table-bordered" cellspacing="0" width="100%">
 					<tr>
 						<th>${authMember.m_name }님 환영합니다.</th>
@@ -102,8 +50,6 @@ margin : 200px;
 						<thaed>
 						<tr>
 							<th>수강날짜</th>
-							<th>상세설명</th>
-							<th>수강생 이름</th>
 							<th>출 결</th>
 						</tr>
 						</thaed>
@@ -114,5 +60,64 @@ margin : 200px;
 			</table>
 		</div>
 	</div>
+<%@ include file="/WEB-INF/views/include/foot.jsp" %>
+<script>
+$(function() {
+	from = new Date();
+	from.setMonth(from.getMonth()-1);
+	$("#from")
+	.datetimepicker({
+		language:  'ko',
+		container: "#datepicker-div",
+		format: "yyyy-mm-dd",
+		todayHighlight:  true,
+        autoclose: true,
+        useCurrent: false,
+	})
+	.datetimepicker("update", from);
+	$("#to")
+	.datetimepicker({
+		language:  'ko',
+		container: "#datepicker-div",
+		format: "yyyy-mm-dd",
+		todayHighlight:  true,
+        autoclose: true,
+        useCurrent: false,
+	})
+	.datetimepicker("update", new Date());
+	function getAttendList(){
+		$.ajax({
+	        type:'post',
+	        data: $("#searchFrm").serialize(),
+	        success: function(json){
+	        	conTag = "";
+				$(json.data).each(function(i,item){
+						conTag +="<tr>";
+						conTag +="<td>"+item.m_id+"</td>";
+						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
+						conTag +="<td>"+item.m_email+"</td>";
+						conTag +="<td>"+item.m_pass+"</td>";
+						conTag +="<td><button class=\"delBtn\" data=\""+item.m_id+"\">삭제</button></td>";
+						conTag +="</tr>";
+				});
+				$("table#sub-table>tbody").empty().append(conTag);
+				
+	        		
+	        },
+	        error : function(request, status, error) { 
+	        	//alert(okText+"내용을 확인해주세요");
+	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+	        } 
+	        
+	    });
+		
+	}
+	getAttendList();
+	
+	
+});
+
+
+</script>
 </body>
 </html>

@@ -2,17 +2,12 @@ package command;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class PersonSearch {
-	Date from;
-	Date to;
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	Date from,to;
 	
-	public PersonSearch(){}
-	
-	private PersonSearch(Date from, Date to) {
-		super();
-		this.from = from;
-		this.to = to;
-	}
 	public Date getFrom() {
 		return from;
 	}

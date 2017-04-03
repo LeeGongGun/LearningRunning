@@ -28,6 +28,18 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 	<bean id="lggDao" class="dao.LggDao">
 		<property name="dataSource" ref="dataSource"/>
 	</bean>
+	<bean id="defaultDao" class="dao.DefaultDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="adminDao" class="dao.AdminDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="studentDao" class="dao.StudentDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
+	<bean id="teacherDao" class="dao.TeacherDao">
+		<property name="dataSource" ref="dataSource"/>
+	</bean>
 
  	<bean class="controller.JshController">
 		<property name="jshDao" ref="jshDao"/>
@@ -41,8 +53,17 @@ http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd "
 	<bean class="controller.LggController">
 		<property name="lggDao" ref="lggDao"/>
 	</bean>
-	<bean class="controller.Lgg2Controller">
-		<property name="lggDao" ref="lggDao"/>
+	<bean class="controller.LoginController">
+		<property name="defaultDao" ref="defaultDao"/>
+	</bean>
+	<bean class="controller.AdminController">
+		<property name="adminDao" ref="adminDao"/>
+	</bean>
+	<bean class="controller.StudentController">
+		<property name="studentDao" ref="studentDao"/>
+	</bean>
+	<bean class="controller.TeacherController">
+		<property name="teacherDao" ref="teacherDao"/>
 	</bean>
 
 <!--	<bean class="controller.LoginController">

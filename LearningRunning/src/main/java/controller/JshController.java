@@ -16,7 +16,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import bean.ClassList;
 import bean.CounselManager;
-import bean.PersonSubList;
 import command.AttendancePersonCommand;
 import command.PersonSearch;
 import dao.JshDao;

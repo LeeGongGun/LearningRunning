@@ -77,4 +77,4 @@ $(function(){
 	<!--        <p class="text-muted">COPYRIGHT© 2017 BY Lee Gong Gun. ALL RIGHTS RESERVED.</p>-->
 	<!--      </div>-->
 	</div>
-	
+<div id="datepicker-div"></div>	
