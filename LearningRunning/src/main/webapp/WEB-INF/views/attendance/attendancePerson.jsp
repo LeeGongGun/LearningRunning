@@ -80,10 +80,6 @@ margin : 200px;
 			<input type="submit" value="기간별 조회" onclick = "periodSrch();">
 		</p>
 	</form:form>
-	<input type="submit" value="지각 조회" onclick = "beLate();">
-	<input type="submit" value="외출 조회" onclick = "goOut();">
-	<input type="submit" value="조퇴 조회" onclick = "leaveEarly();">
-	<input type="submit" value="결석 조회" onclick = "absent();">
 	
 	</div>
 	
@@ -91,27 +87,28 @@ margin : 200px;
 		<div class="main-div">
 			<table class="table table-striped table-bordered" cellspacing="0" width="100%">
 					<tr>
-						<td>${student }님 환영합니다.</td>
-						<td>수강 과목 : ${stuSubject }</td>
-						<td>현재까지 출석률 : ${attendRate }% </td>
-						<td>Email : ${studentEmail }</td>
+						<th>${authMember.m_name }님 환영합니다.</th>
+						<th colspan="3">수강 과목 : ${ClassAttend.class_name }</th>
+						<th>Email : ${authMember.m_email }</th>
 					</tr>
-					<table class="table table-striped table-bordered" cellspacing="0" width="100%">
+					<tr>
+						<th>출석 : ${ClassAttend.attendings }</th>
+						<th>결석 : ${ClassAttend.noAttendings }</th>
+						<th>외출 : ${ClassAttend.outings }</th>
+						<th>지각 : ${ClassAttend.lateings }</th>
+						<th>조퇴 : ${ClassAttend.outComings }</th>
+					</tr>
+					<table class="table table-striped table-bordered" cellspacing="0" width="100%" id="personAttendTable">
+						<thaed>
 						<tr>
-							<td>수강날짜</td>
-							<td>상세설명</td>
-							<td>수강생 이름</td>
-							<td>출 결</td>
+							<th>수강날짜</th>
+							<th>상세설명</th>
+							<th>수강생 이름</th>
+							<th>출 결</th>
 						</tr>
-						<c:forEach var="person" items="${attendancePersonCommand}">
-					
-						<tr>
-							<td>${person.start_time}</td>
-							<td>${person.subject_comment}</td>
-							<td>${person.m_name}</td>
-							<td>${person.attend_status}</td>
-						</tr>
-					</c:forEach>
+						</thaed>
+						<tbody>
+						</tbody>
 					<tr>
 				</table>
 			</table>

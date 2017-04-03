@@ -12,6 +12,7 @@ http://www.springframework.org/schema/tx/spring-tx.xsd "
 	destroy-method="close"> 
 		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"/>
 		<property name="jdbcUrl" value="jdbc:oracle:thin:@192.168.0.63:1521:XE"/>
+		<!-- <property name="jdbcUrl" value="jdbc:oracle:thin:@localhost:1521:XE"/> -->
 		<property name="user" value="learningrunning"/>
 		<property name="password" value="1234"/>
 	</bean> 

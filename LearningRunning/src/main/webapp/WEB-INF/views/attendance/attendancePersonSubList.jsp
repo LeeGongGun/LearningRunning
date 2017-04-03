@@ -25,15 +25,23 @@
 						<th>번호</th>
 						<th>과정명</th>
 						<th>상태</th>
-						<th>출석률</th>
+						<th>출석</th>
+						<th>결석</th>
+						<th>조퇴</th>
+						<th>지각</th>
+						<th>외출</th>
 					</tr>
-					<c:forEach var="subject" items="${personSubList}">
+					<c:forEach var="ClassAttend" items="${ClassAttends}">
 						<tr>
-							<td>${subject.subject_id}</td>
+							<td>${ClassAttend.class_id}</td>
 							<td><a
-								href="<c:url value="/attendance/person/${subject.m_id}"/>">${subject.subject_name}</a></td>
-							<td>${subject.subject_state}</td>
-							<td>${attendRate }</td>
+								href="<c:url value="/attendance/person/${ClassAttend.class_id}/${ClassAttend.m_id}"/>">${ClassAttend.class_name}</a></td>
+							<td>${ClassAttend.class_state}</td>
+							<td>${ClassAttend.attendings }</td>
+							<td>${ClassAttend.noAttendings }</td>
+							<td>${ClassAttend.outings }</td>
+							<td>${ClassAttend.lateings }</td>
+							<td>${ClassAttend.outComings }</td>
 						</tr>
 					</c:forEach>
 				</table>

@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartResolver;
 
 import bean.AuthInfo;
 import bean.AuthMember;
+import bean.ClassAttend;
 import bean.Classes;
 import bean.PersonSubList;
 import command.AttendancePersonCommand;
@@ -88,47 +89,21 @@ public class Lgg2Controller {
 	@RequestMapping(value = "/attendance/person", method = RequestMethod.GET)
 	public String attendPersonSubListGet(Model model) {
 		int id = 1;
-		List<Classes> personSubList = lggDao.classList(id);
-		String stuSubject = lggDao.getSubjectName(id);
-		model.addAttribute("subject", stuSubject);
-		model.addAttribute("personSubList", personSubList);
+		List<ClassAttend> ClassAttends = lggDao.memberClassAttendList(id);
+		model.addAttribute("ClassAttends", ClassAttends);
 		return "attendance/attendancePersonSubList";
 	}
 
-	@RequestMapping(value = "/attendance/person/{id}", method = RequestMethod.GET)
-	public String attendPersonGet(@PathVariable("id") int studentId, Model model, PersonSearch personsearch) {
-		
-		List<PersonSubList> personSubList =lggDao.selectSubPerson(studentId);
-		model.addAttribute("personSubList", personSubList);
-		
-		String student = lggDao.getStudentName(studentId);
-		String studentEmail = lggDao.getStudentEmail(studentId);
-		List<AttendancePersonCommand> attendancePersonCommand = lggDao.selectAllPerson(studentId);
-		String stuSubject = lggDao.getSubjectName(studentId);
-		
-		int countAll = lggDao.count(studentId);
-		int attendAll = lggDao.attendCount(studentId);
-		int late = lggDao.lateCount(studentId);
-		int goOut = lggDao.goOutCount(studentId);
-		int absentCount = lggDao.absentCount(studentId);
-		int leaveEarlyCount = lggDao.leaveEarlyCount(studentId);
-
-		model.addAttribute("countAll", countAll);
-		model.addAttribute("attendAll", attendAll);
-		model.addAttribute("late", late);
-		model.addAttribute("goOut", goOut);
-		model.addAttribute("absentCount", absentCount);
-		model.addAttribute("leaveEarlyCount", leaveEarlyCount);
-
-		model.addAttribute("PersonSearch", personsearch);
-		model.addAttribute("student", student);
-		model.addAttribute("studentEmail", studentEmail);
-		model.addAttribute("stuSubject", stuSubject);
-		model.addAttribute("attendancePersonCommand", attendancePersonCommand);
+	@RequestMapping(value = "/attendance/person/{class_id}/{m_id}", method = RequestMethod.GET)
+	public String attendPersonGet(@PathVariable("class_id") int class_id,@PathVariable("m_id") int m_id, Model model, PersonSearch personsearch) {
+		ClassAttend ClassAttend = lggDao.memberClassAttendList(class_id,m_id);
+		AuthMember authMmember = lggDao.selectMember(m_id);
+		model.addAttribute("ClassAttend", ClassAttend);
+		model.addAttribute("authMember", authMmember);
 		return "attendance/attendancePerson";
 	}
 
-	@RequestMapping(value = "/attendance/person/{id}", method = RequestMethod.POST)
+	@RequestMapping(value = "/attendance/person/{class_id}/{m_id}", method = RequestMethod.POST)
 	public String attendPersonPost(@PathVariable("id") int studentId,
 			@RequestParam(value = "from", required = false) String strFrom,
 			@RequestParam(value = "to", required = false) String strTo, Model model) {

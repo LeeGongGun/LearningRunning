@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import bean.Attendance;
 import bean.AuthMember;
+import bean.ClassAttend;
 import bean.ClassJoinMem;
 import bean.Classes;
 import bean.PersonSubList;
@@ -119,7 +120,24 @@ public class LggDao{
 		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where CLASS_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
 		return jdbcTemplate.update(sql, command.getTime(),class_id);
 	}
-	public List<Classes> classList(int m_id) {
+	private RowMapper<ClassAttend> classAttendRowMapper = new RowMapper<ClassAttend>() {
+		@Override
+		public ClassAttend mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ClassAttend beanClassAttend = new ClassAttend(
+					rs.getInt("CLASS_ID"),
+					rs.getInt("M_ID"),
+					rs.getString("CLASS_NAME"),
+					rs.getString("CLASS_STATE"),
+					rs.getString("출석"),
+					rs.getString("결석"),
+					rs.getString("조퇴"),
+					rs.getString("외출"),
+					rs.getString("지각")
+				);
+			return beanClassAttend;
+		}		
+	};
+	public List<ClassAttend> memberClassAttendList(int m_id) {
 		String sql = "select * "
 				+ "from (SELECT * FROM MEMBER_CLASS where M_ID="+m_id+") "
 				+ "natural join CLASSES "
@@ -128,8 +146,21 @@ public class LggDao{
 				+ "left outer join (select CLASS_ID,M_ID,count(*) as 조퇴 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='조퇴' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
 				+ "left outer join (select CLASS_ID,M_ID,count(*) as 외출 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='외출' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
 				+ "left outer join (select CLASS_ID,M_ID,count(*) as 지각 from ATTENDANCE where M_ID="+m_id+" and ATTEND_STATUS='지각' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) ";
-		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
+		List<ClassAttend> result = jdbcTemplate.query(sql,classAttendRowMapper);
 		return result;
+
+	}
+	public ClassAttend memberClassAttendList(int class_id,int m_id) {
+		String sql = "select * "
+				+ "from (SELECT * FROM MEMBER_CLASS where M_ID="+m_id+" and CLASS_ID="+class_id+") "
+				+ "natural join CLASSES "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 출석 from ATTENDANCE where M_ID="+m_id+" and CLASS_ID="+class_id+" and ATTEND_STATUS='출석' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 결석 from ATTENDANCE where M_ID="+m_id+" and CLASS_ID="+class_id+" and ATTEND_STATUS='결석' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 조퇴 from ATTENDANCE where M_ID="+m_id+" and CLASS_ID="+class_id+" and ATTEND_STATUS='조퇴' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 외출 from ATTENDANCE where M_ID="+m_id+" and CLASS_ID="+class_id+" and ATTEND_STATUS='외출' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) "
+				+ "left outer join (select CLASS_ID,M_ID,count(*) as 지각 from ATTENDANCE where M_ID="+m_id+" and CLASS_ID="+class_id+" and ATTEND_STATUS='지각' GROUP BY M_ID,CLASS_ID,ATTEND_STATUS) using(M_ID,CLASS_ID) ";
+		List<ClassAttend> result = jdbcTemplate.query(sql,classAttendRowMapper);
+		return result.isEmpty()?null:result.get(0);
 
 	}
 	
@@ -161,7 +192,27 @@ public class LggDao{
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 	}
+	public Classes selectClasses(int class_id) {
+		String sql = "select * from CLASSES where class_id = ? ";
+		List<Classes> result = jdbcTemplate.query(sql,new RowMapper<Classes>(){
 
+			@Override
+			public Classes mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Classes beanClasses = new Classes(
+						rs.getInt("CLASS_ID"),
+						rs.getString("CLASS_NAME"),
+						rs.getDate("CLASS_START"),
+						rs.getDate("CLASS_END"),
+						rs.getString("CLASS_STATE"),
+						rs.getString("CLASS_COMMENT"),
+						0
+					);
+				return beanClasses;				
+			}
+			
+		},class_id);
+		return result.isEmpty()?null:result.get(0);
+	}
 	public int studentCountByClasses(int class_id) {
 		List<Integer> result = jdbcTemplate.query("SELECT count(*) FROM STUDENT_CLASS where CLASS_ID = ? ",
 				new RowMapper<Integer>(){
@@ -270,7 +321,7 @@ public class LggDao{
 		String whereSql = "";
 		String sql = "select * "
 				+ "from  CLASSES "
-				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY M_ID,CLASS_ID)  USING(CLASS_ID) "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY CLASS_ID)  USING(CLASS_ID) "
 				+ whereSql;
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
@@ -352,7 +403,13 @@ public class LggDao{
 			return beanMember;
 		}		
 	};
-
+	public AuthMember selectMember(int m_id) {
+		String sql ="select * from MEMBER where M_ID = ?";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,m_id);
+		return result.isEmpty()?null:result.get(0);
+		
+	}
+	
 	public List<AuthMember> memberList(MemberSearchCommand command) {
 		String whereSql ="";
 		int tmp=0;
