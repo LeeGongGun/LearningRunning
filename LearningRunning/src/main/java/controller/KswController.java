@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -30,9 +31,13 @@ public class KswController {
 //		return mav;
 //	}
 	
-	@RequestMapping(value="/attendance/list", method = RequestMethod.GET)
-	public String getList(){
-		return "/attendance/attendanceList";
+	@RequestMapping(value="/attendance/dashboard", method = RequestMethod.GET)
+	public String getDashBoard(@RequestParam(value="active", defaultValue="dashboard") String active){
+		return "/attendance/dashBoard";
 	}
-
+	
+	@RequestMapping(value="/attendance/classlist", method = RequestMethod.GET)
+	public String getClassList(@RequestParam(value="active", defaultValue="attendance") String active){
+		return "/attendance/classList";
+	}
 }

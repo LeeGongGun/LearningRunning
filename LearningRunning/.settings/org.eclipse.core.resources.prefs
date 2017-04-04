@@ -3,5 +3,6 @@ encoding//src/main/java/dao/JshDao.java=UTF-8
 encoding//src/main/java/dao/KswDao.java=UTF-8
 encoding//src/main/java/dao/KymDao.java=UTF-8
 encoding//src/main/java/dao/LggDao.java=UTF-8
-encoding//src/main/webapp/WEB-INF/views/attendance/attendanceList.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/attendance/classList.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/views/attendance/dashBoard.jsp=UTF-8
 encoding//src/main/webapp/WEB-INF/views/include/kims/sidebar.jsp=UTF-8

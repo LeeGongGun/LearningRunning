@@ -28,21 +28,14 @@
       <!-- sidebar menu: : style can be found in sidebar.less -->
       <ul class="sidebar-menu">
         <li class="header">MAIN NAVIGATION</li>
-        <li class="active treeview">
-          <a href="#">
+        <li class="active treeview" id="dashboard">
+          <a href="<%=request.getContextPath()%>/attendance/dashboard">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
           </a>
-          <ul class="treeview-menu">
-            <li class="active"><a href="index.html"><i class="fa fa-circle-o"></i> Dashboard v1</a></li>
-            <li><a href="index2.html"><i class="fa fa-circle-o"></i> Dashboard v2</a></li>
-          </ul>
         </li>
         
         <!-- ///// 출결 관리 ///// -->
-        <li class="treeview">
+        <li class="treeview" id="attendance">
           <a href="#">
             <i class="fa fa-check-square"></i>
             <span>출결 관리</span>
@@ -52,13 +45,13 @@
           </a>
           <ul class="treeview-menu">
             <li><a href="<%=request.getContextPath()%>/teacher/attendance/classList"><i class="fa fa-circle-o"></i> 출결 입력</a></li>
-            <li><a href="<%=request.getContextPath()%>/attendance/list"><i class="fa fa-circle-o"></i> 반별 현황</a></li>
+            <li><a href="<%=request.getContextPath()%>/attendance/classlist"><i class="fa fa-circle-o"></i> 반별 현황</a></li>
             <li><a href="<%=request.getContextPath()%>/attendance/person"><i class="fa fa-circle-o"></i> 개인별 현황</a></li>
           </ul>
         </li>
         
         <!-- ///// 상담 관리 ///// -->
-        <li class="treeview">
+        <li class="treeview" id="counseling">
           <a href="#">
             <i class="fa fa-comments"></i>
             <span>상담 관리</span>
@@ -73,7 +66,7 @@
         </li>
         
         <!-- ///// 성적 관리 ///// -->
-        <li class="treeview">
+        <li class="treeview" id="grade">
           <a href="#">
             <i class="fa fa-line-chart"></i>
             <span>성적 관리</span>
@@ -89,7 +82,7 @@
         </li>
         
         <!-- ///// 관리자 ///// -->
-        <li class="treeview">
+        <li class="treeview" id="management">
           <a href="#">
             <i class="fa fa-bank"></i>
             <span>관리자</span>
@@ -133,3 +126,49 @@
     </section>
     <!-- /.sidebar -->
   </aside>
+  
+  <script type="text/javascript">
+  switch(${active}){
+  	case "dashboard":
+  		$("#dashboard").addClass("active");
+  		$("#attendance").removeClass("active");
+  		$("#grade").removeClass("active");
+  		$("#counseling").removeClass("active");
+  		$("#management").removeClass("active");
+  		break;
+
+  	case "attendance":
+  		$("#dashboard").removeClass("active");
+  		$("#attendance").addClass("active");
+  		$("#grade").removeClass("active");
+  		$("#counseling").removeClass("active");
+  		$("#management").removeClass("active");
+  		break;
+
+  	case "grade":
+  		$("#dashboard").removeClass("active");
+  		$("#attendance").removeClass("active");
+  		$("#grade").addClass("active");
+  		$("#counseling").removeClass("active");
+  		$("#management").removeClass("active");
+  		break;
+
+  	case "counseling":
+  		$("#dashboard").removeClass("active");
+  		$("#attendance").removeClass("active");
+  		$("#grade").removeClass("active");
+  		$("#counseling").addClass("active");
+  		$("#management").removeClass("active");
+  		break;
+  		
+  	case "management":
+  		$("#dashboard").removeClass("active");
+  		$("#attendance").removeClass("active");
+  		$("#grade").removeClass("active");
+  		$("#counseling").removeClass("active");
+  		$("#management").addClass("active");
+  		break;
+  		
+  }
+  	
+  </script>
