@@ -57,9 +57,10 @@ $(function(){
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
 		          <li><a href="<%=request.getContextPath()%>/admin/member">member 관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/auth">선생,학생권한</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/classJoinMem">반-학생,선생 등록</a></li>
-		          <li><a href="<%=request.getContextPath()%>/admin/auth">권한 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/class">반(과정)관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/curri">커리큘럼관리</a></li>
 		        </ul>
             </li>
 		    <li><a href="<%=request.getContextPath()%>/logout">logout</a></li>

@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import bean.AuthMember;
 import bean.ClassJoinMem;
 import bean.Classes;
+import bean.Curriculum;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
 import dao.AdminDao;
@@ -49,7 +50,6 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/admin/class/delete")
 	public String classDelete(int class_id, Model model) {
-		System.out.println(class_id);
 		int delOk = dao.classDelete(class_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -217,5 +217,48 @@ public class AdminController {
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
-
+	
+	
+	@RequestMapping(value = "/admin/curri" , method = RequestMethod.GET)
+	public String curriDefault(Model model) {
+		return "/admin/curriList";
+	}
+	@RequestMapping(value = "/admin/curri", method = RequestMethod.POST)
+	public String curriList(Model model) {
+		List<Curriculum> curriList = dao.curriList();
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(curriList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/curri/insert", method = RequestMethod.POST)
+	public String curriInsert(String cur_name,
+			Model model) {
+		int rs = dao.curriInsert(cur_name);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/curri/edit", method = RequestMethod.POST)
+	public String curriEdit(String cur_name,int cur_id,
+			Model model) {
+		int rs = dao.curriEdit(cur_name,cur_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		System.out.println(rs);
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/curri/delete")
+	public String curriDelete(int cur_id, Model model) {
+		int delOk = dao.curriDelete(cur_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
 }

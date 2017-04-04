@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import bean.AuthMember;
 import bean.ClassJoinMem;
 import bean.Classes;
+import bean.Curriculum;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
 
@@ -237,17 +238,6 @@ public class AdminDao {
 			tmp++;
 			whereSql += " CLASS_NAME like '%"+command.getSearchText()+"%' ";
 		}
-//		if(command.getState()!=null && command.getState().length > 0){
-//			String[] ids = command.getState();
-//			String inSql="";
-//			for (int i = 0; i < ids.length; i++) {
-//				if (i!=0) inSql += ",";
-//				inSql += ids[i];
-//			}
-//			whereSql += (tmp==0)?" where ":" and ";
-//			tmp++;
-//			whereSql += " CLASS_STATE in ("+inSql+") ";
-//		}
 
 		String sql = "select * from  MEMBER  "
 				+ whereSql;
@@ -274,13 +264,50 @@ public class AdminDao {
 				command.getM_name(),
 				command.getM_pass(),
 				command.getM_id()
-	);
+				);
 	}
 	
 	@Transactional
 	public int memberDelete(int m_id) {
 		jdbcTemplate.update("DELETE FROM MEMBER_CLASS WHERE M_ID = ? ",m_id);
 		return jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
+	}
+	
+	private RowMapper<Curriculum> CurriRowMapper = new RowMapper<Curriculum>() {
+		@Override
+		public Curriculum mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Curriculum beanCurri = new Curriculum(
+					rs.getInt("CUR_ID"),
+					rs.getString("CUR_NAME")
+				);
+			return beanCurri;
+		}		
+	};
+	
+	public List<Curriculum> curriList() {
+		String sql = "select * from CURRICULUM ";
+		List<Curriculum> result = jdbcTemplate.query(sql,CurriRowMapper);
+		return result;
+	}
+	public int curriInsert(String cur_name) {
+		return jdbcTemplate.update(" INSERT INTO CURRICULUM "
+				+ "(CUR_ID,CUR_NAME) "
+				+ " VALUES(SEQUENCE_CURRI.NEXTVAL,?) ",
+				cur_name
+				);
+	}
+	public int curriEdit(String cur_name,int cur_id) {
+		return jdbcTemplate.update(" update CURRICULUM set "
+				+ "CUR_NAME=?"
+				+ " where CUR_ID = ? ",
+				cur_name,
+				cur_id
+				);
+	}
+	@Transactional
+	public int curriDelete(int m_id) {
+		jdbcTemplate.update("DELETE FROM CURRICULUM_SUBJECT WHERE CUR_ID = ? ",m_id);
+		return jdbcTemplate.update("DELETE FROM CURRICULUM WHERE CUR_ID = ? ",m_id);
 	}
 
 	

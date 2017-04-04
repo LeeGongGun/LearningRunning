@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class StudentDao {
 	private JdbcTemplate jdbcTemplate;
+	private DataSource dataSource;
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

@@ -53,7 +53,7 @@ public class TeacherDao {
 	
 	public List<Classes> teachersClasses(int teacherId) {
 		String sql = "select * "
-				+ "from (select CLASS_ID from MEMBER_CLASS where M_ID = ?) "
+				+ "from (select CLASS_ID from MEMBER_CLASS where M_ID = ? and auth_ename='teacher') "
 				+ "natural join CLASSES "
 				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY AUTH_ENAME,CLASS_ID) using(CLASS_ID)";
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper,teacherId);

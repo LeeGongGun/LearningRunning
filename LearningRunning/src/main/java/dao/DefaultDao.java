@@ -14,6 +14,7 @@ import bean.AuthMember;
 
 public class DefaultDao {
 	private JdbcTemplate jdbcTemplate;
+	private DataSource dataSource;
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);

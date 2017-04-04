@@ -26,7 +26,7 @@
 			<c:forEach var="classes" items="${list}">
 				<tr>
 					<td>${classes.class_id}</td>
-					<td><a href="<c:url value="/attendance/insert/${classes.class_id}"/>">${classes.class_name}</a></td>
+					<td><a href="<c:url value="/attendance/insert/${classes.class_id}"/>">${classes.class_name}(${classes.student_count}명)</a></td>
 					<td>${classes.class_comment}</td>
 					<td>${classes.class_state}</td>
 				</tr>
