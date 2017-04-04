@@ -21,13 +21,18 @@ public class KswController {
 		this.kswDao = kswDao;
 	}
 
-	@RequestMapping(value = "/attendance/list", method = RequestMethod.GET)
-	public ModelAndView classGetList(Model model) {
-		List<ClassList> list = kswDao.getAllClass();
-		ModelAndView mav = new ModelAndView();
-		mav.addObject("list", list);
-		mav.setViewName("/attendance/attendanceClassList");
-		return mav;
+//	@RequestMapping(value = "/attendance/list", method = RequestMethod.GET)
+//	public ModelAndView classGetList(Model model) {
+//		List<ClassList> list = kswDao.getAllClass();
+//		ModelAndView mav = new ModelAndView();
+//		mav.addObject("list", list);
+//		mav.setViewName("/attendance/attendanceClassList");
+//		return mav;
+//	}
+	
+	@RequestMapping(value="/attendance/list", method = RequestMethod.GET)
+	public String getList(){
+		return "/attendance/attendanceList";
 	}
 
 }
