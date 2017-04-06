@@ -173,13 +173,13 @@ $(function(){
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">반(과정) 입력</h4>
+        <h4 class="modal-title" id="myModalLabel">반 입력</h4>
       </div>
       <div class="modal-body" style="min-height: 350px">
       <form:form commandName="command" id="editFrm">
       	<input  type="hidden" id="mode" value="insert">
       	<div class="form-group">
-      	 	<label for="classId" class="col-sm-2 control-label">과정명</label>
+      	 	<label for="classId" class="col-sm-2 control-label">반명</label>
          	<div class="col-sm-10">
          		<input type="hidden" class="form-control" id="class_id" name="class_id" placeholder="아이디">
          		<input type="text" class="form-control" id="class_name" name="class_name" placeholder="과정명" required="required">
@@ -219,7 +219,7 @@ $(function(){
   </div>
 </div>
 <div class="main"><div class="main-div">
-	<h3 class="sub-title">반(과정)관리</h3>
+	<h3 class="sub-title">반관리</h3>
 	<div class="">
 	<button type="button" class="btn btn-primary btn-lg" id="modalOn">
   		입력
@@ -232,7 +232,7 @@ $(function(){
 			<tr>
 
 				<th>번호</th>
-				<th>과정명</th>
+				<th>반명</th>
 				<th>시작일</th>
 				<th>종료일</th>
 				<th>인원수</th>

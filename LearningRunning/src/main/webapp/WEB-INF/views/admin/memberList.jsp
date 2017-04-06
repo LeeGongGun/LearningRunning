@@ -113,10 +113,11 @@ $(function(){
 		
 	}
 	function getList(sText){
-		$("#sub-table tr").each(function(){
+		$("#sub-table tbody>tr").each(function(){
 			tr = this;
 			sum = 0;
-			$("td",tr).each(function(){
+			$("td",tr).each(function(i){
+				if(i==0 || i==0 || i==0  ) return true;
 				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
 					sum++;
 				}
@@ -215,7 +216,7 @@ $(function(){
 <div class="main"><div class="main-div">
 	<h3 class="sub-title">member 관리</h3>
 	<div class="search-div form-inline">
-	<input type="text" class="form-control" id="searchText" name="searchText" placeholder="검색어">
+	
 	<button type="button" class="btn btn-primary" id="searchBtn">
   		검색
 	</button>
@@ -230,7 +231,7 @@ $(function(){
 			<tr>
 
 				<th>번호</th>
-				<th>member명</th>
+				<th><input type="text" class="form-control" id="searchText" name="searchText" placeholder="검색"></th>
 				<th>email</th>
 				<th>비밀번호</th>
 				<th>삭제</th>

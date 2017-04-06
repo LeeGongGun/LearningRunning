@@ -78,6 +78,7 @@ String rootPath = request.getContextPath();
 <script>
 $(function() {
 	$("#m_id,#class_id").select2();
+	$("#m_id").change(getAttendList);
 	from = new Date();
 	from.setMonth(from.getMonth()-1);
 	$("#from")

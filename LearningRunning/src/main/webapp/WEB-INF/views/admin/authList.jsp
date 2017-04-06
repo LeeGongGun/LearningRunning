@@ -27,6 +27,45 @@ $(function(){
 	$("#auth_ename").change(getAuthList);
 	$("#btnInsert").click(insertAuth);
 	$("#btnDel").click(delAuth);
+	$("#not-allCheck").click(function(){
+		$("table#not-members>tbody>tr").each(function(){
+			if($(this).is(':visible')) trClick("#44b6d9",this);
+		});
+	});
+	$("#con-allCheck").click(function(){
+		$("table#auth-members>tbody>tr").each(function(){
+			if($(this).is(':visible')) trClick("#ed9c2a",this);
+		});
+	});
+	$("#not-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#not-members"),e.target.value);
+		}
+	});
+	$("#con-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#auth-members"),e.target.value);
+		}
+	});
+	function getTable(table,sText){
+		$("tbody>tr",table).each(function(){
+			tr = this;
+			sum = 0;
+			$("td",tr).each(function(i){
+				if(i!=1 && i!=2) console.log(i);return true;
+				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
+					sum++;
+				}
+			});
+			if ( sum > 0 ) {
+				$(tr).show();
+			}else{
+				chkbox = $("input[name='m_id']",tr);
+				chkbox.prop("checked", false);
+				$(tr).hide();
+			}
+		});
+	}
 	function insertAuth(){
 		obj = $("#not-members  [name='m_id']:checked");
 		arr =[];
@@ -85,7 +124,6 @@ $(function(){
 		}else{
 			$(obj).css("background-color","#fff");
 		}
-		console.log(chkbox.is(":checked"));
 	}
 	function getAuthList(){
 		$.ajax({
@@ -149,9 +187,8 @@ $(function(){
 			<thead>
 			<tr>
 
-				<th>번호</th>
-				<th>이름</th>
-				<th>email</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="not-allCheck">반전하기</a></th>
+				<th colspan="2"><input type="text" id="not-search" class="form-control" placeholder="이름,email 검색"></th>
 				<th>인증</th>
 			</tr>
 			</thead>
@@ -168,15 +205,14 @@ $(function(){
 			<thead>
 			<tr>
 
-				<th>번호</th>
-				<th>이름</th>
-				<th>email</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="con-allCheck">반전하기</a></th>
+				<th colspan="2"><input type="text" id="con-search" class="form-control" placeholder="이름,email 검색"></th>
 				<th>인증</th>
 			</tr>
 			</thead>
 			<tbody>
 			</tbody>
-		</div>
+		</table>
 	</div>
 </div>	
 	

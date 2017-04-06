@@ -17,6 +17,7 @@ import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.CurriJoinSubject;
 import bean.Curriculum;
+import bean.Subject;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
 
@@ -242,7 +243,7 @@ public class AdminDao {
 		}
 
 		String sql = "select * from  MEMBER  "
-				+ whereSql;
+				+ whereSql +" order by M_ID desc";
 		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper);
 		return result;
 	}
@@ -320,7 +321,8 @@ public class AdminDao {
 			CurriJoinSubject beanClasses = new CurriJoinSubject(
 					rs.getInt("cur_id"),
 					rs.getInt("subject_id"),
-					rs.getString("subject_title")
+					rs.getString("subject_title"),
+					rs.getString("subject_comment")
 				);
 			return beanClasses;
 		}		
@@ -359,14 +361,15 @@ public class AdminDao {
 			ClassJoinSubject beanClasses = new ClassJoinSubject(
 					rs.getInt("class_id"),
 					rs.getInt("subject_id"),
-					rs.getString("subject_title")
+					rs.getString("subject_title"),
+					rs.getString("subject_comment")
 				);
 			return beanClasses;
 		}		
 	};
 	public List<ClassJoinSubject> classSubjectList(int class_id) {
 		String sql = "select * from SUBJECTS "
-				+ "left outer join (select * from CURRICULUM_SUBJECT where class_id=?) using(subject_id) ";
+				+ "left outer join (select * from CLASS_SUBJECT where class_id=?) using(subject_id) ";
 		List<ClassJoinSubject> result = jdbcTemplate.query(sql,classJoinSubRowMapper,class_id);
 		return result;
 	}
@@ -374,7 +377,7 @@ public class AdminDao {
 		String intoSql = "";
 		
 		for (int i = 0;i<subject_ids.size() ;i++) {
-			intoSql += "into CURRICULUM_SUBJECT (CUR_ID,SUBJECT_ID) values("+class_id+","+subject_ids.get(i)+") ";
+			intoSql += "into CLASS_SUBJECT (CLASS_ID,SUBJECT_ID) values("+class_id+","+subject_ids.get(i)+") ";
 		}
 		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
 		return result;
@@ -385,11 +388,48 @@ public class AdminDao {
 			if (i!=0) inSql += ",";
 			inSql += subject_ids.get(i).toString();
 		}
-		int result = jdbcTemplate.update("DELETE FROM CURRICULUM_SUBJECT WHERE SUBJECT_ID in ("+inSql+") and CUR_ID = ? ",class_id);
+		int result = jdbcTemplate.update("DELETE FROM CLASS_SUBJECT where SUBJECT_ID in ("+inSql+") and CLASS_ID = ? ",class_id);
 		return result;
 	}
-	
-	
-	
+	public List<ClassJoinSubject> classSimpleSubjectList() {
+		String sql = "select * from SUBJECTS ";
+		List<ClassJoinSubject> result = jdbcTemplate.query(sql,new RowMapper<ClassJoinSubject>() {
+			@Override
+			public ClassJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
+				ClassJoinSubject beanClasses = new ClassJoinSubject(
+						0,
+						rs.getInt("subject_id"),
+						rs.getString("subject_title"),
+						rs.getString("subject_comment")
+					);
+				return beanClasses;
+			}		
+		});
+		return result;
+	}
+	public int subjectInsert(Subject command) {
+		return jdbcTemplate.update(" INSERT INTO SUBJECTS "
+				+ "(SUBJECT_ID,SUBJECT_TITLE,SUBJECT_COMMENT) "
+				+ " VALUES(SEQUENCE_SUBJECT.NEXTVAL,?,?) ",
+				command.getSubject_title(),
+				command.getSubject_comment()
+				);
+	}
+	public int subjectEdit(Subject command) {
+		return jdbcTemplate.update(" update SUBJECTS set "
+				+ "SUBJECT_TITLE=?,"
+				+ "SUBJECT_COMMENT=?"
+				+ " where SUBJECT_ID = ? ",
+				command.getSubject_title(),
+				command.getSubject_comment(),
+				command.getSubject_id()
+				);
+	}
+	@Transactional
+	public int subjectDelete(int subject_id) {
+		jdbcTemplate.update("DELETE FROM CURRICULUM_SUBJECT WHERE SUBJECT_ID = ? ",subject_id);
+		jdbcTemplate.update("DELETE FROM CLASS_SUBJECT WHERE SUBJECT_ID = ? ",subject_id);
+		return jdbcTemplate.update("DELETE FROM SUBJECTS WHERE SUBJECT_ID = ? ",subject_id);
+	}
 	
 }
