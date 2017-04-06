@@ -83,13 +83,12 @@ $(function(){
 			+"("
 			+$(this).parents("tr").find("td:eq(2)").text()
 			+")";
-		console.log(sId);
-		return false;
+			del_id = $(this).data("m_id");
 		if(confirm(sId+"님을 삭제하시겠습니까?")){
 			$.ajax({
 		        url:"<%=rootPath%>/admin/member/delete",
 		        type:'post',
-		        data: {m_id:sId},
+		        data: {m_id: del_id},
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert("삭제성공하였습니다.");
@@ -144,7 +143,7 @@ $(function(){
 						conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
 						conTag +="<td>"+item.m_email+"</td>";
 						conTag +="<td>"+item.m_pass+"</td>";
-						conTag +="<td><button class=\"delBtn\" data=\""+item.m_id+"\">삭제</button></td>";
+						conTag +="<td><button class=\"delBtn\" data-m_id=\""+item.m_id+"\">삭제</button></td>";
 						conTag +="</tr>";
 				});
 				$("table#sub-table>tbody").empty().append(conTag);

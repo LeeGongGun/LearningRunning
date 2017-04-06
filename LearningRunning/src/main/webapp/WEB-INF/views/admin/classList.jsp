@@ -75,7 +75,6 @@ $(function(){
 	});
 	$(".search-table").on("click",".delBtn",function(){
 		classTitle = $(this).parents("tr").find("td:eq(1)");
-		console.log(classTitle)
 		pre = classTitle.find("fre").detach();
 		if(confirm(classTitle.text()+"과정를 삭제하시겠습니까?")){
 			$.ajax({

@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 import bean.AuthMember;
 import bean.ClassJoinMem;
+import bean.ClassJoinSubject;
 import bean.Classes;
+import bean.CurriJoinSubject;
 import bean.Curriculum;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
@@ -240,6 +242,8 @@ public class AdminController {
 		model.addAttribute("json", "{\"data\": "+json+"}");
 		return "/ajax/ajaxDefault";
 	}
+
+	//Curriculum
 	@RequestMapping(value = "/admin/curri/insert", method = RequestMethod.POST)
 	public String curriInsert(String cur_name,
 			Model model) {
@@ -261,4 +265,85 @@ public class AdminController {
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
+	
+	@RequestMapping(value = "/admin/curriSubject", method = RequestMethod.POST)
+	public String curriSubjectList(int cur_id,Model model) {
+		List<CurriJoinSubject> rs = dao.curriSubjectList(cur_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	@RequestMapping(value = "/admin/curriSubject/insert", method = RequestMethod.POST)
+	public String curriJoinSubInsert(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="cur_id") String cur_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int rs = dao.curriJoinSubInsert(subject_ids,cur_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/curriSubject/delete", method = RequestMethod.POST)
+	public String curriJoinSubDelete(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="cur_id") String cur_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int delOk = dao.curriJoinSubDelete(subject_ids,cur_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	//ClassSubject
+	
+	@RequestMapping(value = "/admin/classSubject", method = RequestMethod.POST)
+	public String classSubjectList(int class_id,Model model) {
+		List<ClassJoinSubject> rs = dao.classSubjectList(class_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	@RequestMapping(value = "/admin/classSubject/insert", method = RequestMethod.POST)
+	public String classJoinSubInsert(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="class_id") String class_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int rs = dao.classJoinSubInsert(subject_ids,class_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/classSubject/delete", method = RequestMethod.POST)
+	public String classJoinSubDelete(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="class_id") String class_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int delOk = dao.classJoinSubDelete(subject_ids,class_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
 }
