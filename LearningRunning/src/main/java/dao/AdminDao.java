@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import bean.AuthMember;
 import bean.ClassJoinMem;
+import bean.ClassJoinSubject;
 import bean.Classes;
+import bean.CurriJoinSubject;
 import bean.Curriculum;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
@@ -273,6 +275,8 @@ public class AdminDao {
 		return jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
 	}
 	
+	
+	//Curriculum
 	private RowMapper<Curriculum> CurriRowMapper = new RowMapper<Curriculum>() {
 		@Override
 		public Curriculum mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -310,5 +314,82 @@ public class AdminDao {
 		return jdbcTemplate.update("DELETE FROM CURRICULUM WHERE CUR_ID = ? ",m_id);
 	}
 
+	private RowMapper<CurriJoinSubject> curriJoinSubRowMapper = new RowMapper<CurriJoinSubject>() {
+		@Override
+		public CurriJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
+			CurriJoinSubject beanClasses = new CurriJoinSubject(
+					rs.getInt("cur_id"),
+					rs.getInt("subject_id"),
+					rs.getString("subject_title")
+				);
+			return beanClasses;
+		}		
+	};
+	public List<CurriJoinSubject> curriSubjectList(int cur_id) {
+		String sql = "select * from SUBJECTS "
+				+ "left outer join (select * from CURRICULUM_SUBJECT where cur_id=?) using(subject_id) ";
+		List<CurriJoinSubject> result = jdbcTemplate.query(sql,curriJoinSubRowMapper,cur_id);
+		return result;
+	}
+	public int curriJoinSubInsert(List<Integer> subject_ids, String cur_id) {
+		String intoSql = "";
+		
+		for (int i = 0;i<subject_ids.size() ;i++) {
+			intoSql += "into CURRICULUM_SUBJECT (CUR_ID,SUBJECT_ID) values("+cur_id+","+subject_ids.get(i)+") ";
+		}
+		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
+		return result;
+	}
+	public int curriJoinSubDelete(List<Integer> subject_ids, String cur_id) {
+		String inSql = "";
+		for (int i = 0; i < subject_ids.size(); i++) {
+			if (i!=0) inSql += ",";
+			inSql += subject_ids.get(i).toString();
+		}
+		int result = jdbcTemplate.update("DELETE FROM CURRICULUM_SUBJECT WHERE SUBJECT_ID in ("+inSql+") and CUR_ID = ? ",cur_id);
+		return result;
+	}
+
+//////
+	
+	//classSubject
+	private RowMapper<ClassJoinSubject> classJoinSubRowMapper = new RowMapper<ClassJoinSubject>() {
+		@Override
+		public ClassJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ClassJoinSubject beanClasses = new ClassJoinSubject(
+					rs.getInt("class_id"),
+					rs.getInt("subject_id"),
+					rs.getString("subject_title")
+				);
+			return beanClasses;
+		}		
+	};
+	public List<ClassJoinSubject> classSubjectList(int class_id) {
+		String sql = "select * from SUBJECTS "
+				+ "left outer join (select * from CURRICULUM_SUBJECT where class_id=?) using(subject_id) ";
+		List<ClassJoinSubject> result = jdbcTemplate.query(sql,classJoinSubRowMapper,class_id);
+		return result;
+	}
+	public int classJoinSubInsert(List<Integer> subject_ids, String class_id) {
+		String intoSql = "";
+		
+		for (int i = 0;i<subject_ids.size() ;i++) {
+			intoSql += "into CURRICULUM_SUBJECT (CUR_ID,SUBJECT_ID) values("+class_id+","+subject_ids.get(i)+") ";
+		}
+		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
+		return result;
+	}
+	public int classJoinSubDelete(List<Integer> subject_ids, String class_id) {
+		String inSql = "";
+		for (int i = 0; i < subject_ids.size(); i++) {
+			if (i!=0) inSql += ",";
+			inSql += subject_ids.get(i).toString();
+		}
+		int result = jdbcTemplate.update("DELETE FROM CURRICULUM_SUBJECT WHERE SUBJECT_ID in ("+inSql+") and CUR_ID = ? ",class_id);
+		return result;
+	}
+	
+	
+	
 	
 }
