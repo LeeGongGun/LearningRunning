@@ -20,8 +20,6 @@
   <link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/dist/css/skins/_all-skins.min.css">
   <!-- iCheck -->
   <link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/iCheck/flat/blue.css">
-  <!-- Morris chart -->
-  <link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/morris/morris.css">
   <!-- jvectormap -->
   <link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/jvectormap/jquery-jvectormap-1.2.2.css">
   <!-- Date Picker -->

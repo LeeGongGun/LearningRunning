@@ -40,4 +40,9 @@ public class KswController {
 	public String getClassList(@RequestParam(value="active", defaultValue="attendance") String active){
 		return "/attendance/classList";
 	}
+	
+	@RequestMapping(value="/attendance/test", method = RequestMethod.GET)
+	public String getTest(@RequestParam(value="active", defaultValue="attendance") String active){
+		return "/attendance/test";
+	}
 }
