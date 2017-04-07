@@ -28,6 +28,44 @@ $(function(){
 	$("#auth_ename,#class_id").change(getMemberList);
 	$("#btnInsert").click(insertAuth);
 	$("#btnDel").click(delAuth);
+	$("#not-allCheck").click(function(){
+		$("table#con-surbjects>tbody>tr").each(function(){
+			trClick("#44b6d9",this);
+		});
+	});
+	$("#con-allCheck").click(function(){
+		$("table#con-surbjects>tbody>tr").each(function(){
+			trClick("#ed9c2a",this);
+		});
+	});
+	$("#not-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#not-members"),e.target.value);
+		}
+	});
+	$("#con-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#con-members"),e.target.value);
+		}
+	});
+	function getTable(table,sText){
+		$("tbody>tr",table).each(function(){
+			tr = this;
+			sum = 0;
+			$("td",tr).each(function(i){
+				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
+					sum++;
+				}
+			});
+			if ( sum > 0 ) {
+				$(tr).show();
+			}else{
+				chkbox = $("input[name='m_id']",tr);
+				chkbox.prop("checked", false);
+				$(tr).hide();
+			}
+		});
+	}
 	function insertAuth(){
 		obj = $("#not-members  [name='m_id']:checked");
 		arr =[];
@@ -155,8 +193,8 @@ $(function(){
 			<thead>
 			<tr>
 
-				<th>번호</th>
-				<th>이름</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="not-allCheck">반전하기</a></th>
+				<th><input type="text" id="not-search" class="form-control" placeholder="이름검색"></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -172,13 +210,13 @@ $(function(){
 			<thead>
 			<tr>
 
-				<th>번호</th>
-				<th>이름</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="con-allCheck">반전하기</a></th>
+				<th><input type="text" id="con-search" class="form-control" placeholder="이름검색"></th>
 			</tr>
 			</thead>
 			<tbody>
 			</tbody>
-		</div>
+		</table>
 	</div>
 </div>	
 	

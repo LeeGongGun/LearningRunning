@@ -61,6 +61,7 @@ $(function(){
 		          <li><a href="<%=request.getContextPath()%>/admin/classJoinMem">반-학생,선생 등록</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/class">반(과정)관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/curri">커리큘럼관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/classSubject">과목관리</a></li>
 		        </ul>
             </li>
 		    <li><a href="<%=request.getContextPath()%>/logout">logout</a></li>

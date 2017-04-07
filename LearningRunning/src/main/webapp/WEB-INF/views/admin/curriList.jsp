@@ -145,6 +145,46 @@ $(function(){
 	$("#con-surbjects").on("click","tr.list-tr",function(){
 		trClick("#ed9c2a",this);
 	});
+	$("#not-allCheck").click(function(){
+		$("table#not-surbjects>tbody>tr").each(function(){
+			if($(this).is(':visible')) trClick("#44b6d9",this);
+		});
+	});
+	$("#con-allCheck").click(function(){
+		$("table#con-surbjects>tbody>tr").each(function(){
+			if($(this).is(':visible')) trClick("#ed9c2a",this);
+		});
+	});
+	$("#not-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#not-surbjects"),e.target.value);
+		}
+	});
+	$("#con-search").keydown(function(e){
+		if(e.which == 13){
+			getTable($("#con-surbjects"),e.target.value);
+		}
+	});
+	function getTable(table,sText){
+		$("tbody>tr",table).each(function(){
+			tr = this;
+			sum = 0;
+			$("td",tr).each(function(i){
+				if(i!=1 && i!=2) return true;
+				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
+					sum++;
+				}
+			});
+			if ( sum > 0 ) {
+				$(tr).show();
+			}else{
+				chkbox = $("input[name='subject_id']",tr);
+				chkbox.prop("checked", false);
+				$(tr).hide();
+			}
+		});
+	}
+
 	$("#cur_select_id").change(getSubjectList);
 	$("#btnInsert").click(insertSubject);
 	$("#btnDel").click(delSubject);
@@ -309,8 +349,8 @@ $(function(){
 			<thead>
 			<tr>
 
-				<th>번호</th>
-				<th>이름</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="not-allCheck">반전하기</a></th>
+				<th><input type="text" id="not-search" class="form-control" placeholder="이름검색"></th>
 			</tr>
 			</thead>
 			<tbody>
@@ -325,9 +365,8 @@ $(function(){
 		<table  class="table table-striped table-bordered col-sm-12"  id="con-surbjects">
 			<thead>
 			<tr>
-
-				<th>번호</th>
-				<th>이름</th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="con-allCheck">반전하기</a></th>
+				<th><input type="text" id="con-search" class="form-control" placeholder="이름검색"></th>
 			</tr>
 			</thead>
 			<tbody>
