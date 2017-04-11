@@ -38,14 +38,11 @@ String rootPath = request.getContextPath();
 					</c:forEach>
 				
 				</select>	
-				<br>			
-					<label>
-					<input type="text" name="from" id="from" class="datetimepicker form-control" placeholder="from" required readonly/>
+					<input type="text" name="from" id="from" class="form-control" placeholder="from" required readonly/>
+					~
+					<input type="text" name="to" id="to" class="form-control"  placeholder="to" required readonly/>
 					</label>
-					~ <label> 
-					<input type="text" name="to" id="to"  class="datetimepicker form-control" placeholder="to" required readonly/>
-					</label>
-					<input type="button" value="기간별 조회"  class="btn btn-default" id="searchBtn">
+					<input type="button" value="조회"  class="btn btn-default" id="searchBtn">
 			</form:form>
 
 			<table class="table table-striped table-bordered" cellspacing="0" width="100%" id="personTotalAttendTable">

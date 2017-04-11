@@ -40,12 +40,12 @@ $(function(){
 	});
 	$("#not-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#not-members"),e.target.value);
+			getTable($("#not-members"),e.target.value.toUpperCase());
 		}
 	});
 	$("#con-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#con-members"),e.target.value);
+			getTable($("#con-members"),e.target.value.toUpperCase());
 		}
 	});
 	function getTable(table,sText){

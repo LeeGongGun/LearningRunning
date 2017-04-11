@@ -1,7 +1,10 @@
 package dao;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -17,9 +20,12 @@ import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.CurriJoinSubject;
 import bean.Curriculum;
+import bean.Exam;
+import bean.ExamJoinSubject;
 import bean.Subject;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
+import command.examCommand;
 
 public class AdminDao {
 	private JdbcTemplate jdbcTemplate;
@@ -87,12 +93,11 @@ public class AdminDao {
 	public int classInsert(Classes command) {
 		return jdbcTemplate.update(" INSERT INTO CLASSES "
 				+ "(CLASS_ID,CLASS_NAME,CLASS_START,CLASS_END,CLASS_STATE,CLASS_COMMENT) "
-				+ " VALUES(SEQUENCE_CLASS.NEXTVAL,?,?,?,?,?) ",
-				command.getClass_name(),
-				command.getClass_start(),
-				command.getClass_end(),
-				command.getClass_state(),
-				command.getClass_comment()
+				+ " VALUES(SEQUENCE_CLASS.NEXTVAL,'"+command.getClass_name()+"','"
+				+command.getClass_start()+"','"
+				+command.getClass_end()+"','"
+				+command.getClass_state()+"','"
+				+command.getClass_comment()+"') "
 				);
 	}
 	public int classEdit(Classes command) {
@@ -236,7 +241,7 @@ public class AdminDao {
 	public List<AuthMember> memberList(MemberSearchCommand command) {
 		String whereSql ="";
 		int tmp=0;
-		if(command.getSearchText()!=null){
+		if(command.getSearchText()!=""){
 			whereSql += (tmp==0)?" where ":" and ";
 			tmp++;
 			whereSql += " CLASS_NAME like '%"+command.getSearchText()+"%' ";
@@ -396,13 +401,13 @@ public class AdminDao {
 		List<ClassJoinSubject> result = jdbcTemplate.query(sql,new RowMapper<ClassJoinSubject>() {
 			@Override
 			public ClassJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
-				ClassJoinSubject beanClasses = new ClassJoinSubject(
+				ClassJoinSubject beanClassJoinSubject = new ClassJoinSubject(
 						0,
 						rs.getInt("subject_id"),
 						rs.getString("subject_title"),
 						rs.getString("subject_comment")
 					);
-				return beanClasses;
+				return beanClassJoinSubject;
 			}		
 		});
 		return result;
@@ -431,5 +436,105 @@ public class AdminDao {
 		jdbcTemplate.update("DELETE FROM CLASS_SUBJECT WHERE SUBJECT_ID = ? ",subject_id);
 		return jdbcTemplate.update("DELETE FROM SUBJECTS WHERE SUBJECT_ID = ? ",subject_id);
 	}
+	private RowMapper<Exam> examRowMapper = new RowMapper<Exam>() {
+		@Override
+		public Exam mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Exam beanExam = new Exam(
+					rs.getInt("EXAM_ID"),
+					rs.getInt("CLASS_ID"),
+					rs.getString("EXAM_TITLE"),
+					rs.getString("CLASS_NAME"),
+					rs.getDate("EXAM_DATE").toString()
+				);
+			return beanExam;
+		}		
+	};
 	
+	
+	public List<Exam> examlList(examCommand command) {
+		String whereSql ="";
+		String joinSql ="";
+		int tmp=0;
+		if(command.getClass_id()>0){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " CLASS_ID = "+command.getClass_id()+" ";
+		}
+		String sql = "select * from  (select * from EXAM "+whereSql+") natural join (select * from CLASSES "+whereSql+")  ";
+		List<Exam> result = jdbcTemplate.query(sql,examRowMapper);
+		return result;
+	}
+	public int examInsert(Exam command) {
+		return jdbcTemplate.update(" insert into EXAM (EXAM_ID,CLASS_ID,EXAM_TITLE,EXAM_DATE)"
+				+ " values (SEQUENCE_EXAM.NEXTVAL,"+command.getClass_id()+",'"+command.getExam_title()+"','"+command.getExam_date()+"') ");
+	}
+	public int examEdit(Exam command) {
+		return jdbcTemplate.update(" update EXAM set "
+				+ "EXAM_TITLE=?,"
+				+ "EXAM_DATE=?"
+				+ " where EXAM_ID = ? ",
+				command.getExam_title(),
+				command.getExam_date(),
+				command.getExam_id()
+				);
+	}
+	@Transactional
+	public int examDelete(int exam_id) {
+		jdbcTemplate.update("delete from EXAM_SCORE where EXAM_ID = ? ",exam_id);
+		jdbcTemplate.update("delete from EXAM_SUBJECT where EXAM_ID = ? ",exam_id);
+		return jdbcTemplate.update("delete from EXAM where EXAM_ID = ? ",exam_id);
+	}
+	public int countExamScore(int exam_id) {
+		List<Integer> rs=jdbcTemplate.query("select count(*) from exam_score where exam_id=?",new RowMapper<Integer>() {
+			@Override
+			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Integer beanExam = new Integer(
+						rs.getInt(1));
+				return beanExam;
+			}		
+		},exam_id);
+		return (rs.size()>0)?rs.get(0):null;
+	}
+	private RowMapper<ExamJoinSubject> examJoinSubjectMapper = new RowMapper<ExamJoinSubject>() {
+		@Override
+		public ExamJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ExamJoinSubject beanExamJoinSubject = new ExamJoinSubject(
+					rs.getInt("exam_id"),
+					rs.getInt("subject_id"),
+					rs.getString("subject_title")
+				);
+			return beanExamJoinSubject;
+		}		
+	};
+	public List<ExamJoinSubject> examSubjectList(int class_id,int exam_id) {
+		if((Integer)class_id == null) return null;
+		String sql = "select * from "
+				+ "(select * from CLASS_SUBJECT where class_id=?) "
+				+ "natural join SUBJECTS  "
+				+ "left outer join (select * from "
+				+ "(select * from exam where exam_id=?) "
+				+ "natural join EXAM_SUBJECT ) using(subject_id) ";
+		List<ExamJoinSubject> result = jdbcTemplate.query(sql,examJoinSubjectMapper,class_id,exam_id);
+		return result;
+	}
+	public int examJoinSubInsert(List<Integer> subject_ids, String exam_id) {
+		String intoSql = "";
+		
+		for (int i = 0;i<subject_ids.size() ;i++) {
+			intoSql += "into EXAM_SUBJECT (EXAM_ID,SUBJECT_ID) values("+exam_id+","+subject_ids.get(i)+") ";
+		}
+		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
+		return result;
+	}
+	public int examJoinSubDelete(List<Integer> subject_ids, String exam_id) {
+		String inSql = "";
+		for (int i = 0; i < subject_ids.size(); i++) {
+			if (i!=0) inSql += ",";
+			inSql += subject_ids.get(i).toString();
+		}
+		int result = jdbcTemplate.update("DELETE FROM EXAM_SUBJECT where SUBJECT_ID in ("+inSql+") and EXAM_ID = ? ",exam_id);
+		return result;
+	}
+
+
 }

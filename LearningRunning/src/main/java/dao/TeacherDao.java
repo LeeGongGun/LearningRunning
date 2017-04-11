@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import bean.AuthMember;
 import bean.Classes;
+import bean.Counsel;
+import bean.Exam;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
+import command.MemberSearchCommand;
+import command.examCommand;
 
 public class TeacherDao {
 	private JdbcTemplate jdbcTemplate;
@@ -59,6 +64,12 @@ public class TeacherDao {
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper,teacherId);
 		return result;
 	}
+	public List<Classes> counselClasses() {
+		String sql = "select * from CLASSES "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY AUTH_ENAME,CLASS_ID) using(CLASS_ID)";
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
+		return result;
+	}
 	public List<TempAttendance> tempAttendanceList(int class_id) {
 		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? ) "
 				+ "natural join MEMBER  ";
@@ -88,5 +99,60 @@ public class TeacherDao {
 		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where CLASS_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
 		return jdbcTemplate.update(sql, command.getTime(),class_id);
 	}
+	private RowMapper<AuthMember> member2RowMapper = new RowMapper<AuthMember>() {
+		@Override
+		public AuthMember mapRow(ResultSet rs, int rowNum) throws SQLException {
+			AuthMember beanMember = new AuthMember(
+					rs.getInt("M_ID"),
+					rs.getString("M_EMAIL"),
+					rs.getString("M_NAME"),
+					rs.getString("M_PASS"),
+					rs.getString("M_APP_U_NO")
+				);
+			return beanMember;
+		}		
+	};
+	public List<AuthMember> memberList(MemberSearchCommand command) {
+		String whereSql ="";
+		String joinSql ="";
+		int tmp=0;
+		if(command.getClass_id()>0){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " CLASS_ID = "+command.getClass_id()+" ";
+			joinSql = " (select * from member_class "+whereSql+" ) natural join ";
+		}
+		String sql = "select * from "+joinSql+"  MEMBER  order by M_ID desc";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper);
+		return result;
+	}
+	
+	private RowMapper<Counsel> counselRowMapper = new RowMapper<Counsel>() {
+		@Override
+		public Counsel mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Counsel beanMember = new Counsel(
+					rs.getInt("COUNSEL_ID"),
+					rs.getString("COUNSEL_TITLE"),
+					rs.getString("COUNSEL_CONDENT"),
+					rs.getInt("COUNSELOR"),
+					rs.getInt("M_ID"),
+					rs.getDate("COUNSEL_DATE").toString()
+				);
+			return beanMember;
+		}		
+	};
+	
+	
+	public List<Counsel> counselList(MemberSearchCommand command) {
+		String sql = "select * from  COUNSEL  order by COUNSEL_DATE desc ";
+		List<Counsel> result = jdbcTemplate.query(sql,counselRowMapper);
+		return result;
+	}
+	public List<AuthMember> authList(String auth_ename) {
+		String sql = "select * from  MEMBER left outer join (select * from MEMBER_AUTH where auth_ename=?) USING(M_ID)  ";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,auth_ename);
+		return result;
+	}
+
 
 }

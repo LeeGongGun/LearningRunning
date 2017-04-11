@@ -39,12 +39,12 @@ $(function(){
 	});
 	$("#not-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#not-members"),e.target.value);
+			getTable($("#not-members"),e.target.value.toUpperCase());
 		}
 	});
 	$("#con-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#auth-members"),e.target.value);
+			getTable($("#auth-members"),e.target.value.toUpperCase());
 		}
 	});
 	function getTable(table,sText){
@@ -179,7 +179,7 @@ $(function(){
   			<option value="teacher">선생님</option>
   			<option value="admin">관리자</option>
   		</select>
-  		<input type="date" class="form-control form-inline" id="auth_end_date" name="auth_end_date" placeholder="종료일">
+  		<input type="date" class="form-control form-inline" id="auth_end_date" name="auth_end_date" title="관한종료일" placeholder="종료일">
 	</div>
 <div class="search-table row">
 	<div class="col-sm-5">

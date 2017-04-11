@@ -17,6 +17,7 @@ $(function(){
 	$("#modalOn").click(function(){
 		clearFrm();
 		$('#myModal').modal("show");
+		$("#frm_subject_title").focus();
 	});
 	$("#insert").click(function(){ //제목입력
 		okCnt = 0;
@@ -173,12 +174,12 @@ $(function(){
 	});
 	$("#not-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#not-surbjects"),e.target.value);
+			getTable($("#not-surbjects"),e.target.value.toUpperCase());
 		}
 	});
 	$("#con-search").keydown(function(e){
 		if(e.which == 13){
-			getTable($("#con-surbjects"),e.target.value);
+			getTable($("#con-surbjects"),e.target.value.toUpperCase());
 		}
 	});
 	function getTable(table,sText){
@@ -356,7 +357,7 @@ $(function(){
 		<h3 class="sub-title">과목 관리</h3>
 		<div class="search-div form-inline">
 			<select  class="form-control "  name="class_select_id" id="class_select_id">
-				<option value="">과정(반)을 선택하세요. </option>
+				<option value="">반을 선택하세요. </option>
 				<c:forEach var="classes" items="${classList}">
 	  			<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
 				</c:forEach>

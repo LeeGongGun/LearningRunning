@@ -41,15 +41,10 @@ $(function(){
 		          <li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
 		        </ul>
             </li>
-            <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">상담관리<span class="caret"></span></a>
-	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/counselManage">상담관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/teacher/counsel/counselDetail">상담 보기</a></li>
-		        </ul>
-            </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">성적관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/teacher/score/insert">성적관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/counsel">상담관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/score">성적관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/teacher/score/listA">반별성적보기</a></li>
 		          <li><a href="<%=request.getContextPath()%>/teacher/score/listB">개인별성적보기</a></li>
 		        </ul>
@@ -58,10 +53,11 @@ $(function(){
 	            <ul class="dropdown-menu" role="menu">
 		          <li><a href="<%=request.getContextPath()%>/admin/member">member 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/auth">선생,학생권한</a></li>
-		          <li><a href="<%=request.getContextPath()%>/admin/classJoinMem">반-학생,선생 등록</a></li>
-		          <li><a href="<%=request.getContextPath()%>/admin/class">반(과정)관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/admin/curri">커리큘럼관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/curri">과정 관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/class">반(class)관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/classSubject">과목관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/classJoinMem">반-학생,선생 등록</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/exam">시험 관리</a></li>
 		        </ul>
             </li>
 		    <li><a href="<%=request.getContextPath()%>/logout">logout</a></li>

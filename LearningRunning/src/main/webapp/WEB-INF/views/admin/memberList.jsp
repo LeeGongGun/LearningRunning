@@ -63,8 +63,11 @@ $(function(){
 	});
 	$("#searchText").keydown(function(e){
 		if(e.which == 13){
-			getList($("#searchText").val());
+			getList($("#searchText").val().toUpperCase());
 		}
+	});
+	$("#searchBtn").click(function(){
+		getList("");
 	});
 	
 	$(".search-table").on("click",".hover-td",function(){
@@ -218,7 +221,7 @@ $(function(){
 	<div class="search-div form-inline">
 	
 	<button type="button" class="btn btn-primary" id="searchBtn">
-  		검색
+  		모두보기
 	</button>
 	<button type="button" class="btn btn-primary" id="modalOn">
   		입력

@@ -20,9 +20,12 @@ import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.CurriJoinSubject;
 import bean.Curriculum;
+import bean.Exam;
+import bean.ExamJoinSubject;
 import bean.Subject;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
+import command.examCommand;
 import dao.AdminDao;
 
 @Controller
@@ -392,6 +395,96 @@ public class AdminController {
 		return "/ajax/ajaxDefault";
 	}
 
+	@RequestMapping(value = "/admin/exam" , method = RequestMethod.GET)
+	public String examDefault(Model model) {
+		//반 리스트
+		List<Classes> classList = dao.simpleClassList();
+		model.addAttribute("classList",classList);
+		return "/admin/examList";
+	}
+	
+	@RequestMapping(value = "/admin/exam", method = RequestMethod.POST)
+	public String examList(examCommand command,Errors errors, Model model) {
+		List<Exam> counselList = dao.examlList(command);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(counselList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	@RequestMapping(value = "/admin/exam/insert", method = RequestMethod.POST)
+	public String examInsert(Exam command,
+			Errors errors,
+			Model model) {
+		int rs = dao.examInsert(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/exam/edit", method = RequestMethod.POST)
+	public String examEdit(Exam command,
+			Errors errors,
+			Model model) {
+		int rs = dao.examEdit(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/exam/delete", method = RequestMethod.POST)
+	public String examDelete(int exam_id, Model model) {
+		int delOk=0;
+		if(dao.countExamScore(exam_id)==0) delOk = dao.examDelete(exam_id);//점수가 없는경우에만 삭제가능
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}	
+	
+	//examJoinSubject
+	@RequestMapping(value = "/admin/examSubject", method = RequestMethod.POST)
+	public String examSubjectList(int class_id,int exam_id,Model model) {
+		List<ExamJoinSubject> rs = dao.examSubjectList(class_id,exam_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	@RequestMapping(value = "/admin/examSubject/join", method = RequestMethod.POST)
+	public String examJoinSubInsert(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="exam_id") String exam_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int rs = dao.examJoinSubInsert(subject_ids,exam_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/examSubject/cut", method = RequestMethod.POST)
+	public String examJoinSubDelete(
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="exam_id") String exam_id,
+			Model model) {
+		int auth_manager_id = 1;
+		int delOk = dao.examJoinSubDelete(subject_ids,exam_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
 	
 	
 }
