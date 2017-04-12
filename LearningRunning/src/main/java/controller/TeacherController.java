@@ -16,12 +16,15 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.AuthMember;
 import bean.Classes;
 import bean.Counsel;
+import bean.Curriculum;
 import bean.Exam;
+import bean.Score;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
 import command.MemberSearchCommand;
@@ -76,6 +79,7 @@ public class TeacherController {
 		List<AuthMember> listTeacher = dao.authList("teacher");
 		//학생리스트
 		List<AuthMember> listStudent = dao.authList("student");
+		model.addAttribute("counselClasses",counselClasses);
 		model.addAttribute("listTeacher",listTeacher);
 		model.addAttribute("listStudent",listStudent);
 		return "/teacher/counsel";
@@ -97,7 +101,64 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+json+"}");
 		return "/ajax/ajaxDefault";
 	}
-
+	
+	@RequestMapping(value = "/teacher/score", method = RequestMethod.GET)
+	public String examScoreList(Model model) {
+		List<Classes> classList = dao.simpleClassList();
+		model.addAttribute("classList",classList);
+		return "/teacher/scoreList";
+		
+	}
+	@RequestMapping(value = "/teacher/score", method = RequestMethod.POST)
+	public String defaultScoreList(
+			@RequestParam(value="exam_id") Integer exam_id,
+			Model model) {
+		List<Score> scoreList = dao.scoreListByExam(exam_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(scoreList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+		
+	}
+	@RequestMapping(value = "/teacher/score/insert", method = RequestMethod.POST)
+	public String scoreInsert(
+			@RequestParam(value="exam_id[]") List<Integer> exam_ids,
+			@RequestParam(value="m_id[]") List<Integer> m_ids,
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="score[]") List<Integer> scores,
+			Model model) {
+		int rs = dao.scoreInsert(exam_ids,m_ids,subject_ids,scores);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/teacher/score/update", method = RequestMethod.POST)
+	public String scoreUpdate(
+			@RequestParam(value="exam_id[]") List<Integer> exam_ids,
+			@RequestParam(value="m_id[]") List<Integer> m_ids,
+			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
+			@RequestParam(value="score[]") List<Integer> scores,
+			Model model) {
+		int rs = dao.scoreUpdate(exam_ids,m_ids,subject_ids,scores);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/teacher/score/delete", method = RequestMethod.POST)
+	public String scoreDelete(
+			@RequestParam(value="exam_id") Integer exam_id,
+			Model model) {
+		int rs = dao.scoreDelete(exam_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
 	
 	
 }

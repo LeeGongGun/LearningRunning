@@ -9,11 +9,15 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 import bean.AuthMember;
+import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.Counsel;
+import bean.Curriculum;
 import bean.Exam;
+import bean.Score;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
 import command.MemberSearchCommand;
@@ -152,6 +156,86 @@ public class TeacherDao {
 		String sql = "select * from  MEMBER left outer join (select * from MEMBER_AUTH where auth_ename=?) USING(M_ID)  ";
 		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,auth_ename);
 		return result;
+	}
+	private RowMapper<Curriculum> curriRowMapper = new RowMapper<Curriculum>() {
+		@Override
+		public Curriculum mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Curriculum beanCurri = new Curriculum(
+					rs.getInt("CUR_ID"),
+					rs.getString("CUR_NAME")
+				);
+			return beanCurri;
+		}		
+	};
+
+	public List<Curriculum> curriList() {
+		String sql = "select * from CURRICULUM ";
+		List<Curriculum> result = jdbcTemplate.query(sql,curriRowMapper);
+		return result;
+	}
+	public List<Classes> simpleClassList() {
+		String whereSql = "";
+		String sql = "select * "
+				+ "from  CLASSES "
+				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY CLASS_ID)  USING(CLASS_ID) "
+				+ whereSql;
+		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
+		return result;
+	}
+	@Transactional
+	public int scoreInsert(List<Integer> exam_ids, List<Integer> m_ids, List<Integer> subject_ids,
+			List<Integer> scores) {
+		String intoSql = "";
+		
+		for (int i = 0;i<exam_ids.size() ;i++) {
+			intoSql += "into EXAM_SCORE (EXAM_ID,SUBJECT_ID,M_ID,SCORE) "
+					+ "values("+exam_ids.get(i)+","+subject_ids.get(i)+","+m_ids.get(i)+","+scores.get(i)+") ";
+		}
+		int result = jdbcTemplate.update("insert all "+intoSql+" SELECT * FROM DUAL");
+		return result;
+
+	}
+	private RowMapper<Score> scoreRowMapper = new RowMapper<Score>() {
+		@Override
+		public Score mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Score beanscore = new Score(
+					rs.getInt("exam_id"), 
+					rs.getInt("subject_id"), 
+					rs.getInt("m_id"), 
+					rs.getInt("score")
+					);
+			return beanscore;
+		}		
+	};
+
+	
+	public List<Score> scoreListByExam(Integer exam_id) {
+		String whereSql = "where exam_id="+exam_id;
+		String sql = "select * "
+				+ "from  exam_score "
+				+ whereSql;
+		List<Score> result = jdbcTemplate.query(sql,scoreRowMapper);
+		return result;
+		
+	}
+	public int scoreUpdate(List<Integer> exam_ids, List<Integer> m_ids, List<Integer> subject_ids,
+			List<Integer> scores) {
+		int updateOk = 0;
+		for (int i = 0; i < scores.size(); i++) {
+			String sql = "update exam_score set score="+scores.get(i)
+			+" where exam_id="+exam_ids.get(i)
+			+" and subject_id="+subject_ids.get(i)
+			+" and m_id="+m_ids.get(i);
+			updateOk += jdbcTemplate.update(sql);
+		}
+		return updateOk;
+	}
+	public int scoreDelete(Integer exam_id) {
+		return jdbcTemplate.update("DELETE FROM EXAM_SCORE where EXAM_ID = ? ",exam_id);
+	}
+	public List<ClassJoinSubject> examSubjectList(int exam_id) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
