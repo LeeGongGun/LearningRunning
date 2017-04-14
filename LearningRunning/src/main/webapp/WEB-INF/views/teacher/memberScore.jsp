@@ -11,6 +11,7 @@ String rootPath = request.getContextPath();
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%@ include file="/WEB-INF/views/include/head.jsp" %>
+<link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/morris/morris.css">
 
 <title>입력</title>
 <script type="text/javascript">
@@ -18,13 +19,14 @@ $(function(){
 	var members = [];
 	var bar = null;
 	function getMembers(){
+		$class_id = $("#class_select_id");
 		bar = null;
 		members = [];
 			$.ajax({
-		        url:"<%=rootPath%>/admin/classJoinMem",
+		        url:"<%=rootPath%>/admin/classMembers",
 		        type:'post',
 		        data: {
-		        	class_id : $("#class_select_id").val(),
+		        	class_id : $class_id.val(),
 		        	auth_ename : 'student',
 		        	},
 		        success: function(json){
@@ -33,23 +35,27 @@ $(function(){
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
 		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-		        } 
+		        }, 
+		        complete: function(){
+		        	getSubjects();
+		        }
 		        
 		    });
 	}
 	var subjects = [];
-	function getsubjects(){
+	function getSubjects(){
 		bar = null;
 		subjects = [];
 			$.ajax({
-		        url:"<%=rootPath%>/admin/examSubject",
+		        url:"<%=rootPath%>/admin/classSubject",
 		        type:'post',
 		        data: {
-		        	class_id : $("#class_select_id").val(),
-		        	exam_id : $("#exam_select_id").val(),
+		        	class_id : $("#class_select_id").val()
 		        	},
 		        success: function(json){
-		        	subjects = json.data;
+		        	$(json.data).each(function(i,item){
+		        		if(item.class_id>0) subjects.push(item);
+		        	});
 		        },
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
@@ -67,43 +73,36 @@ $(function(){
 		headTag = $("<tr/>");
 		headTag.append("<th class='search-th'><input type=\"text\" class=\"form-control\" id=\"searchText\" name=\"searchText\" placeholder=\"검색\"></th>");
 		$(subjects).each(function(i,item){
-			if(item.exam_id>0) headTag.append("<th>"+item.subject_title.substr(0,6)+"</th>");
+			if(item.class_id>0) headTag.append("<th>"+item.subject_title.substr(0,6)+"</th>");
 		});
 		headTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		headTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
 		$("#sub-table>thead").empty().append(headTag);
 		
-		
 		footTag = $("<tr/>");
 		footTag.append("<th>과목 평균</th>");
 		$(subjects).each(function(i,item){
-			if(item.exam_id>0) footTag.append($("<th/>",{"class":"subAvg-th"}));
+			if(item.class_id>0) footTag.append($("<th/>",{"class":"subAvg-th"}));
 		});
 		footTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		footTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
 		$("#sub-table>tfoot").empty().append(footTag);
 		
-		
 		conTag = $("#sub-table>tbody").empty();
+		
 		$(members).each(function(i,member){
 			if(member.class_id>0){
 				memTag = $("<tr/>",{"class":"list-tr"});
 				memTag.append("<td class='m-name'>"+member.m_name+"</td>");
 				$(subjects).each(function(j,subject){
-					inputTag = $("<input/>",{
-						"class":"score newScore",
-						"type":'number',
-						"step":10,
-						"min":0,
-						"max":100,
-						"data-class_id":$("#class_select_id").val(),
+					inputTag = $("<span/>",{
+						"class":"score",
 						"data-m_id":member.m_id,
-						"data-exam_id":$("#exam_select_id").val(),
 						"data-subject_id":subject.subject_id,
 						
 						//"value":tmp
 					});
-					if(subject.exam_id>0) {
+					if(subject.class_id>0) {
 						memTag.append($("<td/>",{"class":"input-td"}).append(inputTag));
 					}
 				});
@@ -137,34 +136,10 @@ $(function(){
 		$('#myModal').modal();
 
 	});
-	$("#class_select_id").change(getExamList);
-	$("#exam_select_id").change(getsubjects);
+	$("#class_select_id").change(getMembers);
 	
 	
 	
-	function getExamList(){
-		if($("#class_select_id").val()!=""){
-			$.ajax({
-		        url:"<%=rootPath%>/admin/exam",
-		        type:'post',
-		        data: {class_id: $("#class_select_id").val()},
-		        success: function(json){
-		        	conTag = "<option value=\"\">시험을 선택하세요. </option>";
-					$(json.data).each(function(i,item){
-							conTag +="<option value=\""+item.exam_id+"\">"+item.exam_title+"</option>";
-					});
-					$("#exam_select_id").empty().append(conTag);		        		
-		        },
-		        error : function(request, status, error) { 
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-		        } 
-		    });
-		}else{
-			$("#exam_select_id").empty().append("<option value=\"\">시험을 선택하세요. </option>");	
-		}
-		getMembers();			
-
-	}
 	function getTableList(sText){
 		$("#sub-table tbody>tr").each(function(){
 			tr = this;
@@ -186,17 +161,24 @@ $(function(){
 	
 	function getScoreList(){
 		$.ajax({
-	        url:"<%=rootPath%>/teacher/score",
+	        url:"<%=rootPath%>/teacher/memberScore",
 	        type:'post',
 	        data: {
-        		exam_id: $("#exam_select_id").val(),
+        		class_id: $("#class_select_id").val(),
 	        },
 	        success: function(json){			
 	        		$(json.data).each(function(i,item){
-	        			$("#sub-table input[data-exam_id='"+item.exam_id+"']"
-	        			+"[data-m_id='"+item.m_id+"']"
-	        			+"[data-subject_id='"+item.subject_id+"']"
-	        			).val(item.score).attr("data-score",item.score).removeClass("newScore changed");
+	        			$span = $("#sub-table span"
+	    	        			+"[data-m_id='"+item.m_id+"']"
+	    	        			+"[data-subject_id='"+item.subject_id+"']"
+	    	        			);
+	        			console.log($span);
+	        			if($span.text()==""){
+	        				$span.text(item.score).attr("data-exam_id",item.exam_id).attr("data-score",item.score);
+	        			}else{
+	        				$newSpan = $span.clone().attr("data-exam_id",item.exam_id).attr("data-score",item.score);
+	        				$span.parent("td").append($newSpan);
+	        			}
 	        		});
 	        		setSum();
       },
@@ -207,133 +189,22 @@ $(function(){
 	    });
 		
 	}
-	$("#allInsert").click(allInsert);
-	$("#allEdit").click(allEdit);
-	$("#allClear").click(allClear);
-	$("#allDel").click(allDel);
-	function allInsert(){
-		obj = $("#sub-table input.newScore");
-		exam_ids =[];
-		m_ids =[];
-		subject_ids =[];
-		scores =[];
-		obj.each(function(i,item){
-			exam_ids.push($(this).data("exam_id"));
-			m_ids.push($(this).data("m_id"));
-			subject_ids.push($(this).data("subject_id"));
-			scores.push(($(this).val()=="")?0:$(this).val());
-		});
-		if(exam_ids.length>0 
-				&& exam_ids.length == m_ids.length 
-				&& exam_ids.length == subject_ids.length  
-				&& exam_ids.length == scores.length ){
-			$.ajax({
-		        url:"<%=rootPath%>/teacher/score/insert",
-		        type:'post',
-		        data: {
-	        		exam_id: exam_ids,
-		        	m_id: m_ids ,
-		        	subject_id: subject_ids ,
-		        	score: scores ,
-		        	
-		        },
-		        success: function(json){
-		        	alert(json.data+"건 입력하였습니다.");
-		        	getScoreList();
-		        		
-		        },
-		        error : function(request, status, error) { 
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-		        } 
-		        
-		    });
-		}
-	}
-	function allEdit(){
-		obj = $("#sub-table input.changed").not(".newScore");
-		exam_ids =[];
-		m_ids =[];
-		subject_ids =[];
-		scores =[];
-		obj.each(function(i,item){
-			exam_ids.push($(this).attr("data-exam_id"));
-			m_ids.push($(this).attr("data-m_id"));
-			subject_ids.push($(this).attr("data-subject_id"));
-			scores.push(($(this).val()=="")?0:$(this).val());
-		});
-		console.log(exam_ids.length);
-		if(exam_ids.length>0 
-				&& exam_ids.length == m_ids.length 
-				&& exam_ids.length == subject_ids.length  
-				&& exam_ids.length == scores.length ){
-			$.ajax({
-		        url:"<%=rootPath%>/teacher/score/update",
-		        type:'post',
-		        data: {
-	        		exam_id: exam_ids,
-		        	m_id: m_ids ,
-		        	subject_id: subject_ids ,
-		        	score: scores ,
-		        	
-		        },
-		        success: function(json){
-		        	alert(json.data+"건 수정하였습니다.");
-		        	getScoreList();
-		        		
-		        },
-		        error : function(request, status, error) { 
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-		        } 
-		        
-		    });
-		}
-	}
-	function allDel(){
-		obj = $("#sub-table input.score[data-score]");
-		tmp=0;
-		obj.each(function(i,item){
-			tmp++;
-		});
-		console.log(tmp);
-		if(tmp>0){
-			if(confirm(tmp+"건을 삭제하시겠습니까?")){
-				$.ajax({
-			        url:"<%=rootPath%>/teacher/score/delete",
-			        type:'post',
-			        data: {
-		        		exam_id: $("#exam_select_id").val(),		        	
-			        },
-			        success: function(json){
-			        	alert(json.data+"건 삭제하였습니다.");
-			        	setTable();
-			        		
-			        },
-			        error : function(request, status, error) { 
-			            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-			        } 
-			        
-			    });
-			}
-		}
-	}
-	function allClear(){
-		$("#sub-table input.score").val($("#setNum").val()).each(function(){isEqualScore(this)});
-	}
-	function isEqualScore(obj){
-		val = $(obj).val();
-		Rval = $(obj).data("score");
-		if(val!=Rval) $(obj).addClass("changed");
-		else $(obj).removeClass("changed");
-		setSum();
-	}
+
 	function setSum(){
+		gData = [];
+		ykeys = [];
+		labels = [];
 		subAvg = [];
 		subCnt = 0;
 		$("#sub-table tbody>tr").each(function(i,tr){
+			dataRow={y:$(".m-name",tr).text()};
 			
 			sum=0;
 			cnt=0;
-			$("input.score",this).each(function(j,item){
+			$("span.score",this).each(function(j,item){
+				dataRow[subjects[j].subject_id]=Number($(item).val());
+				if(ykeys[j]==null)ykeys.push(subjects[j].subject_id);
+				if(labels[j]==null)labels.push(subjects[j].subject_title);
 				if(subAvg[j]==null){
 					subAvg.push(Number($(item).val()));
 				}else{
@@ -343,16 +214,31 @@ $(function(){
 				cnt++;
 			});
 			avg=(cnt>0)?sum/cnt:0;
-			$(".sum-th",tr).html($("<span/>",{"text":sum}));
+			$(".sum-th",tr).html(sum);
 			$(".avg-th",tr).html(avg.toFixed(2));
 			subCnt++;
+			gData.push(dataRow);
 		});
 		if(subCnt>0){
 			$(subAvg).each(function(i,item){
 				$(".subAvg-th:eq("+i+")").text((subAvg[i]/subCnt).toFixed(2));
 			});
 		}
-
+		if(bar==null){
+			$("#bar-chart").empty();
+			bar = new Morris.Bar({
+		        element: 'bar-chart',
+		        resize: true,
+		        data: gData,
+		        barColors: ['#999999','#245580','#5cb85c','#46b8da','#eea236','#d43f3a'],
+		        xkey: 'y',
+		        ykeys: ykeys,
+		        labels: labels,
+		        hideHover: 'auto'
+		      });
+			}else{
+				bar.setData(gData);
+			}
 
 		}
 });
@@ -364,6 +250,7 @@ $(function(){
 input.score{width: 100%;height: 40px;border: 0px;}
 .search-th{width: 200px}
 td.input-td{padding:0px !important;}
+#sub-table span{display: block;}
 .search-div{ }
 </style>
 </head>
@@ -382,15 +269,7 @@ td.input-td{padding:0px !important;}
  			<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
 		</c:forEach>
 	</select>
-	<select  class="form-control "  name="exam_select_id" id="exam_select_id">
-		<option value="">시험을 선택하세요. </option>
-	</select>
-	
-					<button id="allInsert" class="btn col-sm-3 btn-primary btn-sm">신규 입력</button>
-					<button id="allEdit" class="btn col-sm-3 btn-warning btn-sm">수정</button>
-					<button id="allDel" class="btn col-sm-3 btn-danger  btn-sm">모두 삭제</button>
-					<button id="allClear" class="btn col-sm-3 btn-default  btn-sm">모두<input id="setNum" type="number" min=0 max=100 step=10 value='0' style="width:50px;height: 16px;"/> </button>
-	
+
 	</div>
 	
 <div class="search-table">
@@ -421,6 +300,8 @@ td.input-td{padding:0px !important;}
 
 </div></div>
 <%@ include file="/WEB-INF/views/include/foot.jsp" %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
+<script src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/morris/morris.min.js"></script>
 
 </body>
 </html>

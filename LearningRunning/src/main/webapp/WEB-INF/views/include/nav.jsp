@@ -45,8 +45,7 @@ $(function(){
 	            <ul class="dropdown-menu" role="menu">
 		          <li><a href="<%=request.getContextPath()%>/teacher/counsel">상담관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/teacher/score">성적관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/teacher/score/listA">반별성적보기</a></li>
-		          <li><a href="<%=request.getContextPath()%>/teacher/score/listB">개인별성적보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/teacher/memberScore">개인별성적보기</a></li>
 		        </ul>
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>

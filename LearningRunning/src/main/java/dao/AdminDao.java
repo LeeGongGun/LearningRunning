@@ -213,6 +213,20 @@ public class AdminDao {
 		return result;
 		
 	}
+	public List<ClassJoinMem> classMembers(Integer class_id, String auth_ename) {
+			
+		
+			
+		String sql = " select * from  MEMBER "
+				+ " natural join (select * from member_auth where auth_ename='"+auth_ename+"')"
+				+ " natural join (select * from MEMBER_CLASS where class_id="+class_id+" and AUTH_ENAME='"+auth_ename+"'  ) "
+				+ " natural join classes ";
+		List<ClassJoinMem> result = jdbcTemplate.query(sql,classJoinMemRowMapper);
+		return result;
+		
+	}
+
+	
 	public int classJoinMemInsert(List<Integer> m_ids, String class_id, String auth_ename) {
 		String intoSql = "";
 		if(auth_ename.equals("") || auth_ename==null){

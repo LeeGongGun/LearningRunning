@@ -160,5 +160,34 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 	}
 	
+	@RequestMapping(value = "/teacher/memberScore", method = RequestMethod.GET)
+	public String memberScoreList(Model model) {
+		List<Classes> classList = dao.simpleClassList();
+		model.addAttribute("classList",classList);
+		return "/teacher/memberScore";
+		
+	}
+
+	@RequestMapping(value = "/teacher/memberScore", method = RequestMethod.POST)
+	public String memberScoreList(
+			@RequestParam(value="class_id") Integer class_id,
+			Model model) {
+		List<Score> scoreList = dao.scoreListByClass(class_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(scoreList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+		
+	}
+
 	
 }

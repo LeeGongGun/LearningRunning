@@ -154,6 +154,28 @@ public class AdminController {
 		model.addAttribute("json", "{\"data\": "+json+"}");
 		return "/ajax/ajaxDefault";
 	}
+	
+	@RequestMapping(value = "/admin/classMembers", method = RequestMethod.POST)
+	public String classStudentList(
+			@RequestParam(value="class_id") Integer class_id,
+			Model model) {
+		List<ClassJoinMem> memberList = dao.classMembers(class_id,"student");
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(memberList);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	
 	@RequestMapping(value = "/admin/classJoinMem/insert", method = RequestMethod.POST)
 	public String classJoinMemInsert(
 			@RequestParam(value="m_id[]") List<Integer> m_ids,

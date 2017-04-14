@@ -233,9 +233,12 @@ public class TeacherDao {
 	public int scoreDelete(Integer exam_id) {
 		return jdbcTemplate.update("DELETE FROM EXAM_SCORE where EXAM_ID = ? ",exam_id);
 	}
-	public List<ClassJoinSubject> examSubjectList(int exam_id) {
-		// TODO Auto-generated method stub
-		return null;
+
+	public List<Score> scoreListByClass(Integer class_id) {
+		String sql = "select * from  (select * from exam where class_id="+class_id+")"
+				+ " natural join exam_score ";
+		List<Score> result = jdbcTemplate.query(sql,scoreRowMapper);
+		return result;
 	}
 
 
