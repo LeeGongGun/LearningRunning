@@ -79,7 +79,7 @@ $(function() {
 	from = new Date();
 	from.setMonth(from.getMonth()-1);
 	$("#from")
-	.datetimepicker({
+	.datepicker({
 		language:  'ko',
 		container: "#datepicker-div",
 		format: "yyyy/mm/dd",
@@ -87,9 +87,9 @@ $(function() {
         autoclose: true,
         useCurrent: false,
 	})
-	.datetimepicker("update", from);
+	.datepicker("update", from);
 	$("#to")
-	.datetimepicker({
+	.datepicker({
 		language:  'ko',
 		container: "#datepicker-div",
 		format: "yyyy/mm/dd",
@@ -97,7 +97,7 @@ $(function() {
         autoclose: true,
         useCurrent: false,
 	})
-	.datetimepicker("update", new Date());
+	.datepicker("update", new Date());
 	$("#class_id").change(function(){
 		$.ajax({
 			url:"<%=rootPath%>/attendance/selectStudentList",

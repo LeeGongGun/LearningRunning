@@ -67,7 +67,7 @@ $(function(){
 		headTag = $("<tr/>");
 		headTag.append("<th class='search-th'><input type=\"text\" class=\"form-control\" id=\"searchText\" name=\"searchText\" placeholder=\"검색\"></th>");
 		$(subjects).each(function(i,item){
-			if(item.exam_id>0) headTag.append("<th>"+item.subject_title.substr(0,6)+"</th>");
+			if(item.exam_id>0) headTag.append("<th>"+item.subject_title+"</th>");
 		});
 		headTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		headTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
@@ -404,19 +404,6 @@ td.input-td{padding:0px !important;}
 		</table>
 </div>	
 
-          <div class="box box-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Bar Chart</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div class="box-body chart-responsive">
-              <div class="chart" id="bar-chart" style="height: 300px;"></div>
-            </div>
 
 
 </div></div>

@@ -14,6 +14,15 @@ String rootPath = request.getContextPath();
 <title>입력</title>
 <script type="text/javascript">
 $(function(){
+	$("#class_start,#class_end").datepicker({
+		language:  'ko',
+		container: "#datepicker-div",
+		format: "yyyy-mm-dd",
+		todayHighlight:  true,
+        autoclose: true,
+        useCurrent: false,
+	});
+
 	$("#modalOn").click(function(){
 		clearFrm();
 		$('#myModal').modal("show");
@@ -188,9 +197,9 @@ $(function(){
       	<div class="form-group">
       	 <label for="classStart" class="col-sm-2 control-label">시작,종료</label>
          	<div class="col-sm-10 form-inline">
-         		<input type="date" class="form-control " id="class_start" name="class_start" placeholder="시작일">
+         		<input type="text" class="form-control " id="class_start" name="class_start" placeholder="시작일">
          		-
-         		<input type="date" class="form-control" id="class_end" name="class_end" placeholder="종료일">
+         		<input type="text" class="form-control" id="class_end" name="class_end" placeholder="종료일">
          	</div>
         </div>
       	<div class="form-group ">

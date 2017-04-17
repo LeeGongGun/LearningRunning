@@ -20,13 +20,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.AuthMember;
+import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.Counsel;
 import bean.Curriculum;
 import bean.Exam;
+import bean.ExamJoinSubject;
 import bean.Score;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
+import command.CounselSearchCommand;
 import command.MemberSearchCommand;
 import command.examCommand;
 import dao.LggDao;
@@ -70,22 +73,19 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 	}
 	
-	//member
+	//counsel
 	@RequestMapping(value = "/teacher/counsel" , method = RequestMethod.GET)
 	public String counselDefault(Model model) {
-		//반 리스트
-		List<Classes> counselClasses = dao.counselClasses();
 		//선생님 리스트
-		List<AuthMember> listTeacher = dao.authList("teacher");
+		List<AuthMember> listTeacher = dao.authOnlyList("teacher");
 		//학생리스트
-		List<AuthMember> listStudent = dao.authList("student");
-		model.addAttribute("counselClasses",counselClasses);
+		List<AuthMember> listStudent = dao.authOnlyList("student");
 		model.addAttribute("listTeacher",listTeacher);
 		model.addAttribute("listStudent",listStudent);
 		return "/teacher/counsel";
 	}
 	@RequestMapping(value = "/teacher/counsel", method = RequestMethod.POST)
-	public String counselList(MemberSearchCommand command,Errors errors, Model model) {
+	public String counselList(CounselSearchCommand command,Errors errors, Model model) {
 		List<Counsel> counselList = dao.counselList(command);
 		String json = "";
 		try {
@@ -101,6 +101,47 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+json+"}");
 		return "/ajax/ajaxDefault";
 	}
+	
+	@RequestMapping(value = "/admin/counsel/insert", method = RequestMethod.POST)
+	public String counselInsert(Counsel command,
+			Errors errors,
+			Model model) {
+		int rs = dao.counselInsert(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/counsel/edit", method = RequestMethod.POST)
+	public String counselEdit(Counsel command,
+			Errors errors,
+			Model model) {
+		int rs = dao.counselEdit(command);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		System.out.println(rs);
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/counsel/delete")
+	public String counselDelete(int counsel_id, Model model) {
+		int delOk = dao.counselDelete(counsel_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		return "/ajax/ajaxDefault";
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@RequestMapping(value = "/teacher/score", method = RequestMethod.GET)
 	public String examScoreList(Model model) {
@@ -189,5 +230,22 @@ public class TeacherController {
 		
 	}
 
+	@RequestMapping(value = "/teacher/memberExamSubject", method = RequestMethod.POST)
+	public String memberExamSubjectList(int class_id,Model model) {
+		List<ExamJoinSubject> rs = dao.memberExamSubjectList(class_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
 	
 }

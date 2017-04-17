@@ -14,7 +14,14 @@ String rootPath = request.getContextPath();
 <title>권한 관리</title>
 <script type="text/javascript">
 $(function(){
-
+	$("#auth_end_date").datepicker({
+		language:  'ko',
+		container: "#datepicker-div",
+		format: "yyyy/mm/dd",
+		todayHighlight:  true,
+        autoclose: true,
+        useCurrent: false,
+	});
 	$("#not-members,#auth-members").on("click","tr.list-tr input",function(e){
 		e.preventdefault();
 	});
@@ -179,7 +186,7 @@ $(function(){
   			<option value="teacher">선생님</option>
   			<option value="admin">관리자</option>
   		</select>
-  		<input type="date" class="form-control form-inline" id="auth_end_date" name="auth_end_date" title="관한종료일" placeholder="종료일">
+  		<input type="input" class="form-control form-inline" id="auth_end_date" name="auth_end_date" title="관한종료일" placeholder="종료일">
 	</div>
 <div class="search-table row">
 	<div class="col-sm-5">

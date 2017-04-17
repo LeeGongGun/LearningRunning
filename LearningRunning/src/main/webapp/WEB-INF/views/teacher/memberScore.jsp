@@ -47,14 +47,14 @@ $(function(){
 		bar = null;
 		subjects = [];
 			$.ajax({
-		        url:"<%=rootPath%>/admin/classSubject",
+		        url:"<%=rootPath%>/teacher/memberExamSubject",
 		        type:'post',
 		        data: {
 		        	class_id : $("#class_select_id").val()
 		        	},
 		        success: function(json){
 		        	$(json.data).each(function(i,item){
-		        		if(item.class_id>0) subjects.push(item);
+		        		subjects.push(item);
 		        	});
 		        },
 		        error : function(request, status, error) { 
@@ -73,7 +73,7 @@ $(function(){
 		headTag = $("<tr/>");
 		headTag.append("<th class='search-th'><input type=\"text\" class=\"form-control\" id=\"searchText\" name=\"searchText\" placeholder=\"검색\"></th>");
 		$(subjects).each(function(i,item){
-			if(item.class_id>0) headTag.append("<th>"+item.subject_title.substr(0,6)+"</th>");
+			headTag.append("<th>"+item.subject_title+"</th>");
 		});
 		headTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		headTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
@@ -82,7 +82,7 @@ $(function(){
 		footTag = $("<tr/>");
 		footTag.append("<th>과목 평균</th>");
 		$(subjects).each(function(i,item){
-			if(item.class_id>0) footTag.append($("<th/>",{"class":"subAvg-th"}));
+			footTag.append($("<th/>",{"class":"subAvg-th"}));
 		});
 		footTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		footTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
@@ -91,25 +91,21 @@ $(function(){
 		conTag = $("#sub-table>tbody").empty();
 		
 		$(members).each(function(i,member){
-			if(member.class_id>0){
 				memTag = $("<tr/>",{"class":"list-tr"});
 				memTag.append("<td class='m-name'>"+member.m_name+"</td>");
 				$(subjects).each(function(j,subject){
 					inputTag = $("<span/>",{
 						"class":"score",
+						"data-exam_id":subject.exam_id,
 						"data-m_id":member.m_id,
 						"data-subject_id":subject.subject_id,
-						
 						//"value":tmp
-					});
-					if(subject.class_id>0) {
-						memTag.append($("<td/>",{"class":"input-td"}).append(inputTag));
-					}
+						});
+					memTag.append($("<td/>",{"class":"input-td"}).append(inputTag));
 				});
 				memTag.append($("<th/>",{"class":"sum-th"}));
 				memTag.append($("<th/>",{"class":"avg-th"}));
 				conTag.append(memTag);
-			}
 		});
 		
 		getScoreList();
@@ -169,19 +165,14 @@ $(function(){
 	        success: function(json){			
 	        		$(json.data).each(function(i,item){
 	        			$span = $("#sub-table span"
+	    	        			+"[data-exam_id='"+item.exam_id+"']"
 	    	        			+"[data-m_id='"+item.m_id+"']"
 	    	        			+"[data-subject_id='"+item.subject_id+"']"
 	    	        			);
-	        			console.log($span);
-	        			if($span.text()==""){
-	        				$span.text(item.score).attr("data-exam_id",item.exam_id).attr("data-score",item.score);
-	        			}else{
-	        				$newSpan = $span.clone().attr("data-exam_id",item.exam_id).attr("data-score",item.score);
-	        				$span.parent("td").append($newSpan);
-	        			}
+	        				$span.text(item.score).attr("data-score",item.score);
 	        		});
 	        		setSum();
-      },
+    		},
 	        error : function(request, status, error) { 
 	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
 	        } 
@@ -202,17 +193,23 @@ $(function(){
 			sum=0;
 			cnt=0;
 			$("span.score",this).each(function(j,item){
-				dataRow[subjects[j].subject_id]=Number($(item).val());
-				if(ykeys[j]==null)ykeys.push(subjects[j].subject_id);
-				if(labels[j]==null)labels.push(subjects[j].subject_title);
+				var subject_id = $(item).data("subject_id");
+				var subject = $.grep(subjects, function(element, index) {
+					   return (element.subject_id === subject_id);
+					});
+				subject_title = subject[0].subject_title;
+				if(dataRow[j]==null)dataRow[j]=Number($(item).text());
+				if(ykeys[j]==null)ykeys.push(j);
+				if(labels[j]==null)labels.push(subject_title);
 				if(subAvg[j]==null){
-					subAvg.push(Number($(item).val()));
+					subAvg.push(Number($(item).text()));
 				}else{
-					subAvg[j] += Number($(item).val());
+					subAvg[j] += Number($(item).text());
 				}
-				sum+=Number($(item).val());
+				sum+=Number($(item).text());
 				cnt++;
 			});
+			
 			avg=(cnt>0)?sum/cnt:0;
 			$(".sum-th",tr).html(sum);
 			$(".avg-th",tr).html(avg.toFixed(2));

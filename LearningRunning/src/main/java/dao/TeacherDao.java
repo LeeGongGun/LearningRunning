@@ -17,9 +17,11 @@ import bean.Classes;
 import bean.Counsel;
 import bean.Curriculum;
 import bean.Exam;
+import bean.ExamJoinSubject;
 import bean.Score;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
+import command.CounselSearchCommand;
 import command.MemberSearchCommand;
 import command.examCommand;
 
@@ -131,29 +133,13 @@ public class TeacherDao {
 		return result;
 	}
 	
-	private RowMapper<Counsel> counselRowMapper = new RowMapper<Counsel>() {
-		@Override
-		public Counsel mapRow(ResultSet rs, int rowNum) throws SQLException {
-			Counsel beanMember = new Counsel(
-					rs.getInt("COUNSEL_ID"),
-					rs.getString("COUNSEL_TITLE"),
-					rs.getString("COUNSEL_CONDENT"),
-					rs.getInt("COUNSELOR"),
-					rs.getInt("M_ID"),
-					rs.getDate("COUNSEL_DATE").toString()
-				);
-			return beanMember;
-		}		
-	};
-	
-	
-	public List<Counsel> counselList(MemberSearchCommand command) {
-		String sql = "select * from  COUNSEL  order by COUNSEL_DATE desc ";
-		List<Counsel> result = jdbcTemplate.query(sql,counselRowMapper);
-		return result;
-	}
 	public List<AuthMember> authList(String auth_ename) {
 		String sql = "select * from  MEMBER left outer join (select * from MEMBER_AUTH where auth_ename=?) USING(M_ID)  ";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,auth_ename);
+		return result;
+	}
+	public List<AuthMember> authOnlyList(String auth_ename) {
+		String sql = "select * from  MEMBER natural join (select * from MEMBER_AUTH where auth_ename=?)  ";
 		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,auth_ename);
 		return result;
 	}
@@ -240,6 +226,89 @@ public class TeacherDao {
 		List<Score> result = jdbcTemplate.query(sql,scoreRowMapper);
 		return result;
 	}
+	private RowMapper<ExamJoinSubject> ExamJoinSubjectRowMapper = new RowMapper<ExamJoinSubject>() {
+		@Override
+		public ExamJoinSubject mapRow(ResultSet rs, int rowNum) throws SQLException {
+			ExamJoinSubject beanClasses = new ExamJoinSubject(
+					rs.getInt("exam_id"),
+					rs.getInt("subject_id"),
+					rs.getString("subject_title")
+				);
+			return beanClasses;
+		}		
+	};
+	public List<ExamJoinSubject> memberExamSubjectList(int class_id) {
+		String sql = "select * from "
+				+ "(select * from exam_subject WHERE exam_id in "
+				+ "(select EXAM_ID from exam where class_id=?)) "
+				+ "natural join subjects";
+		List<ExamJoinSubject> result = jdbcTemplate.query(sql,ExamJoinSubjectRowMapper,class_id);
+		return result;
+	}
 
+	
+	//counsel
+	private RowMapper<Counsel> counselRowMapper = new RowMapper<Counsel>() {
+		@Override
+		public Counsel mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Counsel beanMember = new Counsel(
+					rs.getInt("COUNSEL_ID"),
+					rs.getString("COUNSEL_TITLE"),
+					rs.getString("COUNSEL_CONDENT"),
+					rs.getInt("COUNSELOR"),
+					rs.getInt("M_ID"),
+					rs.getDate("COUNSEL_DATE").toString()
+				);
+			return beanMember;
+		}		
+	};
+	
+	
+	public List<Counsel> counselList(CounselSearchCommand command) {
+		String whereSql ="";
+		int tmp=0;
+		if(command.getCounselor()>0){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " counselor = "+command.getCounselor()+" ";
+		}
+		if(command.getM_id()>0){
+			whereSql += (tmp==0)?" where ":" and ";
+			tmp++;
+			whereSql += " m_id = "+command.getM_id()+" ";
+		}
+
+		String sql = "select * from  COUNSEL  order by COUNSEL_DATE desc "+whereSql;
+		List<Counsel> result = jdbcTemplate.query(sql,counselRowMapper);
+		return result;
+	}
+
+	
+	public int counselInsert(Counsel command) {
+		return jdbcTemplate.update(" insert into COUNSEL "
+				+ "(COUNSEL_ID,COUNSEL_TITLE,COUNSEL_CONDENT,COUNSELOR,M_ID,COUNSEL_DATE) "
+				+ " values(SEQUENCE_COUNSEL.NEXTVAL,?,?,?,?,'"
+				+command.getCounsel_date()+"') ",
+				command.getCounsel_title(),command.getCounsel_condent(),command.getCounselor(),command.getM_id()
+				);
+	}
+	public int counselEdit(Counsel command) {
+		return jdbcTemplate.update(" update COUNSEL set "
+				+ "COUNSEL_TITLE=?,"
+				+ "COUNSEL_CONDENT=?,"
+				+ "COUNSELOR=?,"
+				+ "M_ID=?,"
+				+ "COUNSEL_DATE='"+command.getCounsel_date()+"'"
+				+ " where COUNSEL_ID = ? ",
+				command.getCounsel_title(),
+				command.getCounsel_condent(),
+				command.getCounselor(),
+				command.getM_id(),
+				command.getCounsel_id()
+				);
+	}
+	public int counselDelete(int counsel_id) {
+		return jdbcTemplate.update("delete from COUNSEL where CLASS_ID = ? ",counsel_id);
+	}
 
 }

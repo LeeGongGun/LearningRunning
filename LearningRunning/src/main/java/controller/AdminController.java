@@ -18,6 +18,7 @@ import bean.AuthMember;
 import bean.ClassJoinMem;
 import bean.ClassJoinSubject;
 import bean.Classes;
+import bean.Counsel;
 import bean.CurriJoinSubject;
 import bean.Curriculum;
 import bean.Exam;
@@ -427,11 +428,11 @@ public class AdminController {
 	
 	@RequestMapping(value = "/admin/exam", method = RequestMethod.POST)
 	public String examList(examCommand command,Errors errors, Model model) {
-		List<Exam> counselList = dao.examlList(command);
+		List<Exam> examlList = dao.examlList(command);
 		String json = "";
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-			json = ow.writeValueAsString(counselList);
+			json = ow.writeValueAsString(examlList);
 		} catch (JsonGenerationException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -506,7 +507,7 @@ public class AdminController {
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
-	
+
 	
 	
 }
