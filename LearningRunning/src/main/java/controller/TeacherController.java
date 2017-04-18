@@ -44,34 +44,6 @@ public class TeacherController {
 		this.dao = dao;
 	}
 
-	//attendance
-	@RequestMapping(value = "/teacher/attendance/classList", method = RequestMethod.GET)
-	public String attendanceClassesList(Model model) {
-		int teacherId = 2;
-		List<Classes> classList = dao.teachersClasses(teacherId);
-		model.addAttribute("classList", classList );
-		return "/attendance/attendanceInsertClassList";
-	}
-	@RequestMapping(value = "/teacher/attendance/insert/{id}", method = RequestMethod.GET)
-	public String attendanceInsert(@PathVariable("id") int class_id, Model model) {
-		List<TempAttendance> aList = dao.tempAttendanceList(class_id);
-		for (int i = 0; i < aList.size(); i++) {
-			TempAttendance attendance = aList.get(i);
-		}
-		model.addAttribute("aList", aList );
-		return "/attendance/attendanceInsert";
-	}
-	@RequestMapping(value = "/teacher/attendance/insert/{id}", method = RequestMethod.POST)
-	public String attendanceInsertAction(AttendanceInsertCommand command,@PathVariable("id") int class_id, Model model) {
-		String[] tmpArr = command.getAttendanceCheck();
-		int request = 0;
-		if (tmpArr!=null) {
-			request = dao.attendInsert(command,class_id);
-		}
-		model.addAttribute("json", "{\"data\": "+request+"}");
-		
-		return "/ajax/ajaxDefault";
-	}
 	
 	//counsel
 	@RequestMapping(value = "/teacher/counsel" , method = RequestMethod.GET)
@@ -102,7 +74,7 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 	}
 	
-	@RequestMapping(value = "/admin/counsel/insert", method = RequestMethod.POST)
+	@RequestMapping(value = "/teacher/counsel/insert", method = RequestMethod.POST)
 	public String counselInsert(Counsel command,
 			Errors errors,
 			Model model) {
@@ -110,7 +82,7 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/admin/counsel/edit", method = RequestMethod.POST)
+	@RequestMapping(value = "/teacher/counsel/edit", method = RequestMethod.POST)
 	public String counselEdit(Counsel command,
 			Errors errors,
 			Model model) {
@@ -119,29 +91,12 @@ public class TeacherController {
 		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/admin/counsel/delete")
+	@RequestMapping(value = "/teacher/counsel/delete", method = RequestMethod.POST)
 	public String counselDelete(int counsel_id, Model model) {
 		int delOk = dao.counselDelete(counsel_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	@RequestMapping(value = "/teacher/score", method = RequestMethod.GET)
 	public String examScoreList(Model model) {

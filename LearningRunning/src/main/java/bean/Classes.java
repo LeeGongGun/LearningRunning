@@ -11,6 +11,7 @@ public class Classes {
 	Date class_end;
 	String class_state;
 	String class_comment;
+	int cur_id;
 	int student_count;
 	
 	
@@ -21,7 +22,7 @@ public class Classes {
 
 
 	public Classes(int class_id, String class_name, Date class_start, Date class_end, String class_state,
-			String class_comment, int student_count) {
+			String class_comment, int cur_id, int student_count) {
 		super();
 		this.class_id = class_id;
 		this.class_name = class_name;
@@ -29,6 +30,7 @@ public class Classes {
 		this.class_end = class_end;
 		this.class_state = class_state;
 		this.class_comment = class_comment;
+		this.cur_id = cur_id;
 		this.student_count = student_count;
 	}
 
@@ -103,6 +105,16 @@ public class Classes {
 
 	public void setClass_comment(String class_comment) {
 		this.class_comment = class_comment;
+	}
+
+
+	public int getCur_id() {
+		return cur_id;
+	}
+
+
+	public void setCur_id(int cur_id) {
+		this.cur_id = cur_id;
 	}
 
 

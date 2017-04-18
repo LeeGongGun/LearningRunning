@@ -111,9 +111,8 @@ $(function(){
 		$("#insert").text("입력");
 		$("#m_id").val("");
 		$("#m_name").val("");
-		$("#m_pass").val("");
-		$("#m_email").val("");
-		
+		$("#m_pass").val("1234");
+		$("#m_email").val("aaa@naver.com");
 	}
 	function getList(sText){
 		$("#sub-table tbody>tr").each(function(){

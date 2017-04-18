@@ -36,8 +36,8 @@ $(function(){
 		<ul class="nav nav-pills ">
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/teacher/attendance/classList">츨결입력</a></li>
-		          <li><a href="<%=request.getContextPath()%>/attendance/dashboard">반별 출결보기</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/tempAttend">츨결입력</a></li>
+		          <!--<li><a href="<%=request.getContextPath()%>/attendance/dashboard">반별 출결보기</a></li> -->
 		          <li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
 		        </ul>
             </li>

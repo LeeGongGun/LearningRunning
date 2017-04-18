@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.List;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -10,10 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartResolver;
+
+import bean.Attendance;
 import bean.AuthMember;
 import bean.ClassJoinMem;
 import bean.ClassJoinSubject;
@@ -24,8 +28,11 @@ import bean.Curriculum;
 import bean.Exam;
 import bean.ExamJoinSubject;
 import bean.Subject;
+import bean.TempAttendance;
+import command.AttendanceInsertCommand;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
+import command.PersonSearch;
 import command.examCommand;
 import dao.AdminDao;
 
@@ -508,6 +515,105 @@ public class AdminController {
 		return "/ajax/ajaxDefault";
 	}
 
-	
+	@RequestMapping(value = "/attendance/person", method = RequestMethod.GET)
+	public String attendPersonSubListPost(Model model) {
+		boolean isTeacher = false;
+		boolean isAdmin = true;
+		boolean isStudent = false;
+		List<Classes> classesList = null;
+		List<AuthMember> authMembers = null;
+		if(isAdmin) {
+			classesList = dao.simpleClassList();
+			authMembers = dao.authList("student");
+		}
+		model.addAttribute("cList", classesList);
+		model.addAttribute("authMembers", authMembers);
+		return "attendance/attendancePerson";
+	}
+
+
+	@RequestMapping(value = "/attendance/person", method = RequestMethod.POST)
+	public String attendPersonPost(
+			PersonSearch command,
+			Errors errors,
+			Model model) {
+
+		List<Attendance> rs = dao.memberAttendList(command); 
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/attendance/selectStudentList", method = RequestMethod.POST)
+	public String selectStudentList(
+			Integer class_id,
+			Model model) {
+		
+		List<AuthMember> rs = dao.studentList(class_id); 
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+
+	//attendance
+	@RequestMapping(value = "/admin/tempAttend", method = RequestMethod.GET)
+	public String tempAttendanceDefault(Model model) {
+		List<Classes> classList = dao.simpleClassList();
+		model.addAttribute("classList",classList);
+		return "/attendance/attendanceInsert";
+	}
+	@RequestMapping(value = "/admin/tempAttend", method = RequestMethod.POST)
+	public String tempAttendanceList(int class_id,String status, Model model) {
+		
+		
+		List<TempAttendance> rs = (status.toUpperCase().equals("CHECK"))?null:dao.tempAttendanceList(class_id,status); 
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/admin/tempAttend/insert", method = RequestMethod.POST)
+	public String tempAttendInsert(
+			@RequestParam(value="m_id[]") List<Integer> m_ids,
+			@RequestParam(value="class_id") String class_id,
+			@RequestParam(value="status") String status,
+			Model model) {
+		int auth_manager_id = 1;
+		
+		int rs = dao.tempAttendInsert(m_ids,class_id, new Date(System.currentTimeMillis()), status);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
 	
 }

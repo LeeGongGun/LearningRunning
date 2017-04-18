@@ -3,7 +3,10 @@
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<% String fileDir = request.getRealPath("/resources/uploads/"); %>
+<% 
+String fileDir = request.getRealPath("/resources/uploads/");
+String rootPath = request.getContextPath();
+%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,56 +15,140 @@
 <title>입력</title>
 <script type="text/javascript">
 $(function(){
-	$(".search-table").on("change","#allCheck",function(){
-		var allChecked = $(this).is(":checked");
-		$(".attendanceCheck").prop("checked", allChecked);
+	$("#attendDate").datepicker({
+		format: "yyyy/mm/dd",
+		enableOnReadonly: false,
+	}).datepicker('update',new Date());
+	$("#class_select_id,#status").change(function(){
+		getMembers();
 	});
-	$(".search-table").on("click","#btnStart",function(){
-		$("#state").val("start");
-		$("#time").val($("#time").val()+" "+$("#start").val());
-		insertAttend();
-	})
-	.on("click","#btnStop",function(){
-		$("#state").val("stop");
-		$("#time").val($("#time").val()+" "+$("#stop").val());
-		insertAttend();
-	})
-	.on("click","#btnRestart",function(){
-		$("#state").val("restart");
-		$("#time").val($("#time").val()+" "+$("#restart").val());
-		insertAttend();
-	})
-	.on("click","#btnEnd",function(){
-		$("#state").val("end");
-		$("#time").val($("#time").val()+" "+$("#end").val());
-		insertAttend();
-	})
-	$("#attendFrm").submit(function(e){
-		e.preventDefault();//어떤식이든 submit 이벤트는 금지한다
+	var members = [];
+	var attends = [];
+	var $table=$("#temp-attend");
+	$table.on("click","tr.list-tr",function(){
+		trClick("#44b6d9",this);
 	});
-	function insertAttend(){
-		$.ajax({
-	        url:location.href,
-	        type:'post',
-	        data: $("#attendFrm").serialize(),
-	        success: function(json){
-	        	if(json.data > 0) location.reload();
-	        },
-	        error : function(request, status, error) { 
-	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-	        } 
-	        
-	    });
+	$("#con-allCheck").click(function(){
+		$table.find("tbody>tr").each(function(){
+			if($(this).is(':visible')) trClick("#44b6d9",this);
+		});
+	});
+	$("#attendInsertBtn").click(attendInsert);
+	function getMembers(){
+		$class_id = $("#class_select_id");
+		members = [];
+			$.ajax({
+		        url:"<%=rootPath%>/admin/classMembers",
+		        type:'post',
+		        data: {
+		        	class_id : $class_id.val(),
+		        	auth_ename : 'student',
+		        	},
+		        success: function(json){
+		        	members = json.data;
+		        },
+		        error : function(request, status, error) { 
+		        	//alert(okText+"내용을 확인해주세요");
+		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        }, 
+		        complete: function(){
+		        	getTempAttendList();
+		        }
+		        
+		    });
+	}	
+	function getTempAttendList(){
+		$class_id = $("#class_select_id");
+		if($class_id.val()!=""){
+			$.ajax({
+		        url:"<%=rootPath%>/admin/tempAttend",
+		        type:'post',
+		        data: {
+		        	class_id: $class_id.val(),
+		        	status: $("#status").val()
+		        	},
+		        success: function(json){
+		        	authTag = "";
+		        	attends = json.data;
+					$(members).each(function(i,item){
+							authTag +="<tr class='list-tr' data-m_id='"+item.m_id+"'>";
+							authTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"' readonly/></td>";
+							authTag +="<td>"+item.m_name+"("+item.m_email+")</td>";
+							authTag +="</tr>";
+					});
+					$("table#temp-attend>tbody").empty().append(authTag);
+		        		
+		        },
+		        error : function(request, status, error) { 
+		        	//alert(okText+"내용을 확인해주세요");
+		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        }, 
+		        complete: function(){
+		        	setAttend();
+		        }
+		        
+		    });
+		}
 		
 	}
-	
-	function setNow(){
-		d = new Date;
-		$("#today").html(d.toISOString().substring(0,10));
-		$("#time").val(d.toISOString().substring(0,10));
-		$("#start,#end,#stop,#restart").val(d.toString().substring(16,21));
+	function setAttend(){
+		$(attends).each(function(i,item){
+			tr = $table.find("tr[data-m_id='"+item.m_id+"']");
+			trClick("#44b6d9",tr);
+		});
 	}
-	setNow();
+	function getTableList(sText){
+		$table.find("tbody>tr").each(function(){
+			tr = this;
+			sum = 0;
+			$("td",tr).each(function(i){
+				if(i!=0) return true;
+				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
+					sum++;
+				}
+			});
+			if ( sum > 0 ) {
+				$(tr).show();
+			}else{
+				$(tr).hide();
+			}
+		});
+	}
+	function trClick(color,obj){
+		chkbox = $("input[name='m_id']",obj);
+		chkbox.prop("checked", !chkbox.is(":checked"));
+		if(chkbox.is(":checked")){
+			$(obj).css("background-color",color);
+		}else{
+			$(obj).css("background-color","#fff");
+		}
+	}
+	function attendInsert(){
+		obj = $table.find("input[name='m_id']:checked");
+		arr =[];
+		obj.each(function(i){
+			arr.push($(this).val());
+		});
+		if(arr.length>0){
+			$.ajax({
+		        url:"<%=rootPath%>/admin/tempAttend/insert",
+		        type:'post',
+		        data: {
+		        		m_id : arr,
+		        		class_id : $class_id.val(),
+		        		status : $("#status").val(),
+		        	},
+		        success: function(json){
+		        	if(json.data>0) getTempAttendList();
+		        },
+		        error : function(request, status, error) { 
+		        	//alert(okText+"내용을 확인해주세요");
+		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		        
+		    });
+		}		
+	}
 });
 </script>
 <style type="text/css">
@@ -70,52 +157,44 @@ $(function(){
 </head>
 <body>
 <%@ include file="/WEB-INF/views/include/nav.jsp" %>
-<div id="datepicker-div"></div>
 <div class="main"><div class="main-div">
 	<h3 class="sub-title">출결 수정</h3> <span id="today"></span>
+	<div class="search-div form-inline">
+		<form id="searchFrm">
+			<select  class="form-control "  name="status" id="status">
+				<option value="START">출석 </option>
+				<option value="END">퇴교 </option>
+				<option value="STOP">외출 </option>
+				<option value="RESTART">복귀 </option>
+				<option value="CHECK">중간확인 </option>
+			</select>
+			<select  class="form-control "  name="class_id" id="class_select_id">
+				<option value="">반을 선택하세요. </option>
+				<c:forEach var="classes" items="${classList}">
+	  			<option value="${classes.class_id }">${classes.class_name}</option>
+				</c:forEach>
+			</select>
+			<input type="text" class="form-control " name="attendDate" id="attendDate" readonly>
+	<button type="button" class="btn btn-primary" id="attendInsertBtn">
+  		입력
+	</button>
+	</form>
+	</div>
+
+
 <div class="search-table">
 	<form:form id="attendFrm" class="form-inline" enctype="multipart/form-data">
 		<input type="hidden" id="state" name="state">
 		<input type="hidden" id="time" name="time">
-		<table  class="table table-striped table-bordered" cellspacing="0" width="100%">
+		<table  class="table table-striped table-bordered" cellspacing="0" width="100%" id="temp-attend">
 			<thead>
 			<tr>
 
-				<th class="m_no">
-					<label class="switch">
-					  <input type="checkbox" id="allCheck"/><div class="slider round"></div>
-					</label>
-				</th>
-				<th>학생명</th>
-				<th><button class="btn btn-default" id="btnStart">입실</button><input type="time" id="start" class="form-control"  /></th>
-				<th><button class="btn btn-default" id="btnStop">조퇴,외출</button><input type="time" id="stop" class="form-control" /></th>
-				<th><button class="btn btn-default" id="btnRestart">제입실</button><input type="time" id="restart" class="form-control"  /></th>
-				<th><button class="btn btn-default" id="btnEnd">퇴실</button><input type="time" id="end" class="form-control"  /></th>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="con-allCheck">반전하기</a></th>
+				<th colspan="2"><input type="text" id="not-search" class="form-control" placeholder="이름,email 검색"></th>
 			</tr>
 			</thead>
 			<tbody>
-			<c:forEach var="attendance" items="${aList}">
-				<tr>
-					<td>
-						<label class="switch">
-							<input type="checkbox" class="attendanceCheck" name="attendanceCheck" value="${attendance.m_id}"/><div class="slider round"></div>
-						</label>
-					</td>
-					<td>${attendance.m_name}</td>
-					<td>
-						${(empty attendance.start_time)?"":fn:substring(attendance.start_time, 5, 16)}
-					</td>
-					<td>
-						${(empty attendance.stop_time)?"":fn:substring(attendance.stop_time, 5, 16)}
-					</td>
-					<td>
-						${(empty attendance.restart_time)?"":fn:substring(attendance.restart_time, 5, 16)}
-					</td>
-					<td>
-						${(empty attendance.end_time)?"":fn:substring(attendance.end_time, 5, 16)}
-					</td>
-				</tr>
-			</c:forEach>
 			</tbody>
 		</table>
   	</form:form>

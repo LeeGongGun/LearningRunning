@@ -41,9 +41,9 @@ $(function(){
 		});
 		okText = "입력";
 		if(mode=='insert'){
-			frm.attr("action","<%=rootPath%>/admin/counsel/insert");
+			frm.attr("action","<%=rootPath%>/teacher/counsel/insert");
 		}else if(mode=="edit"){
-			frm.attr("action","<%=rootPath%>/admin/counsel/edit");
+			frm.attr("action","<%=rootPath%>/teacher/counsel/edit");
 			okText = "수정";
 			
 		}else{
@@ -76,7 +76,6 @@ $(function(){
 		}
 	});
 	$("#searchBtn").click(function(){
-		$("#class_select_id").val("");
 		getCounselList();
 	});
 	$(".search-table").on("click",".hover-td",function(){
@@ -96,16 +95,16 @@ $(function(){
 
 	});
 	$(".search-table").on("click",".delBtn",function(){
-		sId = $(this).parents("tr").find("td:eq(1)").text()
+		sId = $(this).parents("tr").find("td:eq(2)").text()
 			+"("
-			+$(this).parents("tr").find("td:eq(2)").text()
+			+$(this).parents("tr").find("td:eq(0)").text()
 			+")";
-			del_id = $(this).data("exam_id");
-		if(confirm(sId+"님을 삭제하시겠습니까?")){
+			del_id = $(this).data("counsel_id");
+		if(confirm(sId+"님 상담내역을 삭제하시겠습니까?")){
 			$.ajax({
-		        url:"<%=rootPath%>/admin/exam/delete",
+		        url:"<%=rootPath%>/teacher/counsel/delete",
 		        type:'post',
-		        data: {exam_id: del_id},
+		        data: {counsel_id: del_id},
 		        success: function(json){
 		        	if(json.data>0) {
 		        		alert("삭제성공하였습니다.");
@@ -136,7 +135,7 @@ $(function(){
 			tr = this;
 			sum = 0;
 			$("td",tr).each(function(i){
-				if( i!=1 && i!=2 ) return true;
+				if( i!=1 && i!=2 && i!=3 ) return true;
 				if ( $(this).text().toUpperCase().indexOf(sText) > -1 ) {
 					sum++;
 				}
@@ -151,6 +150,8 @@ $(function(){
 	
 	
 	function getCounselList(){
+		$counselor = $("#select_counselor");
+		$student = $("#m_select_id");
 		$.ajax({
 	        url:"<%=rootPath%>/teacher/counsel",
 	        type:'post',
@@ -158,12 +159,15 @@ $(function(){
 	        success: function(json){
 	        	conTag = "";
 				$(json.data).each(function(i,item){
-						conTag +="<tr data-class_id='"+item.class_id+"'>";
-						conTag +="<td>"+item.exam_id+"</td>";
-						conTag +="<td>"+item.class_name+"</td>";
-						conTag +="<td class=\"hover-td\"><a href=\"javascript:\" >"+item.exam_title+"</a></td>";
-						conTag +="<td>"+item.exam_date+"</td>";
-						conTag +="<td><button class=\"delBtn\" data-exam_id=\""+item.exam_id+"\">삭제</button></td>";
+						conTag +="<tr data-counsel_id='"+item.counsel_id+"'>";
+						conTag +="<td>"+item.counsel_id+"</td>";
+						counselor = $counselor.find("[value='"+item.counselor+"']").text();
+						conTag +="<td>"+counselor+"</td>";
+						student = $student.find("[value='"+item.m_id+"']").text();
+						conTag +="<td>"+student+"</td>";
+						conTag +="<td class=\"hover-td\"><a href=\"javascript:\" >"+item.counsel_title+"</a></td>";
+						conTag +="<td>"+item.counsel_date+"</td>";
+						conTag +="<td><button class=\"delBtn\" data-counsel_id=\""+item.counsel_id+"\">삭제</button></td>";
 						conTag +="</tr>";
 				});
 				$("table#sub-table>tbody").empty().append(conTag);
@@ -179,7 +183,8 @@ $(function(){
 	        
 	    });
 		
-	}	
+	}
+	getCounselList();
 });
 </script>
 <style type="text/css">
@@ -272,7 +277,7 @@ $(function(){
 			</select>
 	
 	<button type="button" class="btn btn-primary" id="searchBtn">
-  		모두보기
+  		검색
 	</button>
 	<button type="button" class="btn btn-primary" id="modalOn">
   		입력

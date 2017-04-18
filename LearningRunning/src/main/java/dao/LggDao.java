@@ -38,6 +38,7 @@ public class LggDao{
 						rs.getDate("CLASS_END"),
 						rs.getString("CLASS_STATE"),
 						rs.getString("CLASS_COMMENT"),
+						rs.getInt("CUR_ID"),
 						rs.getInt("STUDENT_COUNT")
 					);
 				return beanClasses;
@@ -91,6 +92,7 @@ public class LggDao{
 						rs.getDate("CLASS_END"),
 						rs.getString("CLASS_STATE"),
 						rs.getString("CLASS_COMMENT"),
+						rs.getInt("CUR_ID"),
 						0
 					);
 				return beanClasses;				
