@@ -1,20 +1,84 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<% 
-String fileDir = request.getRealPath("/resources/uploads/");
-String rootPath = request.getContextPath();
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%
+	String fileDir = request.getRealPath("/resources/uploads/");
+	String rootPath = request.getContextPath();
 %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
-<link rel="stylesheet" href="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/morris/morris.css">
+<title>Insert title here</title>
+<%@ include file="/WEB-INF/views/include/html-head.jsp"%>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+	<div class="wrapper">
+		<%@ include file="/WEB-INF/views/include/html-header.jsp"%>
+		<%@ include file="/WEB-INF/views/include/html-leftMenuBar.jsp"%>
+		<%@ include file="/WEB-INF/views/include/html-js.jsp"%>
+		<div class="content-wrapper">
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<h1>
+					개인별 성적보기 <small>개인별 성적보기</small>
+				</h1>
+				<ol class="breadcrumb">
+					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+					<li class="active">개인별 성적보기</li>
+				</ol>
+			</section>
+			<section class="content">
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="box box-success form-inline">
+							<select class="form-control " name="class_select_id"
+								id="class_select_id">
+								<option value="">반을 선택하세요.</option>
+								<c:forEach var="classes" items="${classList}">
+									<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
+								</c:forEach>
+							</select>
 
-<title>입력</title>
-<script type="text/javascript">
+						</div>
+						<div class="box box-primary">
+							<table class="table table-bordered" id="sub-table">
+								<thead>
+									<tr>
+										<th class="search-th"><input type="text" class="form-control" id="searchText" name="searchText" placeholder="검색"></th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+								<tfoot>
+								</tfoot>
+							</table>
+						</div>
+						<div class="box box-primary chart-responsive">
+							<div class="chart" id="bar-chart" style="height: 300px;"></div>
+						</div>
+
+					</div>
+				</div>
+			</section>
+		</div>
+
+
+		<%@ include file="/WEB-INF/views/include/html-footer.jsp"%>
+		<%@ include file="/WEB-INF/views/include/html-rightAside.jsp"%>
+		<script type="text/javascript">
+$.AdminLTE.dinamicMenu = function() {
+    var url = window.location;
+    // Will only work if string in href matches with location
+    $('.treeview-menu li a[href="' + url.pathname + '"]').parent().addClass('active');
+    // Will also work for relative and absolute hrefs
+    $('.treeview-menu li a').filter(function() {
+        return this.href == url;
+    }).parent().parent().parent().addClass('active');
+};  
+$.AdminLTE.dinamicMenu();
+</script>
+		<script type="text/javascript">
 $(function(){
 	var members = [];
 	var bar = null;
@@ -158,147 +222,123 @@ $(function(){
 	function getScoreList(){
 		$.ajax({
 	        url:"<%=rootPath%>/teacher/memberScore",
-	        type:'post',
-	        data: {
-        		class_id: $("#class_select_id").val(),
-	        },
-	        success: function(json){			
-	        		$(json.data).each(function(i,item){
-	        			$span = $("#sub-table span"
-	    	        			+"[data-exam_id='"+item.exam_id+"']"
-	    	        			+"[data-m_id='"+item.m_id+"']"
-	    	        			+"[data-subject_id='"+item.subject_id+"']"
-	    	        			);
-	        				$span.text(item.score).attr("data-score",item.score);
-	        		});
-	        		setSum();
-    		},
-	        error : function(request, status, error) { 
-	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-	        } 
-	        
-	    });
-		
-	}
+						type : 'post',
+						data : {
+							class_id : $("#class_select_id").val(),
+						},
+						success : function(json) {
+							$(json.data).each(
+									function(i, item) {
+										$span = $("#sub-table span"
+												+ "[data-exam_id='"
+												+ item.exam_id + "']"
+												+ "[data-m_id='" + item.m_id
+												+ "']" + "[data-subject_id='"
+												+ item.subject_id + "']");
+										$span.text(item.score).attr(
+												"data-score", item.score);
+									});
+							setSum();
+						},
+						error : function(request, status, error) {
+							alert("code : " + request.status + "\r\nmessage : "
+									+ request.reponseText);
+						}
 
-	function setSum(){
-		gData = [];
-		ykeys = [];
-		labels = [];
-		subAvg = [];
-		subCnt = 0;
-		$("#sub-table tbody>tr").each(function(i,tr){
-			dataRow={y:$(".m-name",tr).text()};
-			
-			sum=0;
-			cnt=0;
-			$("span.score",this).each(function(j,item){
-				var subject_id = $(item).data("subject_id");
-				var subject = $.grep(subjects, function(element, index) {
-					   return (element.subject_id === subject_id);
 					});
-				subject_title = subject[0].subject_title;
-				if(dataRow[j]==null)dataRow[j]=Number($(item).text());
-				if(ykeys[j]==null)ykeys.push(j);
-				if(labels[j]==null)labels.push(subject_title);
-				if(subAvg[j]==null){
-					subAvg.push(Number($(item).text()));
-				}else{
-					subAvg[j] += Number($(item).text());
+
 				}
-				sum+=Number($(item).text());
-				cnt++;
+
+				function setSum() {
+					gData = [];
+					ykeys = [];
+					labels = [];
+					subAvg = [];
+					subCnt = 0;
+					$("#sub-table tbody>tr")
+							.each(
+									function(i, tr) {
+										dataRow = {
+											y : $(".m-name", tr).text()
+										};
+
+										sum = 0;
+										cnt = 0;
+										$("span.score", this)
+												.each(
+														function(j, item) {
+															var subject_id = $(
+																	item)
+																	.data(
+																			"subject_id");
+															var subject = $
+																	.grep(
+																			subjects,
+																			function(
+																					element,
+																					index) {
+																				return (element.subject_id === subject_id);
+																			});
+															subject_title = subject[0].subject_title;
+															if (dataRow[j] == null)
+																dataRow[j] = Number($(
+																		item)
+																		.text());
+															if (ykeys[j] == null)
+																ykeys.push(j);
+															if (labels[j] == null)
+																labels
+																		.push(subject_title);
+															if (subAvg[j] == null) {
+																subAvg
+																		.push(Number($(
+																				item)
+																				.text()));
+															} else {
+																subAvg[j] += Number($(
+																		item)
+																		.text());
+															}
+															sum += Number($(
+																	item)
+																	.text());
+															cnt++;
+														});
+
+										avg = (cnt > 0) ? sum / cnt : 0;
+										$(".sum-th", tr).html(sum);
+										$(".avg-th", tr).html(avg.toFixed(2));
+										subCnt++;
+										gData.push(dataRow);
+									});
+					if (subCnt > 0) {
+						$(subAvg).each(
+								function(i, item) {
+									$(".subAvg-th:eq(" + i + ")").text(
+											(subAvg[i] / subCnt).toFixed(2));
+								});
+					}
+					if (bar == null) {
+						$("#bar-chart").empty();
+						bar = new Morris.Bar({
+							element : 'bar-chart',
+							resize : true,
+							data : gData,
+							barColors : [ '#999999', '#245580', '#5cb85c',
+									'#46b8da', '#eea236', '#d43f3a' ],
+							xkey : 'y',
+							ykeys : ykeys,
+							labels : labels,
+							hideHover : 'auto'
+						});
+					} else {
+						bar.setData(gData);
+					}
+
+				}
 			});
-			
-			avg=(cnt>0)?sum/cnt:0;
-			$(".sum-th",tr).html(sum);
-			$(".avg-th",tr).html(avg.toFixed(2));
-			subCnt++;
-			gData.push(dataRow);
-		});
-		if(subCnt>0){
-			$(subAvg).each(function(i,item){
-				$(".subAvg-th:eq("+i+")").text((subAvg[i]/subCnt).toFixed(2));
-			});
-		}
-		if(bar==null){
-			$("#bar-chart").empty();
-			bar = new Morris.Bar({
-		        element: 'bar-chart',
-		        resize: true,
-		        data: gData,
-		        barColors: ['#999999','#245580','#5cb85c','#46b8da','#eea236','#d43f3a'],
-		        xkey: 'y',
-		        ykeys: ykeys,
-		        labels: labels,
-		        hideHover: 'auto'
-		      });
-			}else{
-				bar.setData(gData);
-			}
-
-		}
-});
-</script>
-<style type="text/css">
-.hover-td{cursor: pointer;}
-.changed{background-color: Yellow}
-.newScore{background-color: #b0eaff;}
-input.score{width: 100%;height: 40px;border: 0px;}
-.search-th{width: 200px}
-td.input-td{padding:0px !important;}
-#sub-table span{display: block;}
-.search-div{ }
-</style>
-</head>
-<body>
-<%@ include file="/WEB-INF/views/include/nav.jsp" %>
-<!-- Button trigger modal -->
-
-
-
-<div class="main"><div class="main-div">
-	<h3 class="sub-title">score 관리</h3>
-	<div class="search-div">
-	<select  class="form-control "  name="class_select_id" id="class_select_id">
-		<option value="">반을 선택하세요. </option>
-		<c:forEach var="classes" items="${classList}">
- 			<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
-		</c:forEach>
-	</select>
+		</script>
 
 	</div>
-	
-<div class="search-table">
-		<table  class="table table-striped table-bordered table-hover" id="sub-table" cellspacing="0" width="100%">
-			<thead>
-			</thead>
-			<tbody>
-			</tbody>
-			<tfoot>
-			</tfoot>
-		</table>
-</div>	
-
-          <div class="box box-success">
-            <div class="box-header with-border">
-              <h3 class="box-title">Bar Chart</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-              </div>
-            </div>
-            <div class="box-body chart-responsive">
-              <div class="chart" id="bar-chart" style="height: 300px;"></div>
-            </div>
-
-
-</div></div>
-<%@ include file="/WEB-INF/views/include/foot.jsp" %>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-<script src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/morris/morris.min.js"></script>
-
 </body>
 </html>

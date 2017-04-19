@@ -12,23 +12,6 @@ $(function(){
 
 		}
 	});
-	/*
-	var img_array = [1, 2, 3, 4, 5],
-    interval = 7000;
-	 var i = 0;
-	 $bg=$(".VideoPane-bg");
-	 $bg.css("background-image", "url(<%=request.getContextPath()%>/images/background_img" + img_array[i] + ".jpg)");
-        setInterval(function () {
-            i++;
-            if (i == img_array.length) {
-                i = 0;
-            }
-            $bg.fadeOut("slow", function () {
-                $(this).css("background-image", "url(<%=request.getContextPath()%>/images/background_img" + img_array[i] + ".jpg)");
-                $(this).fadeIn("slow"); // 1000 = 1초
-            });
-        }, interval);
-	*/	
 });
 </script>
 <div id="datepicker-div"></div>	
@@ -37,7 +20,7 @@ $(function(){
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">츨결관리<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
 		          <li><a href="<%=request.getContextPath()%>/admin/tempAttend">츨결입력</a></li>
-		          <!--<li><a href="<%=request.getContextPath()%>/attendance/dashboard">반별 출결보기</a></li> -->
+		          <li><a href="<%=request.getContextPath()%>/attendance/dashboard">반별 출결보기</a></li>
 		          <li><a href="<%=request.getContextPath()%>/attendance/person">개인별 출결보기</a></li>
 		        </ul>
             </li>
@@ -50,11 +33,11 @@ $(function(){
             </li>
             <li role="presentation" class="dropdown"><a href="#"  data-toggle="dropdown" role="button" aria-expanded="false">관리자<span class="caret"></span></a>
 	            <ul class="dropdown-menu" role="menu">
-		          <li><a href="<%=request.getContextPath()%>/admin/member">member 관리</a></li>
-		          <li><a href="<%=request.getContextPath()%>/admin/auth">선생,학생권한</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/curri">과정 관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/class">반(class)관리</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/classSubject">과목관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/member">member 관리</a></li>
+		          <li><a href="<%=request.getContextPath()%>/admin/auth">선생,학생권한</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/classJoinMem">반-학생,선생 등록</a></li>
 		          <li><a href="<%=request.getContextPath()%>/admin/exam">시험 관리</a></li>
 		        </ul>

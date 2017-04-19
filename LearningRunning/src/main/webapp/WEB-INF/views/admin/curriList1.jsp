@@ -9,132 +9,9 @@ String rootPath = request.getContextPath();
 <!DOCTYPE html>
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%@ include file="/WEB-INF/views/include/head.jsp" %>
 <title>과정 입력</title>
-<%@ include file="/WEB-INF/views/include/html-head.jsp"%>
-</head>
-<body class="hold-transition skin-blue sidebar-mini">
-<div class="wrapper">
-<%@ include file="/WEB-INF/views/include/html-header.jsp"%>
-<%@ include file="/WEB-INF/views/include/html-leftMenuBar.jsp"%>
-<%@ include file="/WEB-INF/views/include/html-js.jsp"%>
-		<div class="content-wrapper">
-			<!-- Content Header (Page header) -->
-			<section class="content-header">
-				<h1>
-					과정 입력 <small>과정 입력</small>
-				</h1>
-				<ol class="breadcrumb">
-					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li class="active">과정 입력</li>
-				</ol>
-			</section>
-			<section class="content">
-				<div class="row">
-					<div class="col-xs-12">
-						<div class="box box-success form-inline">
-							<select name="cur_select_id" id="cur_select_id">
-								<option value="">과정을 선택하세요.</option>
-							</select>
-							<button type="button" class="btn btn-primary" id="delBtn">
-								과정삭제</button>
-							<button type="button" class="btn btn-default" id="editBtn">
-								과정수정</button>
-							<button type="button" class="btn btn-default" id="modalOn">
-								과정입력</button>
-						</div>
-					</div>
-					<div class="col-sm-5">
-						<div class="box box-info">
-						<table class="table table-bordered"
-							 id="not-surbjects">
-							<thead>
-								<tr>
-
-									<th><a href="javascript:;" class="btn btn-default btn-sm"
-										id="not-allCheck">반전하기</a></th>
-									<th><input type="text" id="not-search"
-										class="form-control" placeholder="이름검색"></th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
-						</div>
-					</div>
-					<div class="col-sm-2">
-						<button class="btn btn-info btn-block" id="btnInsert">
-							입력 <span class="glyphicon glyphicon-arrow-right"
-								aria-hidden="true"></span>
-						</button>
-						<br />
-						<button class="btn btn-warning btn-block" id="btnDel">
-							<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-							삭제
-						</button>
-					</div>
-					<div class="col-sm-5">
-					<div class="box box-warning">
-						<table class="table table-bordered" id="con-surbjects">
-							<thead>
-								<tr>
-									<th><a href="javascript:;" class="btn btn-default btn-sm"
-										id="con-allCheck">반전하기</a></th>
-									<th><input type="text" id="con-search"
-										class="form-control" placeholder="이름검색"></th>
-								</tr>
-							</thead>
-							<tbody>
-							</tbody>
-						</table>
-						</div>
-					</div>
-
-				</div>
-			</section>
-		</div>
-
-
-<%@ include file="/WEB-INF/views/include/html-footer.jsp"%>
-<%@ include file="/WEB-INF/views/include/html-rightAside.jsp"%>
-<!-- Modal -->
-<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">과정 입력</h4>
-      </div>
-      <div class="modal-body" style="min-height: 150px">
-      <form:form commandName="command" id="editFrm">
-      	<input  type="hidden" id="mode" value="insert">
-      	<div class="form-group">
-      	 	<label for="cur_id" class="col-sm-2 control-label">과정명</label>
-         	<div class="col-sm-10">
-         		<input type="hidden" class="form-control" id="cur_id" name="cur_id" placeholder="아이디">
-         		<input type="text" class="form-control" id="cur_name" name="cur_name" placeholder="과정명" required="required">
-         	</div>
-        </div>
-        </form:form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="insert">입력</button>
-      </div>
-    </div>
-  </div>
-</div>
-<script type="text/javascript">
-$.AdminLTE.dinamicMenu = function() {
-    var url = window.location;
-    // Will only work if string in href matches with location
-    $('.treeview-menu li a[href="' + url.pathname + '"]').parent().addClass('active');
-    // Will also work for relative and absolute hrefs
-    $('.treeview-menu li a').filter(function() {
-        return this.href == url;
-    }).parent().parent().parent().addClass('active');
-};  
-$.AdminLTE.dinamicMenu();
-</script>
 <script type="text/javascript">
 $(function(){
 	$("#modalOn").click(function(){
@@ -412,6 +289,93 @@ $(function(){
 	getCurriList();
 });
 </script>
+<style type="text/css">
+.hover-td{cursor: pointer;}
+</style>
+</head>
+<body>
+<%@ include file="/WEB-INF/views/include/nav.jsp" %>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">과정 입력</h4>
+      </div>
+      <div class="modal-body" style="min-height: 150px">
+      <form:form commandName="command" id="editFrm">
+      	<input  type="hidden" id="mode" value="insert">
+      	<div class="form-group">
+      	 	<label for="cur_id" class="col-sm-2 control-label">과정명</label>
+         	<div class="col-sm-10">
+         		<input type="hidden" class="form-control" id="cur_id" name="cur_id" placeholder="아이디">
+         		<input type="text" class="form-control" id="cur_name" name="cur_name" placeholder="과정명" required="required">
+         	</div>
+        </div>
+        </form:form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="insert">입력</button>
+      </div>
+    </div>
+  </div>
 </div>
+<div class="main"><div class="main-div">
+	<div>
+		<h3 class="sub-title">과정 관리</h3>
+		<div class="search-div form-inline">
+			<select name="cur_select_id" id="cur_select_id">
+				<option value="">과정을 선택하세요.</option>
+			</select>
+			<button type="button" class="btn btn-primary" id="delBtn">
+		  		과정삭제
+			</button>
+			<button type="button" class="btn btn-default" id="editBtn">
+		  		과정수정
+			</button>
+			<button type="button" class="btn btn-default" id="modalOn">
+		  		과정입력
+			</button>
+		</div>
+	</div>
+<div class="search-table row">
+	<div class="col-sm-5">
+		<table  class="table table-striped table-bordered col-sm-12" cellspacing="0" width="100%" id="not-surbjects">
+			<thead>
+			<tr>
+
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="not-allCheck">반전하기</a></th>
+				<th><input type="text" id="not-search" class="form-control" placeholder="이름검색"></th>
+			</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+	<div class="col-sm-2">
+		<button class="btn btn-info btn-block" id="btnInsert">입력  <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span></button><br/>
+		<button class="btn btn-warning btn-block" id="btnDel"><span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>  삭제</button>
+	</div>
+	<div class="col-sm-5">
+		<table  class="table table-striped table-bordered col-sm-12"  id="con-surbjects">
+			<thead>
+			<tr>
+				<th><a href="javascript:;" class="btn btn-default btn-sm" id="con-allCheck">반전하기</a></th>
+				<th><input type="text" id="con-search" class="form-control" placeholder="이름검색"></th>
+			</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+	</div>
+</div>	
+</div>
+</div>
+<%@ include file="/WEB-INF/views/include/foot.jsp" %>
 </body>
 </html>

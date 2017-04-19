@@ -8,7 +8,6 @@ public class AuthMember {
 	String m_name;
 	String m_pass;
 	String auth_ename;
-	String m_img;
 	boolean m_app_u_no;
 	
 	

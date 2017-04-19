@@ -297,6 +297,7 @@ public class AdminDao {
 	
 	@Transactional
 	public int memberDelete(int m_id) {
+		jdbcTemplate.update("DELETE FROM MEMBER_AUTH WHERE M_ID = ? ",m_id);
 		jdbcTemplate.update("DELETE FROM MEMBER_CLASS WHERE M_ID = ? ",m_id);
 		return jdbcTemplate.update("DELETE FROM MEMBER WHERE M_ID = ? ",m_id);
 	}
