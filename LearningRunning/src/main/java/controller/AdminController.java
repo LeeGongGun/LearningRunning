@@ -1,8 +1,15 @@
 package controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.Time;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -15,6 +22,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.Attendance;
@@ -59,7 +69,6 @@ public class AdminController {
 			Model model) {
 		int rs = dao.classEdit(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
-		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/admin/class/delete")
@@ -233,6 +242,29 @@ public class AdminController {
 	public String memberInsert(AuthMember command,
 			Errors errors,
 			Model model) {
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		MultipartFile multi = command.getM_file();
+		String newFileName = "";
+		System.out.println(multi);
+		if( multi!= null && !multi.isEmpty()){
+			String fileName = multi.getOriginalFilename(); 
+			newFileName= System.currentTimeMillis()+"_"+fileName;
+			Set<String> pathSet = request.getSession().getServletContext().getResourcePaths("/");
+			
+			String path = request.getRealPath("/resources/uploads/")+"m_image/"+newFileName;
+			System.out.println();
+			try {
+				File file =  new File(path);
+				multi.transferTo(file);
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			command.setM_image(newFileName);
+		}
+
+		
 		int rs = dao.memberInsert(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -243,12 +275,10 @@ public class AdminController {
 			Model model) {
 		int rs = dao.memberEdit(command);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
-		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/admin/member/delete")
 	public String memberDelete(int m_id, Model model) {
-		System.out.println(m_id);
 		int delOk = dao.memberDelete(m_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -289,7 +319,6 @@ public class AdminController {
 			Model model) {
 		int rs = dao.curriEdit(cur_name,cur_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
-		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/admin/curri/delete")
@@ -610,8 +639,17 @@ public class AdminController {
 			@RequestParam(value="status") String status,
 			Model model) {
 		int auth_manager_id = 1;
-		
-		int rs = dao.tempAttendInsert(m_ids,class_id, new Date(System.currentTimeMillis()), status);
+		if(!status.equals("CHECK")){
+			for (Iterator<Integer> it = m_ids.iterator() ; it.hasNext() ;) {
+				Integer m_id = it.next();
+				boolean isAttend = dao.isAttend(m_id,class_id,status);
+				if(isAttend) it.remove();
+//				System.out.println(isAttend+" "+m_ids.toString());
+			}
+		}
+		Time time = new Time(System.currentTimeMillis());
+		int rs = (m_ids.isEmpty())?0:dao.tempAttendInsert(m_ids,class_id, time, status);
+//		int rs = (m_ids.isEmpty())?0:0;
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}

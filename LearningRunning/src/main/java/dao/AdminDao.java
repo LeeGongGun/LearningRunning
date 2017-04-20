@@ -3,6 +3,7 @@ package dao;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -89,6 +90,7 @@ public class AdminDao {
 					rs.getString("M_EMAIL"),
 					rs.getString("M_NAME"),
 					rs.getString("M_PASS"),
+					rs.getString("M_IMAGE"),
 					rs.getString("M_APP_U_NO")
 				);
 			return beanMember;
@@ -274,11 +276,12 @@ public class AdminDao {
 	}
 	public int memberInsert(AuthMember command) {
 		return jdbcTemplate.update(" INSERT INTO MEMBER "
-				+ "(M_ID,M_EMAIL,M_NAME,M_PASS) "
-				+ " VALUES(SEQUENCE_MEMBER.NEXTVAL,?,?,?) ",
+				+ "(M_ID,M_EMAIL,M_NAME,M_PASS,M_IMAGE) "
+				+ " VALUES(SEQUENCE_MEMBER.NEXTVAL,?,?,?,?) ",
 				command.getM_email(),
 				command.getM_name(),
-				command.getM_pass()
+				command.getM_pass(),
+				command.getM_image()
 				);
 	}
 
@@ -286,11 +289,13 @@ public class AdminDao {
 		return jdbcTemplate.update(" update MEMBER set "
 				+ "M_EMAIL=?,"
 				+ "M_NAME=?,"
-				+ "M_PASS=?"
+				+ "M_PASS=?,"
+				+ "M_IMAGE=?"
 				+ " where M_ID = ? ",
 				command.getM_email(),
 				command.getM_name(),
 				command.getM_pass(),
+				command.getM_image(),
 				command.getM_id()
 				);
 	}
@@ -691,7 +696,7 @@ private RowMapper<TempAttendance> tempAttendanceRowMapper = new RowMapper<TempAt
 				rs.getInt("TEMP_ID"),
 				rs.getInt("ClASS_ID"),
 				rs.getInt("M_ID"),
-				rs.getDate("CHECK_TIME"),
+				rs.getTime("CHECK_TIME"),
 				rs.getString("STATUS")
 				
 		);
@@ -749,18 +754,24 @@ public List<Attendance> memberAttendList(PersonSearch command) {
 	return results;
 }
 @Transactional
-public int tempAttendInsert(List<Integer> m_ids, String class_id,Date attendTime,String status) {
+public int tempAttendInsert(List<Integer> m_ids, String class_id,Time time,String status) {
 	int result=0;
 	for (int i = 0;i<m_ids.size() ;i++) {
 		result += jdbcTemplate.update("insert into TEMP_ATTENDANCE (TEMP_ID,CLASS_ID,M_ID,CHECK_TIME,STATUS) "
 				+ "values(SEQUENCE_TEMP_ATTEND.NEXTVAL,?,?,?,?) ",
 				class_id,
 				m_ids.get(i),
-				attendTime,
+				time,
 				status
 				);
 	}
 	return result;
+}
+public boolean isAttend(Integer m_id, String class_id, String status) {
+	String sql = "select * from TEMP_ATTENDANCE where M_ID = ? and CLASS_ID=?  and STATUS=? ";
+	List<TempAttendance> results = 
+			jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id, status);
+	return !results.isEmpty();
 } 
 
 }

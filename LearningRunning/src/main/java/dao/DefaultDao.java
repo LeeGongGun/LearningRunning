@@ -27,6 +27,7 @@ public class DefaultDao {
 					rs.getString("M_EMAIL"),
 					rs.getString("M_NAME"),
 					rs.getString("M_PASS"),
+					rs.getString("M_IMAGE"),
 					rs.getString("M_APP_U_NO")
 				);
 			return beanMember;

@@ -39,3 +39,5 @@
 <script src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/dist/js/demo.js"></script>
 <!-- select2 -->
 <script src="<%=request.getContextPath()%>/js/select2.min.js"></script>
+<!-- jquery.form.js -->
+<script src="<%=request.getContextPath()%>/js/jquery.form.js"></script>

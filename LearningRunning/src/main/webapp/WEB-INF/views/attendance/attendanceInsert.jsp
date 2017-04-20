@@ -26,7 +26,7 @@
 				</h1>
 				<ol class="breadcrumb">
 					<li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-					<li class="active">Dashboard</li>
+					<li class="active">출결 관리</li>
 				</ol>
 			</section>
 			<section class="content">
@@ -47,7 +47,7 @@
 										<option value="${classes.class_id }">${classes.class_name}</option>
 									</c:forEach>
 								</select> <input type="text" class="form-control " name="attendDate"
-									id="attendDate" readonly>
+									id="attendDate" readonly="readonly">
 								<button type="button" class="btn btn-primary"
 									id="attendInsertBtn">입력</button>
 							</form>
@@ -82,22 +82,25 @@
 		<%@ include file="/WEB-INF/views/include/html-footer.jsp"%>
 		<%@ include file="/WEB-INF/views/include/html-rightAside.jsp"%>
 		<script type="text/javascript">
-$.AdminLTE.dinamicMenu = function() {
-    var url = window.location;
-    // Will only work if string in href matches with location
-    $('.treeview-menu li a[href="' + url.pathname + '"]').parent().addClass('active');
-    // Will also work for relative and absolute hrefs
-    $('.treeview-menu li a').filter(function() {
-        return this.href == url;
-    }).parent().parent().parent().addClass('active');
-};  
-$.AdminLTE.dinamicMenu();
-</script>
+			$.AdminLTE.dinamicMenu = function() {
+			    var url = window.location;
+			    // Will only work if string in href matches with location
+			    $('.treeview-menu li a[href="' + url.pathname + '"]').parent().addClass('active');
+			    // Will also work for relative and absolute hrefs
+			    $('.treeview-menu li a').filter(function() {
+			        return this.href == url;
+			    }).parent().parent().parent().addClass('active');
+			};  
+			$.AdminLTE.dinamicMenu();
+		</script>
 		<script type="text/javascript">
 $(function(){
 	$("#attendDate").datepicker({
 		format: "yyyy/mm/dd",
 		enableOnReadonly: false,
+		beforeShowDay: function() {
+		      return false;
+		}
 	}).datepicker('update',new Date());
 	$("#class_select_id,#status").change(function(){
 		getMembers();

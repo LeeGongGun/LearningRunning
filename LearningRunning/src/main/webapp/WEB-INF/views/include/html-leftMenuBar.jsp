@@ -68,7 +68,7 @@
             <i class="fa fa-bank"></i>
             <span>관리자</span>
             <span class="pull-right-container">
-              <span class="label label-primary pull-right">8</span>
+              <span class="label label-primary pull-right">7</span>
             </span>
           </a>
           <ul class="treeview-menu">

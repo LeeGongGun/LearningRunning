@@ -1,14 +1,15 @@
 package bean;
 
 import java.sql.Date;
+import java.sql.Time;
 
 public class TempAttendance {
 	int temp_id,class_id,m_id;
-	Date check_time;
+	Time check_time;
 	String status;
 	
 	
-	public TempAttendance(int temp_id, int class_id, int m_id, Date check_time, String status) {
+	public TempAttendance(int temp_id, int class_id, int m_id, Time check_time, String status) {
 		super();
 		this.temp_id = temp_id;
 		this.class_id = class_id;
@@ -34,10 +35,10 @@ public class TempAttendance {
 	public void setM_id(int m_id) {
 		this.m_id = m_id;
 	}
-	public Date getCheck_time() {
+	public Time getCheck_time() {
 		return check_time;
 	}
-	public void setCheck_time(Date check_time) {
+	public void setCheck_time(Time check_time) {
 		this.check_time = check_time;
 	}
 	public String getStatus() {

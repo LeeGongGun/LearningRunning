@@ -74,7 +74,7 @@
 	        <h4 class="modal-title" id="myModalLabel">member 입력</h4>
 	      </div>
 	      <div class="modal-body" style="min-height: 150px">
-	      <form:form commandName="command" id="editFrm">
+	      <form:form commandName="command" id="editFrm" enctype="multipart/form-data">
 	      	<input  type="hidden" id="mode" value="insert">
 	      	<div class="form-group">
 	      	 	<label for="m_id" class="col-sm-2 control-label">member</label>
@@ -95,12 +95,20 @@
 	         		<input type="text" class="form-control" id="m_pass" name="m_pass" placeholder="password" required="required">
 	         	</div>
 	        </div>
-	        </form:form>
+	      	<div class="form-group">
+	      	 	<label for="m_img" class="col-sm-2 control-label">image</label>
+	         	<div class="col-sm-10">
+	         		<input type="file" class="form-control" id="m_file" name="m_file" placeholder="img">
+	         	</div>
+	        </div>
+	        
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	        <button type="button" class="btn btn-primary" id="insert">입력</button>
+	        <button type="submit" class="btn btn-primary" id="submit">form</button>
 	      </div>
+	      </form:form>
 	    </div>
 	  </div>
 	</div>
@@ -124,11 +132,45 @@
 			clearFrm();
 			$('#myModal').modal("show");
 		});
+
+		$('#editFrm').ajaxForm({
+            beforeSubmit: function (data,form,option) {
+    			mode = $("#mode").val();
+    			frm = $("#editFrm");
+    			$($(':input[required]', frm ).get().reverse()).each( function () {
+    			    if ( $(this).val().trim() == '' ) {
+    			        $(this).focus();
+    			        return false;
+    			    }
+    			});
+    			okText = "입력";
+    			if(mode=='insert'){
+    				frm.attr("action","<%=rootPath%>/admin/member/insert");
+    			}else if(mode=="edit"){
+    				frm.attr("action","<%=rootPath%>/admin/member/edit");
+    				okText = "수정";
+    				
+    			}else{
+    				return false;
+    			}
+    			return true;
+            },
+            success: function(response,status){
+                //성공후 서버에서 받은 데이터 처리
+        		alert(okText+"성공하였습니다.");
+        		getMemberList();
+            },
+            error: function(){
+	        	alert(okText+"내용을 확인해주세요");
+               //에러발생을 위한 code페이지
+            }                              
+        });
+
+
 		$("#insert").click(function(){ 
 			okCnt = 0;
 			mode = $("#mode").val();
 			frm = $("#editFrm");
-			console.log(frm.serialize());
 			$($(':input[required]', frm ).get().reverse()).each( function () {
 			    if ( $(this).val().trim() == '' ) {
 			        $(this).focus();
@@ -248,7 +290,12 @@
 		        	conTag = "";
 					$(json.data).each(function(i,item){
 							conTag +="<tr>";
-							conTag +="<td>"+item.m_id+"</td>";
+							conTag +="<td>";
+							conTag +="<img src=\"<%=rootPath%>/uploads/m_image/";
+							
+							conTag +=(item.m_image)?item.m_image:"m_image_default.png";
+							conTag +="\" alt=\""+item.m_name+"\" class=\"img-circle\" style=\"width:50px;height:50px;\">";
+							conTag +="</td>";
 							conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
 							conTag +="<td>"+item.m_email+"</td>";
 							conTag +="<td>"+item.m_pass+"</td>";
