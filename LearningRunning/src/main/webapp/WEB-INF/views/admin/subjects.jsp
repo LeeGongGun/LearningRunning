@@ -33,7 +33,7 @@
 			<section class="content">
 				<div class="row">
 					<div class="col-xs-12">
-						<div class="box box-success">
+						<div class="box box-success form-inline">
 							<select class="form-control " name="class_select_id"
 								id="class_select_id">
 								<option value="">반을 선택하세요.</option>

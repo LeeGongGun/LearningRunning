@@ -6,42 +6,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-<%@ include file="/WEB-INF/views/include/head.jsp" %>
+<%@ include file="/WEB-INF/views/include/html-head.jsp" %>
 <title>Insert title here</title>
 <style>
 body{}
-.loginForm{position:absolute;top:45%;left:50%;transform:translate(-50%, -50%);width:400px; margin: auto;padding : 20px; background: rgba( 255, 255, 255, 0.5 );border-radius: 5px;}
+.btn-naver {
+    color: #fff;
+    background-color: #23b300;
+    border-color: rgba(0,0,0,0.2);
+}
+.btn-naver:hover {
+    color: #fff;
+    background-color: #1b8c00;
+    border-color: rgba(0,0,0,0.2);
+}
 #result,.result{color: red;font-size: 11px;margin: 5px}
 .btns{margin-top: 5px;}
 #background-changer{position:absolute;top:0;width:100%;height:100%;z-index:-1;background-size: cover;
     background-repeat: no-repeat;
     background-position: 0 0;
     background-attachment: fixed;}
+.register-logo a{
+    color: #fff;
+	text-shadow: 2px 2px 2px gray;
+}
 </style>
 </head>
-<body>
+<body class="hold-transition register-page">
 <div id="background-changer"></div>
-	<form:form commandName="loginCommand" >
-		<div class="loginForm" >
-			<h3>Login</h3>
-			<div><form:input path="email"  class="form-control" placeholder="아이디"/><div class="result"><form:errors path="email"/></div></div>
-			<div><form:password path="password"  class="form-control" placeholder="비밀번호"/><div class="result"><form:errors path="password"/></div></div>
-			<div id="result"><form:errors/></div>
-			<div><label><spring:message code="rememberEmail"/><form:checkbox path="remember"/></label></div>
-			<div><label><spring:message code="autoLogin"/><form:checkbox path="autoLogin"/></label></label></div>
-			<div class="btns">
-				<input type="submit" class="btn btn-primary btn-block" value="<spring:message code="login.btn" />" id="loginBtn">
-				<input type="reset" class="btn btn-default btn-block" value="취소">
-				<input type="button" class="btn btn-default btn-block" value="회원가입" id="registerBtn">
-			</div>
-		</div>		
-	</form:form>
-
-<%@ include file="/WEB-INF/views/include/foot.jsp" %>
+	<div class="register-box">
+		<div class="register-logo">
+			<a href="<%=request.getContextPath()%>/"><b>출석</b>해쓰~</a>
+		</div>
+		<form:form commandName="loginCommand" >
+			<div class="register-box-body">
+			    <p class="login-box-msg">회원 가입</p>
+				<div class="form-group has-feedback">
+					<form:input path="email"  class="form-control" placeholder="아이디"/>
+					<span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+					<div class="result"><form:errors path="email"/></div>
+				</div>
+				<div class="form-group has-feedback">
+					<form:password path="password"  class="form-control" placeholder="비밀번호"/>
+					<span class="glyphicon glyphicon-lock form-control-feedback"></span>
+					<div class="result"><form:errors path="password"/></div>
+				</div>
+				<div class="form-group has-feedback" id="result"><form:errors/></div>
+				<div class="form-group has-feedback">
+					<p>
+						<label><spring:message code="rememberEmail"/><form:checkbox path="remember"/></label>
+						<br/><label><spring:message code="autoLogin"/><form:checkbox path="autoLogin"/></label>
+					</p>
+				</div>
+				<div class="form-group has-feedback" class="btns">
+					<input type="submit" class="btn btn-primary btn-block" value="<spring:message code="login.btn" />" id="loginBtn">
+					<input type="button" class="btn btn-default btn-block" value="회원가입" id="registerBtn">
+				</div>
+			    <div class="social-auth-links text-center">
+			      <p>- OR -</p>
+			      <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> 페이스북 ID로 로그인 / 가입</a>
+			      <a href="#" class="btn btn-block btn-social btn-naver btn-flat"><i class="fa fa-google-plus"></i> 네이버 ID로 로그인 / 가입</a>
+			    </div>
+			</div>		
+		</form:form>
+	</div>
+<%@ include file="/WEB-INF/views/include/html-js.jsp" %>
 <script type="text/javascript">
 $(function(){
 	$("#registerBtn").click(function(){
-		$(location).attr("href","<%=request.getContextPath()%>/register/step1");
+		$(location).attr("href","<%=request.getContextPath()%>/register");
 		
 	});
     	var img_array = [1, 2, 3, 4, 5],

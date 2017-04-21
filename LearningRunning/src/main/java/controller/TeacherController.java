@@ -24,7 +24,7 @@ import bean.ClassJoinSubject;
 import bean.Classes;
 import bean.Counsel;
 import bean.Curriculum;
-import bean.Exam;
+import bean.Exam;	
 import bean.ExamJoinSubject;
 import bean.Score;
 import bean.TempAttendance;
@@ -32,10 +32,10 @@ import command.AttendanceInsertCommand;
 import command.CounselSearchCommand;
 import command.MemberSearchCommand;
 import command.examCommand;
-import dao.LggDao;
 import dao.TeacherDao;
 
 @Controller
+@RequestMapping("/teacher")
 public class TeacherController {
 	private TeacherDao dao;
 	private MultipartResolver multipartResolver;
@@ -46,7 +46,7 @@ public class TeacherController {
 
 	
 	//counsel
-	@RequestMapping(value = "/teacher/counsel" , method = RequestMethod.GET)
+	@RequestMapping(value = "/counsel" , method = RequestMethod.GET)
 	public String counselDefault(Model model) {
 		//선생님 리스트
 		List<AuthMember> listTeacher = dao.authOnlyList("teacher");
@@ -56,7 +56,7 @@ public class TeacherController {
 		model.addAttribute("listStudent",listStudent);
 		return "/teacher/counsel";
 	}
-	@RequestMapping(value = "/teacher/counsel", method = RequestMethod.POST)
+	@RequestMapping(value = "/counsel", method = RequestMethod.POST)
 	public String counselList(CounselSearchCommand command,Errors errors, Model model) {
 		List<Counsel> counselList = dao.counselList(command);
 		String json = "";
@@ -74,7 +74,7 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 	}
 	
-	@RequestMapping(value = "/teacher/counsel/insert", method = RequestMethod.POST)
+	@RequestMapping(value = "/counsel/insert", method = RequestMethod.POST)
 	public String counselInsert(Counsel command,
 			Errors errors,
 			Model model) {
@@ -82,7 +82,7 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/teacher/counsel/edit", method = RequestMethod.POST)
+	@RequestMapping(value = "/counsel/edit", method = RequestMethod.POST)
 	public String counselEdit(Counsel command,
 			Errors errors,
 			Model model) {
@@ -91,21 +91,21 @@ public class TeacherController {
 		System.out.println(rs);
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/teacher/counsel/delete", method = RequestMethod.POST)
+	@RequestMapping(value = "/counsel/delete", method = RequestMethod.POST)
 	public String counselDelete(int counsel_id, Model model) {
 		int delOk = dao.counselDelete(counsel_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
 	}
 	
-	@RequestMapping(value = "/teacher/score", method = RequestMethod.GET)
+	@RequestMapping(value = "/score", method = RequestMethod.GET)
 	public String examScoreList(Model model) {
 		List<Classes> classList = dao.simpleClassList();
 		model.addAttribute("classList",classList);
 		return "/teacher/scoreList";
 		
 	}
-	@RequestMapping(value = "/teacher/score", method = RequestMethod.POST)
+	@RequestMapping(value = "/score", method = RequestMethod.POST)
 	public String defaultScoreList(
 			@RequestParam(value="exam_id") Integer exam_id,
 			Model model) {
@@ -125,7 +125,7 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 		
 	}
-	@RequestMapping(value = "/teacher/score/insert", method = RequestMethod.POST)
+	@RequestMapping(value = "/score/insert", method = RequestMethod.POST)
 	public String scoreInsert(
 			@RequestParam(value="exam_id[]") List<Integer> exam_ids,
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
@@ -136,7 +136,7 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/teacher/score/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/score/update", method = RequestMethod.POST)
 	public String scoreUpdate(
 			@RequestParam(value="exam_id[]") List<Integer> exam_ids,
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
@@ -147,7 +147,7 @@ public class TeacherController {
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
-	@RequestMapping(value = "/teacher/score/delete", method = RequestMethod.POST)
+	@RequestMapping(value = "/score/delete", method = RequestMethod.POST)
 	public String scoreDelete(
 			@RequestParam(value="exam_id") Integer exam_id,
 			Model model) {
@@ -156,7 +156,7 @@ public class TeacherController {
 		return "/ajax/ajaxDefault";
 	}
 	
-	@RequestMapping(value = "/teacher/memberScore", method = RequestMethod.GET)
+	@RequestMapping(value = "/memberScore", method = RequestMethod.GET)
 	public String memberScoreList(Model model) {
 		List<Classes> classList = dao.simpleClassList();
 		model.addAttribute("classList",classList);
@@ -164,7 +164,7 @@ public class TeacherController {
 		
 	}
 
-	@RequestMapping(value = "/teacher/memberScore", method = RequestMethod.POST)
+	@RequestMapping(value = "/memberScore", method = RequestMethod.POST)
 	public String memberScoreList(
 			@RequestParam(value="class_id") Integer class_id,
 			Model model) {
@@ -185,7 +185,7 @@ public class TeacherController {
 		
 	}
 
-	@RequestMapping(value = "/teacher/memberExamSubject", method = RequestMethod.POST)
+	@RequestMapping(value = "/memberExamSubject", method = RequestMethod.POST)
 	public String memberExamSubjectList(int class_id,Model model) {
 		List<ExamJoinSubject> rs = dao.memberExamSubjectList(class_id);
 		String json = "";

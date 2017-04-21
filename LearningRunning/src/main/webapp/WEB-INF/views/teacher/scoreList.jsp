@@ -43,13 +43,13 @@ td.input-td{padding:0px !important;}
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="box box-success form-inline">
-							<select class="form-control " name="class_select_id"
+							<select class="form-control " name="class_id"
 								id="class_select_id">
 								<option value="">반을 선택하세요.</option>
 								<c:forEach var="classes" items="${classList}">
 									<option value="${classes.class_id }">${classes.class_name}-${classes.class_state}</option>
 								</c:forEach>
-							</select> <select class="form-control " name="exam_select_id"
+							</select> <select class="form-control " name="exam_id"
 								id="exam_select_id">
 								<option value="">시험을 선택하세요.</option>
 							</select>

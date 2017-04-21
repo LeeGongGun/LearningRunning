@@ -1,8 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
   <header class="main-header">
     <!-- Logo -->
-    <a href="<%=request.getContextPath()%>/attendance/dashboard" class="logo">
+    <a href="<%=request.getContextPath()%>/" class="logo">
       <!-- mini logo for sidebar mini 50x50 pixels -->
       <span class="logo-mini"><b>출</b>석</span>
       <!-- logo for regular state and mobile devices -->
@@ -213,16 +214,19 @@
           <!-- User Account: style can be found in dropdown.less -->
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
-              <span class="hidden-xs">이공건</span>
-            </a>
+              <img src="<%=request.getContextPath()%>/uploads/m_image/${(!empty sessionScope.authInfo.m_image)?sessionScope.authInfo.m_image:"m_image_default.png"}" 
+              class="user-image" alt="${sessionScope.authInfo.m_name }">
+              <span class="hidden-xs">${sessionScope.authInfo.m_name }</span>
+             </a>
             <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                <img src="<%=request.getContextPath()%>/uploads/m_image/${(!empty sessionScope.authInfo.m_image)?sessionScope.authInfo.m_image:"m_image_default.png"}" class="img-circle" alt="User Image">
 
                 <p>
-                  이공건 - Web Developer
+                  ${sessionScope.authInfo.m_name } - ${(sessionScope.authInfo.admin)?"관리자":"" }
+                  	${(sessionScope.authInfo.teacher)?"선생님":"" }
+                  	${(sessionScope.authInfo.student)?"학생":"" }
                   <small>Member since Nov. 2012</small>
                 </p>
               </li>
@@ -247,7 +251,7 @@
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
                 </div>
                 <div class="pull-right">
-                  <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                  <a href="<%=request.getContextPath()%>/logout" class="btn btn-default btn-flat">Sign out</a>
                 </div>
               </li>
             </ul>

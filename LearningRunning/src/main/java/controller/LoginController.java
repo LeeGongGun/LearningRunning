@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.Cookie;
@@ -49,7 +50,14 @@ public class LoginController {
 		try {
 			AuthMember member = dao.memberByEmailAndPass(loginCommand.getEmail(),loginCommand.getPassword());
 			if(member == null) throw new IdPasswordNotMatchException();
-			AuthInfo authInfo = new AuthInfo(member.getM_id(), member.getM_email(), member.getM_name());
+			boolean isAdmin=false,isTeacher=false,isStudent=false;
+			List<String> memberAuth = dao.memberAuth(member.getM_id());
+			for (String auth : memberAuth) {
+				if(auth.equals("admin")) isAdmin=true;
+				if(auth.equals("teacher")) isTeacher=true;
+				if(auth.equals("student")) isStudent=true;
+			}
+			AuthInfo authInfo = new AuthInfo(member.getM_id(), member.getM_email(), member.getM_name(), member.getM_image(), isAdmin, isTeacher, isStudent);
 			if (authInfo.getM_email()==null || authInfo.getM_email().equals("")) {
 				return "login/loginForm";
 			}
@@ -74,4 +82,10 @@ public class LoginController {
 		session.invalidate();
 		return "redirect:/login";
 	}
+	
+	@RequestMapping(value = "/register",method=RequestMethod.GET)
+	public String register(Model model) {
+		return "register/register";
+	}
+
 }

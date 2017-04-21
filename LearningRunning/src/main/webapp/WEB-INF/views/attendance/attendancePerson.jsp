@@ -137,7 +137,7 @@ $(function() {
 	.datepicker("update", new Date());
 	$("#class_id").change(function(){
 		$.ajax({
-			url: "<%=rootPath%>/attendance/selectStudentList",
+			url: "<%=rootPath%>/admin/attendance/selectStudentList",
 			type:'post',
 	        data: {class_id : $("#class_id").val()},
 	        success: function(json){
@@ -173,7 +173,7 @@ $(function() {
 		});
 		if(okCnt==0){
 			$.ajax({
-				url: "<%=rootPath%>/attendance/person",
+				url: "<%=rootPath%>/admin/attendance/person",
 									type : 'post',
 									data : $("#searchFrm").serialize(),
 									success : function(json) {

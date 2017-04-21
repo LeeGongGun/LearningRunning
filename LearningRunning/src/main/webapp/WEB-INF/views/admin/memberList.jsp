@@ -12,6 +12,7 @@
 <title>member 관리</title>
 <%@ include file="/WEB-INF/views/include/html-head.jsp"%>
 <style type="text/css">
+#editFrm{display: inline-block;width: 100%;}
 </style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
@@ -71,15 +72,17 @@
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel">member 입력</h4>
+	        <h4 class="modal-title" id="myModalLabel">
+	        <img src="/learningrunning/uploads/m_image/m_image_default.png" id="frm_image" class="img-circle m_image" style="width:50px;height:50px;">
+	           member 입력</h4>
 	      </div>
 	      <div class="modal-body" style="min-height: 150px">
 	      <form:form commandName="command" id="editFrm" enctype="multipart/form-data">
 	      	<input  type="hidden" id="mode" value="insert">
 	      	<div class="form-group">
-	      	 	<label for="m_id" class="col-sm-2 control-label">member</label>
+	      	 	<label for="m_id" class="col-sm-2 control-label">이름</label>
 	         	<div class="col-sm-10">
-	         		<input type="hidden" class="form-control" id="m_id" name="m_id" placeholder="아이디">
+	         		<input type="hidden" class="form-control" id="m_id" name="m_id">
 	         		<input type="text" class="form-control" id="m_name" name="m_name" placeholder="member명" required="required">
 	         	</div>
 	        </div>
@@ -105,8 +108,7 @@
 	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-	        <button type="button" class="btn btn-primary" id="insert">입력</button>
-	        <button type="submit" class="btn btn-primary" id="submit">form</button>
+	        <button type="submit" class="btn btn-primary" id="submit">입력</button>
 	      </div>
 	      </form:form>
 	    </div>
@@ -149,7 +151,6 @@
     			}else if(mode=="edit"){
     				frm.attr("action","<%=rootPath%>/admin/member/edit");
     				okText = "수정";
-    				
     			}else{
     				return false;
     			}
@@ -166,49 +167,6 @@
             }                              
         });
 
-
-		$("#insert").click(function(){ 
-			okCnt = 0;
-			mode = $("#mode").val();
-			frm = $("#editFrm");
-			$($(':input[required]', frm ).get().reverse()).each( function () {
-			    if ( $(this).val().trim() == '' ) {
-			        $(this).focus();
-			        okCnt++;
-			        return;
-			    }
-			});
-			okText = "입력";
-			if(mode=='insert'){
-				frm.attr("action","<%=rootPath%>/admin/member/insert");
-			}else if(mode=="edit"){
-				frm.attr("action","<%=rootPath%>/admin/member/edit");
-				okText = "수정";
-				
-			}else{
-				return;
-			}
-			if(okCnt==0){
-				$.ajax({
-			        url:frm.attr("action"),
-			        type:'post',
-			        data: frm.serialize(),
-			        success: function(json){
-			        	if(json.data>0) {
-			        		alert(okText+"성공하였습니다.");
-			        		getMemberList();
-			        	}
-			        		
-			        },
-			        error : function(request, status, error) { 
-			        	alert(okText+"내용을 확인해주세요");
-			            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-			        } 
-			        
-			    });
-			};
-			
-		});
 		$("#searchText").keydown(function(e){
 			if(e.which == 13){
 				getList($("#searchText").val().toUpperCase());
@@ -221,8 +179,12 @@
 		$table.on("click",".hover-td",function(){
 			if($.isEmptyObject(this)) return false;
 			$("#mode").val("edit");
-			$("#insert").text("수정");
-			$("#m_id").val($(this).prev().text());
+			$("#submit").text("수정");
+			$("#m_id").val($(this).parent("tr").data("m_id"));
+			imgSrc = $(this).parent("tr").data("m_image");
+			$("#m_image").val(imgSrc);
+			if(imgSrc!='') $("#frm_image").attr("src",$(this).parent("tr").find("img.m_image").attr("src"));
+			else $("#frm_image").attr("src","/learningrunning/uploads/m_image/m_image_default.png");
 			$("#m_name").val($("a",this).text());
 			$("#m_email").val($(this).next().text());
 			$("#m_pass").val($(this).next().next().text());
@@ -256,11 +218,13 @@
 		});
 		function clearFrm(){
 			$("#mode").val("insert");
-			$("#insert").text("입력");
+			$("#submit").text("입력");
 			$("#m_id").val("");
 			$("#m_name").val("");
 			$("#m_pass").val("1234");
 			$("#m_email").val("aaa@naver.com");
+			$("#frm_image").attr("src","/learningrunning/uploads/m_image/m_image_default.png");
+			$("#m_file").val("");
 		}
 		function getList(sText){
 			$("#sub-table tbody>tr").each(function(){
@@ -289,12 +253,12 @@
 		        success: function(json){
 		        	conTag = "";
 					$(json.data).each(function(i,item){
-							conTag +="<tr>";
+							conTag +="<tr data-m_image=\""+item.m_image+"\" data-m_id=\""+item.m_id+"\">";
 							conTag +="<td>";
 							conTag +="<img src=\"<%=rootPath%>/uploads/m_image/";
 							
 							conTag +=(item.m_image)?item.m_image:"m_image_default.png";
-							conTag +="\" alt=\""+item.m_name+"\" class=\"img-circle\" style=\"width:50px;height:50px;\">";
+							conTag +="\" alt=\""+item.m_name+"\" class=\"img-circle m_image\" style=\"width:50px;height:50px;\">";
 							conTag +="</td>";
 							conTag +="<td class=\"hover-td\"><a href=\"javascript:\">"+item.m_name+"</a></td>";
 							conTag +="<td>"+item.m_email+"</td>";

@@ -40,5 +40,21 @@ public class DefaultDao {
 		return result.isEmpty()?null:result.get(0);
 
 	}
+	public List<String> memberAuth(int m_id) {
+		String sql = "select AUTH_ENAME from  MEMBER_AUTH  "
+				+ "where m_id = ? ";
+		List<String> result = jdbcTemplate.query(sql,new RowMapper<String>(){
+			@Override
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				String beanMember = new String(
+						rs.getString("AUTH_ENAME")
+					);
+				return beanMember;
+			}		
+
+		},m_id);
+		return result;
+		
+	}
 
 }

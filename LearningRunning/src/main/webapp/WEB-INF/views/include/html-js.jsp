@@ -41,3 +41,7 @@
 <script src="<%=request.getContextPath()%>/js/select2.min.js"></script>
 <!-- jquery.form.js -->
 <script src="<%=request.getContextPath()%>/js/jquery.form.js"></script>
+<!-- iCheck -->
+<script src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/plugins/iCheck/icheck.min.js"></script>
+
+

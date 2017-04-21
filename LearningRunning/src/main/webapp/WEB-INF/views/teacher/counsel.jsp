@@ -57,8 +57,8 @@
 								<button type="button" class="btn btn-primary" id="modalOn">
 									입력</button>
 							</form>
-
-							<div class="search-table">
+						</div>
+						<div class="search-table box box-info">
 								<table class="table table-striped table-bordered table-hover"
 									id="sub-table" >
 									<thead>
@@ -76,7 +76,7 @@
 									</thead>
 									<tbody></tbody>
 								</table>
-							</div>
+						</div>
 
 						</div>
 					</div>

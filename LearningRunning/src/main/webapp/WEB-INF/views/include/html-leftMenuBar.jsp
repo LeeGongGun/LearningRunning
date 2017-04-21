@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!-- Left side column. contains the logo and sidebar -->
   <aside class="main-sidebar" id="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
@@ -8,10 +8,11 @@
       <!-- Sidebar user panel -->
       <div class="user-panel">
         <div class="pull-left image">
-          <img src="<%=request.getContextPath()%>/webjars/adminlte/2.3.11/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+          <img src="<%=request.getContextPath()%>/uploads/m_image/${(!empty sessionScope.authInfo.m_image)?sessionScope.authInfo.m_image:"m_image_default.png"}"
+           class="img-circle" alt="${sessionScope.authInfo.m_name }">
         </div>
         <div class="pull-left info">
-          <p>이공건</p>
+          <p>${sessionScope.authInfo.m_name }</p>
           <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
         </div>
       </div>
@@ -41,11 +42,13 @@
             </span>
           </a>
           <ul class="treeview-menu">
-		       <li><a href="<%=request.getContextPath()%>/admin/tempAttend"><i class="fa fa-circle-o"></i> 츨결입력</a></li>
-		       <li><a href="<%=request.getContextPath()%>/attendance/person"><i class="fa fa-circle-o"></i> 개인별 출결보기</a></li>
+		       <c:if test="${sessionScope.authInfo.admin or sessionScope.authInfo.teacher}">
+		       	<li><a href="<%=request.getContextPath()%>/admin/tempAttend"><i class="fa fa-circle-o"></i> 츨결입력</a></li>
+		       </c:if>
+		       <li><a href="<%=request.getContextPath()%>/admin/attendance/person"><i class="fa fa-circle-o"></i> 개인별 출결보기</a></li>
           </ul>
         </li>
-        
+        <c:if test="${sessionScope.authInfo.admin or sessionScope.authInfo.teacher}">
         <!-- ///// 성적 관리 ///// -->
         <li class="treeview" id="grade">
           <a href="#">
@@ -61,7 +64,8 @@
 	         <li><a href="<%=request.getContextPath()%>/teacher/memberScore"><i class="fa fa-circle-o"></i> 개인별성적보기</a></li>
           </ul>
         </li>
-        
+        </c:if>
+        <c:if test="${sessionScope.authInfo.admin}">
         <!-- ///// 관리자 ///// -->
         <li class="treeview" id="management">
           <a href="#">
@@ -81,6 +85,7 @@
 			<li><a href="<%=request.getContextPath()%>/admin/exam"><i class="fa fa-circle-o"></i>시험 관리</a></li>
           </ul>
         </li>
+        </c:if>
         <!-- 
         <li>
           <a href="pages/calendar.html">
