@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import bean.Attendance;
 import bean.AuthMember;
@@ -272,6 +273,14 @@ public class TeacherDao {
 		List<Score> result = jdbcTemplate.query(sql,scoreRowMapper);
 		return result;
 	}
+	
+	public int scoreImgInsert(Integer exam_id, Integer m_id, String fileName, String oriFileName) {
+		int result = jdbcTemplate.update("insert into EXAM_MEMBER (EXAM_ID,M_ID,EX_IMG,ORI_FILE_NAME) "
+					+ "values("+exam_id+","+m_id+",'"+fileName+"','"+oriFileName+"') ");
+		return result;
+	} 
+
+	
 
 	//ExamJoinSubject
 	private RowMapper<ExamJoinSubject> ExamJoinSubjectRowMapper = new RowMapper<ExamJoinSubject>() {
@@ -433,6 +442,7 @@ public class TeacherDao {
 		List<Attendance> results = 
 				jdbcTemplate.query(sql, attendPersonRowMapper, command.getM_id(), command.getClass_id(), command.getFrom(), command.getTo());
 		return results;
-	} 
+	}
+
 	
 }

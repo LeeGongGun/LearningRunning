@@ -42,9 +42,83 @@ public class LoginController {
 		}
 		return "login/loginForm";
 	}
+	@RequestMapping(value = "/error",method=RequestMethod.GET)
+	public String error( Model model) {
+		
+		return "ajax/function";
+	}
 	
 	@RequestMapping(value = "/login",method=RequestMethod.POST)
 	public String submit(LoginCommand loginCommand ,Errors errors,HttpSession session,HttpServletResponse response) {
+		new LoginCommandValidator().validate(loginCommand, errors);
+		if(errors.hasErrors()) return "login/loginForm";
+		try {
+			AuthMember member = dao.memberByEmailAndPass(loginCommand.getEmail(),loginCommand.getPassword());
+			if(member == null) throw new IdPasswordNotMatchException();
+			boolean isAdmin=false,isTeacher=false,isStudent=false;
+			List<String> memberAuth = dao.memberAuth(member.getM_id());
+			for (String auth : memberAuth) {
+				if(auth.equals("admin")) isAdmin=true;
+				if(auth.equals("teacher")) isTeacher=true;
+				if(auth.equals("student")) isStudent=true;
+			}
+			AuthInfo authInfo = new AuthInfo(member.getM_id(), member.getM_email(), member.getM_name(), member.getM_image(), isAdmin, isTeacher, isStudent);
+			if (authInfo.getM_email()==null || authInfo.getM_email().equals("")) {
+				return "login/loginForm";
+			}
+			session.setAttribute("authInfo", authInfo);
+			
+			Cookie rCookie = new Cookie("REMEMBER",	 loginCommand.getEmail());
+			rCookie.setPath("/");
+			if (loginCommand.isRemember()) {
+				rCookie.setMaxAge(60*60*24*30);
+			} else {
+				rCookie.setMaxAge(0);
+			}
+			response.addCookie(rCookie);
+			return "redirect:/";
+		} catch (IdPasswordNotMatchException e) {
+			errors.reject("idPasswordNotMatching");
+			return "login/loginForm";
+		}
+	}
+	@RequestMapping(value = "/naverLogin",method=RequestMethod.POST)
+	public String naverLogin(LoginCommand loginCommand ,Errors errors,HttpSession session,HttpServletResponse response) {
+		new LoginCommandValidator().validate(loginCommand, errors);
+		if(errors.hasErrors()) return "login/loginForm";
+		try {
+			AuthMember member = dao.memberByEmailAndPass(loginCommand.getEmail(),loginCommand.getPassword());
+			if(member == null) throw new IdPasswordNotMatchException();
+			boolean isAdmin=false,isTeacher=false,isStudent=false;
+			List<String> memberAuth = dao.memberAuth(member.getM_id());
+			for (String auth : memberAuth) {
+				if(auth.equals("admin")) isAdmin=true;
+				if(auth.equals("teacher")) isTeacher=true;
+				if(auth.equals("student")) isStudent=true;
+			}
+			AuthInfo authInfo = new AuthInfo(member.getM_id(), member.getM_email(), member.getM_name(), member.getM_image(), isAdmin, isTeacher, isStudent);
+			if (authInfo.getM_email()==null || authInfo.getM_email().equals("")) {
+				return "login/loginForm";
+			}
+			session.setAttribute("authInfo", authInfo);
+			
+			Cookie rCookie = new Cookie("REMEMBER",	 loginCommand.getEmail());
+			rCookie.setPath("/");
+			if (loginCommand.isRemember()) {
+				rCookie.setMaxAge(60*60*24*30);
+			} else {
+				rCookie.setMaxAge(0);
+			}
+			response.addCookie(rCookie);
+			return "redirect:/";
+		} catch (IdPasswordNotMatchException e) {
+			errors.reject("idPasswordNotMatching");
+			return "login/loginForm";
+		}
+	}
+	
+	@RequestMapping(value = "/mLogin",method=RequestMethod.POST)
+	public String mobileLogin(LoginCommand loginCommand ,Errors errors,HttpSession session,HttpServletResponse response) {
 		new LoginCommandValidator().validate(loginCommand, errors);
 		if(errors.hasErrors()) return "login/loginForm";
 		try {

@@ -77,7 +77,7 @@
 	           member 입력</h4>
 	      </div>
 	      <div class="modal-body" style="min-height: 150px">
-	      <form:form commandName="command" id="editFrm" enctype="multipart/form-data">
+	      <form:form commandName="command" id="editFrm" enctype="multipart/form-data" action="${pageContext.request.contextPath}/admin/member/insert">
 	      	<input  type="hidden" id="mode" value="insert">
 	      	<div class="form-group">
 	      	 	<label for="m_id" class="col-sm-2 control-label">이름</label>
@@ -138,18 +138,16 @@
 		$('#editFrm').ajaxForm({
             beforeSubmit: function (data,form,option) {
     			mode = $("#mode").val();
-    			frm = $("#editFrm");
-    			$($(':input[required]', frm ).get().reverse()).each( function () {
+    			$($(':input[required]', $(form) ).get().reverse()).each( function () {
     			    if ( $(this).val().trim() == '' ) {
     			        $(this).focus();
     			        return false;
     			    }
     			});
-    			okText = "입력";
+    			okText = "";
     			if(mode=='insert'){
-    				frm.attr("action","<%=rootPath%>/admin/member/insert");
-    			}else if(mode=="edit"){
-    				frm.attr("action","<%=rootPath%>/admin/member/edit");
+        			okText = "입력";
+				}else if(mode=="edit"){
     				okText = "수정";
     			}else{
     				return false;
@@ -179,6 +177,7 @@
 		$table.on("click",".hover-td",function(){
 			if($.isEmptyObject(this)) return false;
 			$("#mode").val("edit");
+			$('#editFrm').attr("action","<%=rootPath%>/admin/member/edit");
 			$("#submit").text("수정");
 			$("#m_id").val($(this).parent("tr").data("m_id"));
 			imgSrc = $(this).parent("tr").data("m_image");
@@ -218,6 +217,7 @@
 		});
 		function clearFrm(){
 			$("#mode").val("insert");
+			$('#editFrm').attr("action","<%=rootPath%>/admin/member/insert");
 			$("#submit").text("입력");
 			$("#m_id").val("");
 			$("#m_name").val("");

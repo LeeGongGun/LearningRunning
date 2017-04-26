@@ -37,6 +37,7 @@ import bean.CurriJoinSubject;
 import bean.Curriculum;
 import bean.Exam;
 import bean.ExamJoinSubject;
+import bean.MemberExam;
 import bean.Subject;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
@@ -238,17 +239,15 @@ public class AdminController {
 	@RequestMapping(value = "/member/insert", method = RequestMethod.POST)
 	public String memberInsert(AuthMember command,
 			Errors errors,
+			HttpServletRequest request,
 			Model model) {
-		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+//		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		MultipartFile multi = command.getM_file();
 		String newFileName = "";
 		if( multi!= null && !multi.isEmpty()){
 			String fileName = multi.getOriginalFilename(); 
 			newFileName= System.currentTimeMillis()+"_"+fileName;
-			Set<String> pathSet = request.getSession().getServletContext().getResourcePaths("/");
-			
-			String path = request.getRealPath("/resources/uploads/")+"m_image/"+newFileName;
-			System.out.println();
+			String path = request.getSession().getServletContext().getRealPath("/resources/uploads/m_image/") + newFileName;
 			try {
 				File file =  new File(path);
 				multi.transferTo(file);
@@ -268,17 +267,27 @@ public class AdminController {
 	@RequestMapping(value = "/member/edit", method = RequestMethod.POST)
 	public String memberEdit(AuthMember command,
 			Errors errors,
+			HttpServletRequest request,
 			Model model) {
-		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
 		MultipartFile multi = command.getM_file();
 		String newFileName = "";
 		if( multi!= null && !multi.isEmpty()){
+			//파일 삭제
+			AuthMember member = dao.selectMember(command.getM_id());
+			if(!member.getM_image().equals("")){
+				String path = request.getSession().getServletContext().getRealPath("/resources/uploads/m_image/") + member.getM_image();
+				try {
+					File file =  new File(path);
+					System.out.println(file.delete());
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			String fileName = multi.getOriginalFilename(); 
 			newFileName= System.currentTimeMillis()+"_"+fileName;
-			Set<String> pathSet = request.getSession().getServletContext().getResourcePaths("/");
-			
-			String path = request.getRealPath("/resources/uploads/")+"m_image/"+newFileName;
-			System.out.println();
+			String path = request.getSession().getServletContext().getRealPath("/resources/uploads/m_image/") +newFileName;
 			try {
 				File file =  new File(path);
 				multi.transferTo(file);
@@ -294,7 +303,20 @@ public class AdminController {
 		return "/ajax/ajaxDefault";
 	}
 	@RequestMapping(value = "/member/delete")
-	public String memberDelete(int m_id, Model model) {
+	public String memberDelete(int m_id,HttpServletRequest request, Model model) {
+		AuthMember member = dao.selectMember(m_id);
+		if(!member.getM_image().equals("")){
+			String path = request.getSession().getServletContext().getRealPath("/resources/uploads/m_image/") + member.getM_image();
+			try {
+				File file =  new File(path);
+				System.out.println(file.delete());
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		int delOk = dao.memberDelete(m_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -577,6 +599,57 @@ public class AdminController {
 		return "/ajax/ajaxDefault";
 	}
 
+	//memberExamImg
+	@RequestMapping(value = "/memberExam", method = RequestMethod.POST)
+	public String memberExamList(
+			@RequestParam(value="class_id") Integer class_id,
+			@RequestParam(value="exam_id") Integer exam_id,
+			Model model) {
+		List<MemberExam> rs = dao.memberExam(class_id,exam_id);
+		String json = "";
+		try {
+			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+			json = ow.writeValueAsString(rs);
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		model.addAttribute("json", "{\"data\": "+json+"}");
+		return "/ajax/ajaxDefault";
+	}
+
+	@RequestMapping(value = "/memberExamDelete", method = RequestMethod.POST)
+	public String memberExamDelete(
+			@RequestParam(value="m_id") Integer m_id,
+			@RequestParam(value="exam_id") Integer exam_id,
+			Model model) {
+		MemberExam memberExam = dao.memberExamByMemberId(m_id,exam_id);
+		if(memberExam!=null){
+			HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+			String path = request.getSession().getServletContext().getRealPath("/resources/uploads/exam/") + memberExam.getEx_img();
+			System.out.println(path);
+			try {
+				File file =  new File(path);
+				System.out.println(file.delete());
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		int delOk = dao.memberExamDelete(m_id,exam_id);
+		model.addAttribute("json", "{\"data\": "+delOk+"}");
+		//model.addAttribute("json", "{\"data\": "+0+"}");
+		return "/ajax/ajaxDefault";
+	}
+
+	
+	
+	
+	
 	//attendance
 	@RequestMapping(value = "/attendance/person", method = RequestMethod.GET)
 	public String attendPersonSubListPost(Model model) {

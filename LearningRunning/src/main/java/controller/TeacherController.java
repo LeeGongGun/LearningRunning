@@ -1,9 +1,15 @@
 package controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -17,6 +23,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartResolver;
 
 import bean.AuthMember;
@@ -152,6 +161,36 @@ public class TeacherController {
 			@RequestParam(value="exam_id") Integer exam_id,
 			Model model) {
 		int rs = dao.scoreDelete(exam_id);
+		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	@RequestMapping(value = "/score/imgInsert", method = RequestMethod.POST)
+	public String scoreImgInsert(
+			@RequestParam(value="exam_id") Integer exam_id,
+			@RequestParam(value="m_id") Integer m_id,
+			@RequestParam(value="ex_file") MultipartFile ex_file,
+			Model model) {
+		HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.currentRequestAttributes()).getRequest();
+		String newFileName = "";
+		String oriFileName = "";
+			if( ex_file!= null && !ex_file.isEmpty()){
+				oriFileName = ex_file.getOriginalFilename(); 
+				newFileName= System.currentTimeMillis()+"_"+oriFileName;
+				//Set<String> pathSet = request.getSession().getServletContext().getResourcePaths("/");
+				
+				String path = request.getRealPath("/resources/uploads/")+"exam/"+newFileName;
+				System.out.println(path);
+				try {
+					File file =  new File(path);
+					ex_file.transferTo(file);
+				} catch (IllegalStateException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}		
+			}
+		
+		int rs = dao.scoreImgInsert(exam_id,m_id,newFileName,oriFileName);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}

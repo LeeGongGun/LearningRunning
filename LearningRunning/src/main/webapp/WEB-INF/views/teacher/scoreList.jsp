@@ -19,6 +19,7 @@ input.score{width: 100%;height: 40px;border: 0px;}
 .search-th{width: 200px}
 td.input-td{padding:0px !important;}
 .search-div{ }
+#setNum{border:0;width: 50px;}
 </style>
 
 </head>
@@ -60,9 +61,11 @@ td.input-td{padding:0px !important;}
 								삭제</button>
 							<button id="allClear" class="btn  btn-default  btn-sm">
 								모두<input id="setNum" type="number" min=0 max=100 step=10
-									value='0' style="width: 50px; height: 16px;" />
+									value='0' />
 							</button>
 							<div class="box box-primary">
+								
+								<input type="hidden" name="exam_id" id="exam_frm_id">
 								<table class="table table-striped table-bordered table-hover"
 									id="sub-table" cellspacing="0" width="100%">
 									<thead>
@@ -87,7 +90,20 @@ td.input-td{padding:0px !important;}
 
 <%@ include file="/WEB-INF/views/include/html-footer.jsp"%>
 <%@ include file="/WEB-INF/views/include/html-rightAside.jsp"%>
-<script type="text/javascript">
+	<!-- Modal -->
+	<div class="modal" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	      </div>
+	      <div class="modal-body" style="min-height: 150px">
+			<img id='ex_img' alt="exam_img" src="">	        
+	      </div>
+	    </div>
+	  </div>
+	</div>
+	<script type="text/javascript">
 $.AdminLTE.dinamicMenu = function() {
     var url = window.location;
     // Will only work if string in href matches with location
@@ -102,9 +118,10 @@ $.AdminLTE.dinamicMenu();
 <script type="text/javascript">
 $(function(){
 	var members = [];
-	var bar = null;
+	$table=$("#sub-table");
+	getExamList();
+	getsubjects();
 	function getMembers(){
-		bar = null;
 		members = [];
 			$.ajax({
 		        url:"<%=rootPath%>/admin/classJoinMem",
@@ -118,14 +135,16 @@ $(function(){
 		        },
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
 		        } 
 		        
 		    });
 	}
 	var subjects = [];
 	function getsubjects(){
-		bar = null;
+		class_id = $("#class_select_id").val() || "";
+		exam_id = $("#exam_select_id").val() || "";
+		if(class_id!="" && exam_id!=""){		
 		subjects = [];
 			$.ajax({
 		        url:"<%=rootPath%>/admin/examSubject",
@@ -136,16 +155,19 @@ $(function(){
 		        	},
 		        success: function(json){
 		        	subjects = json.data;
+		        	
 		        },
 		        error : function(request, status, error) { 
 		        	//alert(okText+"내용을 확인해주세요");
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
 		        },
 		        complete: function(){
 		        	setTable();
 		        }
 		        
 		    });
+		}
+		
 	}
 	function setTable(){
 		
@@ -157,6 +179,14 @@ $(function(){
 		});
 		headTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		headTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
+		form = $("<form/>",{"id":"img_frm", "action":"<%=rootPath%>/teacher/score/imgInsert", "method":"post", "enctype":"multipart/form-data"});
+		form
+		.append($("<input/>",{"type":"file","id":"ex_file","class":"form-control ","name":"ex_file"}))
+		.append($("<button/>",{"type":"submit","class":"btn  btn-primary btn-sm","text":"업로드"}))
+		.append($("<input/>",{"type":"hidden","id":"img_frm_m_id","name":"m_id"}))
+		.append($("<input/>",{"type":"hidden","id":"img_frm_exam_id","name":"exam_id"}));
+
+		headTag.append($("<th/>",{"class":"file-th"}).append(form));
 		$("#sub-table>thead").empty().append(headTag);
 		
 		
@@ -167,12 +197,15 @@ $(function(){
 		});
 		footTag.append($("<th/>",{"class":"total-th",text:"총합"}));
 		footTag.append($("<th/>",{"class":"sum-th",text:"평균"}));
+//		footTag.append($("<th/>").append($("<button/>",{"type":"submit","class":"btn  btn-primary btn-sm ex_file_submit","id":"ex_file_submit","text":"img 저장"})));
 		$("#sub-table>tfoot").empty().append(footTag);
 		
 		
 		conTag = $("#sub-table>tbody").empty();
 		$(members).each(function(i,member){
 			if(member.class_id>0){
+				$class_select_id = 	$("#class_select_id").val();			
+				$exam_select_id = 	$("#exam_select_id").val();			
 				memTag = $("<tr/>",{"class":"list-tr"});
 				memTag.append("<td class='m-name'>"+member.m_name+"</td>");
 				$(subjects).each(function(j,subject){
@@ -182,9 +215,9 @@ $(function(){
 						"step":10,
 						"min":0,
 						"max":100,
-						"data-class_id":$("#class_select_id").val(),
+						"data-class_id":$class_select_id,
 						"data-m_id":member.m_id,
-						"data-exam_id":$("#exam_select_id").val(),
+						"data-exam_id":$exam_select_id,
 						"data-subject_id":subject.subject_id,
 						
 						//"value":tmp
@@ -195,41 +228,103 @@ $(function(){
 				});
 				memTag.append($("<th/>",{"class":"sum-th"}));
 				memTag.append($("<th/>",{"class":"avg-th"}));
+//				form = $("<form/>",{"class":"img_frm", "action":"<%=rootPath%>/teacher/score/imgInsert", "method":"post", "enctype":"multipart/form-data"});
+//				form
+//					.append($("<button/>",{"type":"submit","class":"btn  btn-primary btn-sm","text":"이미지"}))
+//					.append($("<input/>",{"type":"file","class":"ex_file","name":"ex_file"}))
+//					.append($("<input/>",{"type":"hidden","class":"m_id","name":"m_id","value":member.m_id}))
+//					.append($("<input/>",{"type":"hidden","class":"exam_id","name":"exam_id","value":$exam_select_id}));
+//				memTag.append($("<th/>",{"class":"ex_file-th"}).append(form));
+				memTag.append($("<th/>",{"class":"ex_file-th"})
+						.append($("<button/>",{"type":"button","class":"imgInsertBtn btn btn-primary btn-xs","text":"img 입력"}))
+						.append($("<button/>",{"type":"button","class":"imgShowBtn btn btn-default btn-xs hidden","text":"img 보기"}))
+						.append($("<button/>",{"type":"button","class":"imgDelBtn btn btn-warning btn-xs hidden","text":"img 삭제"}))
+						.data("exam_id",Number($exam_select_id))
+						.data("m_id",member.m_id)
+				);
 				conTag.append(memTag);
 			}
 		});
-		
+		bindingAjaxForm();
 		getScoreList();
+		getMemberExam();
 	}
-	$("#sub-table").on("keydown","#searchText",function(e){
+	$table.on("keydown","#searchText",function(e){
 		if(e.which == 13){
 			getTableList($("#searchText").val().toUpperCase());
 		}
 	});
+	$table.on("click","button.imgInsertBtn",function(){
+		//val(data) ex_file-th
+		$parent = $(this).parent("th.ex_file-th")
+		$("#img_frm_m_id").val($parent.data("m_id"));
+		$("#img_frm_exam_id").val($parent.data("exam_id"));
+		$("#ex_file").trigger("click");
+		
+	});
+	$table.on("click","button.imgShowBtn",function(){
+		//val(data) ex_file-th
+		$parent = $(this).parent("th.ex_file-th")
+		$("#myModal").find("#ex_img").attr("src","<%=rootPath%>/uploads/exam/"+$parent.data("ex_img"));
+		$("#myModal").modal("show");
+		
+	});
+	$table.on("click","button.imgDelBtn",function(){
+		//val(data) ex_file-th
+		data = $(this).parent("th.ex_file-th").data();
+		$.ajax({
+	        url:"<%=rootPath%>/admin/memberExamDelete",
+	        type:'post',
+	        data: data,
+	        success: function(json){
+				if(json.data==1) alert('이미지를 삭제하였습니다.');
+				setTable();
+	        },
+	        error : function(request, status, error) { 
+	            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+	        } 
+	    });					
+	});
 	$("#searchBtn").click(function(){
 		getTableList("");
 	});
-	$("#sub-table").on("input","input.score",function(){
+	$table.on("input","input.score",function(){
 		isEqualScore(this);
-	});
-	$(".search-table").on("click",".hover-td",function(){
-		if($.isEmptyObject(this)) return false;
-		$("#mode").val("edit");
-		$("#insert").text("수정");
-		$("#m_id").val($(this).prev().text());
-		$("#m_name").val($("a",this).text());
-		$("#m_email").val($(this).next().text());
-		$("#m_pass").val($(this).next().next().text());
-		$('#myModal').modal();
-
 	});
 	$("#class_select_id").change(getExamList);
 	$("#exam_select_id").change(getsubjects);
 	
+	function getMemberExam(){
+		class_id = $("#class_select_id").val() || "";
+		exam_id = $("#exam_select_id").val() || "";
+		if(class_id!="" && exam_id!="" ){
+			$.ajax({
+		        url:"<%=rootPath%>/admin/memberExam",
+		        type:'post',
+		        data: {class_id: class_id,exam_id: exam_id},
+		        success: function(json){
+		    		$(json.data).each(function(i,item){
+				       	$table.find(".ex_file-th").each(function(i,th){
+							if($(th).data("m_id")==item.m_id && $(th).data("exam_id")==item.exam_id){
+								$(th).find("button.imgInsertBtn").addClass("hidden");		        		
+								$(th).find("button.imgShowBtn").removeClass("hidden");		        		
+								$(th).find("button.imgDelBtn").removeClass("hidden");
+								$(th).data('ex_img',item.ex_img);
+							}
+			        	});
+		    		});
+		        },
+		        error : function(request, status, error) { 
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		    });			
+		}
+	}
 	
 	
 	function getExamList(){
-		if($("#class_select_id").val()!=""){
+		class_id = $("#class_select_id").val() || "";
+		if(class_id!=""){
 			$.ajax({
 		        url:"<%=rootPath%>/admin/exam",
 		        type:'post',
@@ -242,7 +337,7 @@ $(function(){
 					$("#exam_select_id").empty().append(conTag);		        		
 		        },
 		        error : function(request, status, error) { 
-		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
 		        } 
 		    });
 		}else{
@@ -271,32 +366,62 @@ $(function(){
 	
 	
 	function getScoreList(){
-		$.ajax({
-	        url:"<%=rootPath%>/teacher/score",
-	        type:'post',
-	        data: {
-        		exam_id: $("#exam_select_id").val(),
-	        },
-	        success: function(json){			
-	        		$(json.data).each(function(i,item){
-	        			$("#sub-table input[data-exam_id='"+item.exam_id+"']"
-	        			+"[data-m_id='"+item.m_id+"']"
-	        			+"[data-subject_id='"+item.subject_id+"']"
-	        			).val(item.score).attr("data-score",item.score).removeClass("newScore changed");
-	        		});
-	        		setSum();
-      },
-	        error : function(request, status, error) { 
-	            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
-	        } 
-	        
-	    });
+		exam_id = $("#exam_select_id").val() || "";
+		if(exam_id!=""){
+			$.ajax({
+		        url:"<%=rootPath%>/teacher/score",
+		        type:'post',
+		        data: {
+	        		"exam_id": exam_id,
+		        },
+		        success: function(json){			
+		        		$(json.data).each(function(i,item){
+		        			$table.find("input[data-exam_id='"+item.exam_id+"']"
+		        			+"[data-m_id='"+item.m_id+"']"
+		        			+"[data-subject_id='"+item.subject_id+"']"
+		        			).val(item.score).attr("data-score",item.score).removeClass("newScore changed");
+		        		});
+		        		setSum();
+	     		 },
+		        error : function(request, status, error) { 
+		            //alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
+		        } 
+		        
+		    });
+		}
 		
 	}
 	$("#allInsert").click(allInsert);
 	$("#allEdit").click(allEdit);
 	$("#allClear").click(allClear);
 	$("#allDel").click(allDel);
+	function bindingAjaxForm(){
+		$("#img_frm").ajaxForm({
+	        beforeSubmit: function (data,form,option) {
+				imgSum = 0;
+				console.log($(form).find('input#ex_file').val());
+				if(!$(form).find('input#img_frm_m_id').val()) return false;
+				if(!$(form).find('input#img_frm_exam_id').val()) return false;
+				if(!$(form).find('input#ex_file').val()) return false;
+				return true;
+	        },
+	        success: function(response,status,xhr){
+	        	console.log(xhr);
+	        	 var ct = xhr.getResponseHeader("content-type") || "";
+	        	    if (ct.indexOf('html') > -1) {}
+	        	    if (ct.indexOf('json') > -1) {
+			    		alert(" 이미지 업로드 성공하였습니다.");
+			    		getsubjects();
+	        	    } 
+	        },
+	        error: function(request, status, error){
+	        	if(request.status==500)	alert("이미 저장된 이미지가 있습니다 삭제후 업로드 해주세요");
+	        	else 	alert("이미지를 확인해주세요");
+	           //에러발생을 위한 code페이지
+	        }                              
+	    });
+	}
+			
 	function allInsert(){
 		obj = $("#sub-table input.newScore");
 		exam_ids =[];
@@ -347,7 +472,6 @@ $(function(){
 			subject_ids.push($(this).attr("data-subject_id"));
 			scores.push(($(this).val()=="")?0:$(this).val());
 		});
-		console.log(exam_ids.length);
 		if(exam_ids.length>0 
 				&& exam_ids.length == m_ids.length 
 				&& exam_ids.length == subject_ids.length  
@@ -403,7 +527,7 @@ $(function(){
 		}
 	}
 	function allClear(){
-		$("#sub-table input.score").val($("#setNum").val()).each(function(){isEqualScore(this)});
+		$table.find("input.score").val($("#setNum").val()).each(function(){isEqualScore(this)});
 	}
 	function isEqualScore(obj){
 		val = $(obj).val();
@@ -415,7 +539,7 @@ $(function(){
 	function setSum(){
 		subAvg = [];
 		subCnt = 0;
-		$("#sub-table tbody>tr").each(function(i,tr){
+		$table.find("tbody>tr").each(function(i,tr){
 			
 			sum=0;
 			cnt=0;
@@ -435,7 +559,7 @@ $(function(){
 		});
 		if(subCnt>0){
 			$(subAvg).each(function(i,item){
-				$(".subAvg-th:eq("+i+")").text((subAvg[i]/subCnt).toFixed(2));
+				$table.find(".subAvg-th:eq("+i+")").text((subAvg[i]/subCnt).toFixed(2));
 			});
 		}
 

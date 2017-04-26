@@ -25,6 +25,7 @@ import bean.CurriJoinSubject;
 import bean.Curriculum;
 import bean.Exam;
 import bean.ExamJoinSubject;
+import bean.MemberExam;
 import bean.Subject;
 import bean.TempAttendance;
 import command.AttendanceInsertCommand;
@@ -768,6 +769,36 @@ public class AdminDao {
 		List<TempAttendance> results = 
 				jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id, status);
 		return !results.isEmpty();
+	}
+	
+	//MemberExam
+	private RowMapper<MemberExam> MemberExamMapper = new RowMapper<MemberExam>() {
+		@Override
+		public MemberExam mapRow(ResultSet rs, int rowNum) throws SQLException {
+			MemberExam beanAttendance = new MemberExam(
+					rs.getInt("EXAM_ID"),
+					rs.getInt("M_ID"),
+					rs.getString("EX_IMG"),
+					rs.getString("ORI_FILE_NAME")
+			);
+			return beanAttendance;
+		}		
+	};
+	
+	public List<MemberExam> memberExam(Integer class_id, Integer exam_id) {
+		String sql = "select * from (select * from EXAM_MEMBER where m_id in (select m_id from member_class where class_id = ?)) where exam_id=? ";
+		List<MemberExam> results = 
+				jdbcTemplate.query(sql, MemberExamMapper, class_id, exam_id);
+		return results;
+	}
+	public int memberExamDelete(Integer m_id, Integer exam_id) {
+		return jdbcTemplate.update("delete from EXAM_MEMBER where m_id = ? and exam_id = ?",m_id,exam_id);
+	}
+	public MemberExam memberExamByMemberId(Integer m_id, Integer exam_id) {
+		String sql = "select * from EXAM_MEMBER where m_id=? and exam_id=? ";
+		List<MemberExam> result = 
+				jdbcTemplate.query(sql, MemberExamMapper, m_id, exam_id);
+		return result.isEmpty()?null:result.get(0);
 	} 
 
 }

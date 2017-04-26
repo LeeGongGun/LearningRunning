@@ -32,8 +32,28 @@ body{}
 }
 </style>
 </head>
+
 <body class="hold-transition register-page">
-<div id="background-changer"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '284758311950258',
+      xfbml      : true,
+      version    : 'v2.9'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0]
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+  
+</script>
+    <div id="background-changer"></div>
 	<div class="register-box">
 		<div class="register-logo">
 			<a href="<%=request.getContextPath()%>/"><b>출석</b>해쓰~</a>
