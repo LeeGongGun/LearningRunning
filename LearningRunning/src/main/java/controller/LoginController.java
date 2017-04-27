@@ -14,12 +14,12 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.multipart.MultipartResolver;
 
 import bean.AuthInfo;
 import bean.AuthMember;
 import command.LoginCommand;
 import command.LoginCommandValidator;
+import command.RegisterCommand;
 import dao.DefaultDao;
 import exception.IdPasswordNotMatchException;
 
@@ -160,6 +160,20 @@ public class LoginController {
 	@RequestMapping(value = "/register",method=RequestMethod.GET)
 	public String register(Model model) {
 		return "register/register";
+	}
+
+	@RequestMapping(value = "/register",method=RequestMethod.POST)
+	public String registerFrom(RegisterCommand command,Errors errors,Model model) {
+			AuthMember member = dao.selectMemberByEmail(command.getM_email());
+			int rs = 0;
+			if (member != null){
+				rs=-1;
+			}else{
+				rs = dao.memberRegister(command);
+			}
+			model.addAttribute("json", "{\"data\": "+rs+"}");
+			return "/ajax/ajaxDefault";
+
 	}
 
 }

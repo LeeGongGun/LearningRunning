@@ -277,10 +277,10 @@
 			        data: {exam_id: del_id},
 			        success: function(json){
 			        	if(json.data>0) {
-			        		alert("삭제성공하였습니다.");
+			        		alert("삭제 성공하였습니다.");
 			        		getExamList();
 			        	}else if(json.data==0){
-			        		alert("점수데이터가 있어서 삭제불가능.");
+			        		alert("연관데이터가 있어서 삭제가 불가능 합니다..");
 			        	}
 			        		
 			        },
@@ -328,8 +328,8 @@
 					$(json.data).each(function(i,item){
 							conTag +="<tr data-class_id='"+item.class_id+"'>";
 							conTag +="<td>"+item.exam_id+"</td>";
-							conTag +="<td>"+item.class_name+"</td>";
 							conTag +="<td class=\"hover-td\"><a href=\"javascript:\" >"+item.exam_title+"</a></td>";
+							conTag +="<td>"+item.class_name+"</td>";
 							conTag +="<td>"+item.exam_date+"</td>";
 							conTag +="<td><button class=\"btn btn-default delBtn\" data-exam_id=\""+item.exam_id+"\">삭제</button></td>";
 							conTag +="</tr>";

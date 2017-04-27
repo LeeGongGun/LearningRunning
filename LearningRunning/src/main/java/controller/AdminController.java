@@ -2,13 +2,12 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.Time;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -18,21 +17,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartResolver;
 
 import bean.Attendance;
+import bean.AuthInfo;
 import bean.AuthMember;
 import bean.ClassJoinMem;
 import bean.ClassJoinSubject;
 import bean.Classes;
-import bean.Counsel;
 import bean.CurriJoinSubject;
 import bean.Curriculum;
 import bean.Exam;
@@ -40,7 +37,6 @@ import bean.ExamJoinSubject;
 import bean.MemberExam;
 import bean.Subject;
 import bean.TempAttendance;
-import command.AttendanceInsertCommand;
 import command.ClassesSearchCommand;
 import command.MemberSearchCommand;
 import command.PersonSearch;
@@ -51,7 +47,6 @@ import dao.AdminDao;
 @RequestMapping("/admin")
 public class AdminController {
 	private AdminDao dao;
-	private MultipartResolver multipartResolver;
 	@Autowired
 	public void setAdminDao(AdminDao dao) {
 		this.dao = dao;
@@ -75,6 +70,12 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/class/delete")
 	public String classDelete(int class_id, Model model) {
+		//테이블데이터검증
+		//MEMBER_CLASS
+		//CLASS_SUBJECT
+		//EXAM
+		//ATTENDANCE
+		//TEMP_ATTENDANCE
 		int delOk = dao.classDelete(class_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -128,9 +129,14 @@ public class AdminController {
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
 			@RequestParam(value="auth_ename") String auth_ename,
 			@RequestParam(value="auth_end_date",required=false) String auth_end_date,
+			HttpSession session,
 			Model model) {
-		int auth_manager_id = 1;
-		int rs = dao.authInsert(m_ids,auth_ename,auth_manager_id);
+		
+		AuthInfo authInfo = (AuthInfo) session.getAttribute("authinfo");
+		int rs=0;
+		if(authInfo!=null && authInfo.isAdmin()){
+			rs = dao.authInsert(m_ids,auth_ename,authInfo.getM_id());
+		}
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
@@ -139,7 +145,7 @@ public class AdminController {
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int delOk = dao.authDelete(m_ids,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -197,7 +203,7 @@ public class AdminController {
 			@RequestParam(value="class_id") String class_id,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int rs = dao.classJoinMemInsert(m_ids,class_id,auth_ename);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -208,7 +214,7 @@ public class AdminController {
 			@RequestParam(value="class_id") String class_id,
 			@RequestParam(value="auth_ename") String auth_ename,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int delOk = dao.classJoinMemDelete(m_ids,class_id,auth_ename);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -304,6 +310,15 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/member/delete")
 	public String memberDelete(int m_id,HttpServletRequest request, Model model) {
+		
+		//테이블데이터검증
+		//ATTENDANCE
+		//COUNSEL
+		//EXAM_MEMBER
+		//EXAM_SCORE
+		//MEMBER_AUTH
+		//MEMBER_CLASS
+		//TEMP_ATTENDANCE
 		AuthMember member = dao.selectMember(m_id);
 		if(!member.getM_image().equals("")){
 			String path = request.getSession().getServletContext().getRealPath("/resources/uploads/m_image/") + member.getM_image();
@@ -381,6 +396,9 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/curri/delete")
 	public String curriDelete(int cur_id, Model model) {
+		//테이블데이터검증필요
+		//CLASSES
+		//현재 클래스 입력시 커리큘럼입력 안됨
 		int delOk = dao.curriDelete(cur_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -409,7 +427,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="cur_id") String cur_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int rs = dao.curriJoinSubInsert(subject_ids,cur_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -419,7 +437,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="cur_id") String cur_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int delOk = dao.curriJoinSubDelete(subject_ids,cur_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -471,7 +489,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="class_id") String class_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int rs = dao.classJoinSubInsert(subject_ids,class_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -481,7 +499,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="class_id") String class_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int delOk = dao.classJoinSubDelete(subject_ids,class_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -506,6 +524,11 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/classSubject/delete")
 	public String subjectDelete(int subject_id, Model model) {
+		//테이블데이터검증필요
+		//CLASS_SUBJECT
+		//CURRICULUM_SUBJECT
+		//EXAM_SCORE
+		//EXAM_SUBJECT
 		int delOk = dao.subjectDelete(subject_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -554,6 +577,10 @@ public class AdminController {
 	}
 	@RequestMapping(value = "/exam/delete", method = RequestMethod.POST)
 	public String examDelete(int exam_id, Model model) {
+		//테이블데이터검증필요
+		//EXAM_MEMBER
+		//EXAM_SUBJECT
+		//EXAM_SCORE
 		int delOk=0;
 		if(dao.countExamScore(exam_id)==0) delOk = dao.examDelete(exam_id);//점수가 없는경우에만 삭제가능
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
@@ -583,7 +610,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="exam_id") String exam_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int rs = dao.examJoinSubInsert(subject_ids,exam_id);
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
@@ -593,7 +620,7 @@ public class AdminController {
 			@RequestParam(value="subject_id[]") List<Integer> subject_ids,
 			@RequestParam(value="exam_id") String exam_id,
 			Model model) {
-		int auth_manager_id = 1;
+		
 		int delOk = dao.examJoinSubDelete(subject_ids,exam_id);
 		model.addAttribute("json", "{\"data\": "+delOk+"}");
 		return "/ajax/ajaxDefault";
@@ -653,6 +680,7 @@ public class AdminController {
 	//attendance
 	@RequestMapping(value = "/attendance/person", method = RequestMethod.GET)
 	public String attendPersonSubListPost(Model model) {
+		//권한별로 로직을 다르게 하기위해 추가작업해야함
 		boolean isTeacher = false;
 		boolean isAdmin = true;
 		boolean isStudent = false;
@@ -722,7 +750,6 @@ public class AdminController {
 			@RequestParam(value="class_id") String class_id,
 			@RequestParam(value="status") String status,
 			Model model) {
-		int auth_manager_id = 1;
 		if(!status.equals("CHECK")){
 			for (Iterator<Integer> it = m_ids.iterator() ; it.hasNext() ;) {
 				Integer m_id = it.next();

@@ -205,6 +205,8 @@
 			        	if(json.data>0) {
 			        		alert("삭제성공하였습니다.");
 			        		getMemberList();
+			        	}else if(json.data==0){
+			        		alert("연관데이터가 있어서 삭제가 불가능 합니다..");
 			        	}
 			        		
 			        },

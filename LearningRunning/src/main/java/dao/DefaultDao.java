@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import bean.AuthMember;
+import command.RegisterCommand;
 
 public class DefaultDao {
 	private JdbcTemplate jdbcTemplate;
@@ -55,6 +56,23 @@ public class DefaultDao {
 		},m_id);
 		return result;
 		
+	}
+	public AuthMember selectMemberByEmail(String email) {
+		String sql = "select * from  MEMBER  "
+				+ "where m_email = ?";
+		List<AuthMember> result = jdbcTemplate.query(sql,member2RowMapper,email);
+		return result.isEmpty()?null:result.get(0);
+
+	}
+	
+	public int memberRegister(RegisterCommand command) {
+		return jdbcTemplate.update(" INSERT INTO MEMBER "
+				+ "(M_ID,M_EMAIL,M_NAME,M_PASS) "
+				+ " VALUES(SEQUENCE_MEMBER.NEXTVAL,?,?,?) ",
+				command.getM_email(),
+				command.getM_name(),
+				command.getM_pass()
+				);
 	}
 
 }

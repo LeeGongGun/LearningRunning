@@ -50,6 +50,8 @@
 									id="attendDate" readonly="readonly">
 								<button type="button" class="btn btn-primary"
 									id="attendInsertBtn">입력</button>
+								<button type="button" class="btn btn-primary"
+									id="todayInsertBtn">일일 결과 입력</button>
 							</form>
 						</div>
 						<div class="box box-primary">
@@ -213,7 +215,7 @@ $(function(){
 			arr.push($(this).val());
 		});
 		if(arr.length>0){
-			if(confirm(arr.length+"건 "+$("#status").val()+" 하시겠습니까?")){
+			if(confirm(arr.length+"건 "+$("#status").find("option:selected").text()+"로 입력하시겠습니까?")){
 			$.ajax({
 		        url : "<%=rootPath %>/admin/tempAttend/insert",
 							type : 'post',

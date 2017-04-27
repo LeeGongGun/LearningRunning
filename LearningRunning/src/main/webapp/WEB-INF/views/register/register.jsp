@@ -38,21 +38,21 @@
   <div class="register-box-body">
     <p class="login-box-msg">회원 가입</p>
 
-    <form id="registerFrm">
+    <form id="registerFrm" method="post">
       <div class="form-group has-feedback">
-        <input type="text" name="m_name" id="m_name" class="form-control" placeholder="이름">
+        <input type="text" name="m_name" id="m_name" class="form-control" placeholder="이름" required="required">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="email" name="m_email" id="m_email" class="form-control" placeholder="Email(아이디용)">
+        <input type="email" name="m_email" id="m_email" class="form-control" placeholder="Email(아이디용)" required="required">
         <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" name="m_name" id="m_name" class="form-control" placeholder="Pass">
+        <input type="password" name="m_pass" id="m_pass" class="form-control" placeholder="Pass" required="required">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" name="m_name" id="m_name" class="form-control" placeholder="Re pass">
+        <input type="password" name="m_repass" id="m_repass" class="form-control" placeholder="Re pass" required="required">
         <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
       </div>
       <div class="row">
@@ -69,10 +69,10 @@
       </div>
     </form>
 
-    <div class="social-auth-links text-center">
+    <div class="social-auth-links text-center">&f02c;
       <p>- OR -</p>
-      <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> 페이스북 ID로 로그인 / 가입</a>
-      <a href="#" class="btn btn-block btn-social btn-naver btn-flat"><i class="fa fa-google-plus"></i> 네이버 ID로 로그인 / 가입</a>
+      <a href="#" id="googleLogin" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> 페이스북 ID로 로그인 / 가입</a>
+      <a href="#" id="naverLogin" class="btn btn-block btn-social btn-naver btn-flat"><i class="fa fa-naver"></i> 네이버 ID로 로그인 / 가입</a>
     </div>
   </div>
   <!-- /.form-box -->
@@ -101,7 +101,44 @@
                 $(this).fadeIn("slow"); // 1000 = 1초
             });
         }, interval);
+		$("#registerFrm").ajaxForm({
+	        beforeSubmit: function (data,form,option) {
+	        	if($("#m_pass").val().length <= 4){
+					alert("비밀번호가 너무 짧습니다.");
+					$("#m_pass").focus();
+					return false;
+	        	}
+				if($("#m_pass").val()!=$("#m_repass").val()) {
+					alert("비밀번호 불일치");
+					$("#m_repass").focus();
+					return false;
+				}
+	        	return true;
+	        },
+	        success: function(response,status,xhr){
+	        	 var ct = xhr.getResponseHeader("content-type") || "";
+	        	    if (ct.indexOf('html') > -1) {}
+	        	    if (ct.indexOf('json') > -1) {
+						if(response.data==-1){
+							alert($("#m_email").val()+"은 이미 가입된 이메일입니다.");
+							$("#m_email").focus();
+						}else if(response.data==1){
+							alert($("#m_name").val()+"님 회원가입이 성공하였습니다 로그인 페이지로 이동합니다.");
+							location.href='<%=request.getContextPath() %>/login';
+						}
+	        	    } 
+	        },
+	        error: function(request, status, error){
+	        		alert("문제가 있습니다.");
+	        }                              
+	    });
+		$("#googleLogin,#naverLogin").click(function(){
+			alert("준비중입니다.");
+		});
+  
   });
+  
+  
 </script>
 
 

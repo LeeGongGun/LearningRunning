@@ -1,11 +1,8 @@
 package dao;
 
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -151,7 +148,6 @@ public class AdminDao {
 		return result.isEmpty()?null:result.get(0);
 	}
 	public List<Classes> teacherClassList(int teacher_id) {
-		String whereSql = "";
 		String sql = "(select * from  MEMBER_CLASS where m_id= "+teacher_id+" and auth_ename='teacher')"
 				+ "natural join CLASSES "
 				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY CLASS_ID)  USING(CLASS_ID) ";
@@ -159,7 +155,6 @@ public class AdminDao {
 		return result;
 	}
 	public List<Classes> studentClassList(int student_id) {
-		String whereSql = "";
 		String sql = "(select * from  MEMBER_CLASS where m_id= "+student_id+" and auth_ename='student')"
 				+ "natural join CLASSES "
 				+ "left outer join (select CLASS_ID,count(*) as STUDENT_COUNT from MEMBER_CLASS where AUTH_ENAME='student' GROUP BY CLASS_ID)  USING(CLASS_ID) ";
@@ -547,7 +542,6 @@ public class AdminDao {
 
 	public List<Exam> examlList(examCommand command) {
 		String whereSql ="";
-		String joinSql ="";
 		int tmp=0;
 		if(command.getClass_id()>0){
 			whereSql += (tmp==0)?" where ":" and ";

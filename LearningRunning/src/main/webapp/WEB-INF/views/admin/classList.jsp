@@ -46,28 +46,28 @@
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="box box-success form-inline">
-							<button type="button" class="btn btn-primary btn-lg" id="modalOn">
+							<button type="button" class="btn btn-primary btn-sm" id="modalOn">
 								입력</button>
 						</div>
+					
+						<div class="box box-primary">
+							<table class="table table-striped table-bordered" id="sub-table">
+								<thead>
+									<tr>
+	
+										<th>번호</th>
+										<th>반명</th>
+										<th>시작일</th>
+										<th>종료일</th>
+										<th>인원수</th>
+										<th>상태</th>
+										<th>삭제</th>
+									</tr>
+								</thead>
+								<tbody></tbody>
+							</table>
+						</div>
 					</div>
-					<div class="box box-primary">
-						<table class="table table-striped table-bordered" id="sub-table">
-							<thead>
-								<tr>
-
-									<th>번호</th>
-									<th>반명</th>
-									<th>시작일</th>
-									<th>종료일</th>
-									<th>인원수</th>
-									<th>상태</th>
-									<th>삭제</th>
-								</tr>
-							</thead>
-							<tbody></tbody>
-						</table>
-					</div>
-
 				</div>
 			</section>
 		</div>
@@ -96,7 +96,7 @@
 									<input type="hidden" class="form-control" id="class_id"
 										name="class_id" placeholder="아이디"> <input type="text"
 										class="form-control" id="class_name" name="class_name"
-										placeholder="과정명" required="required">
+										placeholder="반명" required="required">
 								</div>
 							</div>
 							<div class="form-group">
@@ -230,6 +230,8 @@ $(function(){
 		        	if(json.data>0) {
 		        		alert("삭제성공하였습니다.");
 		        		getSubjectList();
+		        	}else if(json.data==0){
+		        		alert("연관데이터가 있어서 삭제가 불가능 합니다.");
 		        	}
 		        		
 		        },

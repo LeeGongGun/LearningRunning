@@ -36,7 +36,7 @@
 								<option value="student">학생</option>
 								<option value="teacher">선생님</option>
 								<option value="admin">관리자</option>
-							</select> <input type="input" class="form-control form-inline"
+							</select> <input type="input" class="form-control form-inline hidden"
 								id="auth_end_date" name="auth_end_date" title="관한종료일"
 								placeholder="종료일">
 
