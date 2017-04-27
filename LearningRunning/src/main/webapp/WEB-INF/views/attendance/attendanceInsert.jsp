@@ -150,7 +150,8 @@ $(function(){
 		        type:'post',
 		        data: {
 		        	class_id: $class_id.val(),
-		        	status: $("#status").val()
+		        	status: $("#status").val(),
+		        	temp_date: $("#attendDate").val()
 		        	},
 		        success: function(json){
 		        	authTag = "";
@@ -218,30 +219,60 @@ $(function(){
 			if(confirm(arr.length+"건 "+$("#status").find("option:selected").text()+"로 입력하시겠습니까?")){
 			$.ajax({
 		        url : "<%=rootPath %>/admin/tempAttend/insert",
-							type : 'post',
-							data : {
-								m_id : arr,
-								class_id : $class_id.val(),
-								status : $("#status").val(),
-							},
-							success : function(json) {
-								if (json.data > 0){
-									alert(arr.length+"건 "+$("#status").val()+" 성공하였습니다.");
-									getTempAttendList();
-								}
-							},
-							error : function(request, status, error) {
-								//alert(okText+"내용을 확인해주세요");
-								alert("code : " + request.status
-										+ "\r\nmessage : "
-										+ request.reponseText);
-							}
-
-						});
+				type : 'post',
+				data : {
+					m_id : arr,
+					class_id : $class_id.val(),
+					temp_date : $("#attendDate").val(),
+					status : $("#status").val(),
+				},
+				success : function(json) {
+					if (json.data > 0){
+						alert(json.data+"건 "+$("#status").val()+" 성공하였습니다.");
+						getTempAttendList();
 					}
+				},
+				error : function(request, status, error) {
+					//alert(okText+"내용을 확인해주세요");
+					alert("code : " + request.status
+							+ "\r\nmessage : "
+							+ request.reponseText);
 				}
-			}
+
 			});
+			}
+		}
+	}
+	function attendConfirm(){
+		$class_id = $("#class_select_id");
+		if($class_id.val()!=""){
+			if(confirm(arr.length+"건 "+$("#status").find("option:selected").text()+"로 입력하시겠습니까?")){
+			$.ajax({
+		        url : "<%=rootPath %>/admin/tempAttend/attendConfirm",
+				type : 'post',
+				data : {
+					class_id : $class_id.val(),
+					temp_date : $("#attendDate").val(),
+				},
+				success : function(json) {
+					if (json.data > 0){
+						alert(json.data+"건 "+$("#status").val()+" 성공하였습니다.");
+						getTempAttendList();
+					}
+				},
+				error : function(request, status, error) {
+					//alert(okText+"내용을 확인해주세요");
+					alert("code : " + request.status
+							+ "\r\nmessage : "
+							+ request.reponseText);
+				}
+
+			});
+			}
+		}
+	}
+	
+});
 		</script>
 	</div>
 </body>

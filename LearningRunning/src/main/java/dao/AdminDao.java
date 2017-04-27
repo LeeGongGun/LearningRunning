@@ -3,6 +3,7 @@ package dao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -668,7 +669,7 @@ public class AdminDao {
 					rs.getInt("attend_id"),
 					rs.getInt("class_id"),
 					rs.getInt("m_id"),
-					rs.getDate("attend_date"),
+					rs.getDate("attend_date").toString(),
 					rs.getString("attend_status"),
 					rs.getString("start_time"),
 					rs.getString("end_time"),
@@ -694,8 +695,8 @@ public class AdminDao {
 					rs.getInt("ClASS_ID"),
 					rs.getInt("M_ID"),
 					rs.getTime("CHECK_TIME"),
-					rs.getString("STATUS")
-					
+					rs.getString("STATUS"),
+					rs.getString("TEMP_DATE")
 			);
 			return beanAttendance;
 		}		
@@ -714,11 +715,11 @@ public class AdminDao {
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 	}
-	public List<TempAttendance> tempAttendanceList(int class_id, String status) {
+	public List<TempAttendance> tempAttendanceList(int class_id, String status,String date) {
 		if(status.toUpperCase().equals("CHECK")) return null;
-		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? and status=? ) "
+		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? and status=? and temp_date=? ) "
 				+ "natural join MEMBER  ";
-		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id,status);
+		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id,status,date);
 		return result;
 	}
 	public int attendInsert(AttendanceInsertCommand command,int class_id) {
@@ -745,37 +746,68 @@ public class AdminDao {
 		return jdbcTemplate.update(sql, command.getTime(),class_id);
 	}
 	@Transactional
-	public int tempAttendInsert(List<Integer> m_ids, String class_id,Time time,String status) {
+	public int tempAttendInsert(List<Integer> m_ids, String class_id,Time time,String status,String temp_date) {
 		int result=0;
 		for (int i = 0;i<m_ids.size() ;i++) {
-			result += jdbcTemplate.update("insert into TEMP_ATTENDANCE (TEMP_ID,CLASS_ID,M_ID,CHECK_TIME,STATUS) "
-					+ "values(SEQUENCE_TEMP_ATTEND.NEXTVAL,?,?,?,?) ",
+			result += jdbcTemplate.update("insert into TEMP_ATTENDANCE (TEMP_ID,CLASS_ID,M_ID,CHECK_TIME,STATUS,TEMP_DATE) "
+					+ "values(SEQUENCE_TEMP_ATTEND.NEXTVAL,?,?,?,?,?) ",
 					class_id,
 					m_ids.get(i),
 					time,
-					status
+					status,
+					temp_date
 					);
 		}
 		return result;
 	}
-	public boolean isAttend(Integer m_id, String class_id, String status) {
-		String sql = "select * from TEMP_ATTENDANCE where M_ID = ? and CLASS_ID=?  and STATUS=? ";
-		List<TempAttendance> results = 
-				jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id, status);
-		return !results.isEmpty();
+	public TempAttendance getAttend(Integer m_id, String class_id,String status,String temp_date) {
+		String sql = "select * from TEMP_ATTENDANCE where M_ID = ? and CLASS_ID=?   and STATUS=?  and TEMP_DATE=?  ";
+		List<TempAttendance> result = 
+				jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id, status, temp_date);
+		return result.isEmpty()?null:result.get(0);
 	}
+	public List<TempAttendance> tempAttendanceListByClass(String class_id) {
+		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? ) "
+				+ "natural join MEMBER  ";
+		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id);
+		return result;
+	} 
+
+	
+	
+	private RowMapper<Attendance> confirmAttendanceRowMapper = new RowMapper<Attendance>() {
+		@Override
+		public Attendance mapRow(ResultSet rs, int rowNum) throws SQLException {
+			Attendance beanAttendance = new Attendance(
+					rs.getInt("ClASS_ID"),
+					rs.getInt("M_ID"),
+					rs.getDate("TEMP_DATE").toString()
+			);
+			return beanAttendance;
+		}		
+	};
+	
+	
+	public List<Attendance> tempAttendanceListByClassSum(String class_id, String temp_date) {
+		String sql = "select CLASS_ID,M_ID,TEMP_DATE,count(*) as CNT from TEMP_ATTENDANCE where CLASS_ID = ? and TEMP_DATE=?  group by CLASS_ID,M_ID,TEMP_DATE";
+		List<Attendance> result = jdbcTemplate.query(sql,confirmAttendanceRowMapper,class_id,temp_date);
+		return result;
+	} 
+
+	
+	
 	
 	//MemberExam
 	private RowMapper<MemberExam> MemberExamMapper = new RowMapper<MemberExam>() {
 		@Override
 		public MemberExam mapRow(ResultSet rs, int rowNum) throws SQLException {
-			MemberExam beanAttendance = new MemberExam(
+			MemberExam beanMemberExam = new MemberExam(
 					rs.getInt("EXAM_ID"),
 					rs.getInt("M_ID"),
 					rs.getString("EX_IMG"),
 					rs.getString("ORI_FILE_NAME")
 			);
-			return beanAttendance;
+			return beanMemberExam;
 		}		
 	};
 	
@@ -793,6 +825,6 @@ public class AdminDao {
 		List<MemberExam> result = 
 				jdbcTemplate.query(sql, MemberExamMapper, m_id, exam_id);
 		return result.isEmpty()?null:result.get(0);
-	} 
+	}
 
 }

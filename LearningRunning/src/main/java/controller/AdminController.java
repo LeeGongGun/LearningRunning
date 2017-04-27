@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -725,10 +726,8 @@ public class AdminController {
 		return "/attendance/attendanceInsert";
 	}
 	@RequestMapping(value = "/tempAttend", method = RequestMethod.POST)
-	public String tempAttendanceList(int class_id,String status, Model model) {
-		
-		
-		List<TempAttendance> rs = (status.toUpperCase().equals("CHECK"))?null:dao.tempAttendanceList(class_id,status); 
+	public String tempAttendanceList(int class_id,String status,String temp_date, Model model) {
+		List<TempAttendance> rs = (status.toUpperCase().equals("CHECK"))?null:dao.tempAttendanceList(class_id,status,temp_date); 
 		String json = "";
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -748,20 +747,41 @@ public class AdminController {
 	public String tempAttendInsert(
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
 			@RequestParam(value="class_id") String class_id,
+			@RequestParam(value="temp_date") String temp_date,
 			@RequestParam(value="status") String status,
 			Model model) {
 		if(!status.equals("CHECK")){
 			for (Iterator<Integer> it = m_ids.iterator() ; it.hasNext() ;) {
 				Integer m_id = it.next();
-				boolean isAttend = dao.isAttend(m_id,class_id,status);
-				if(isAttend) it.remove();
-//				System.out.println(isAttend+" "+m_ids.toString());
+				TempAttendance isAttend = dao.getAttend(m_id,class_id,status,temp_date);
+				if(isAttend!=null) it.remove();
 			}
 		}
 		Time time = new Time(System.currentTimeMillis());
-		int rs = (m_ids.isEmpty())?0:dao.tempAttendInsert(m_ids,class_id, time, status);
+		int rs = (m_ids.isEmpty())?0:dao.tempAttendInsert(m_ids,class_id, time, status, temp_date);
 //		int rs = (m_ids.isEmpty())?0:0;
 		model.addAttribute("json", "{\"data\": "+rs+"}");
+		return "/ajax/ajaxDefault";
+	}
+	
+	
+	@RequestMapping(value = "/tempAttend/attendConfirm", method = RequestMethod.POST)
+	public String tempAttendConfirm(
+			@RequestParam(value="class_id") String class_id,
+			@RequestParam(value="temp_date") String temp_date,
+			Model model) {
+		//
+		List<Attendance> attends = dao.tempAttendanceListByClassSum(class_id,temp_date); 
+		
+		for (Attendance attendance : attends) {
+			TempAttendance startTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "START", attendance.getAttend_date().toString()); 
+			TempAttendance endTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "END", attendance.getAttend_date().toString()); 
+			TempAttendance stopTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "STOP", attendance.getAttend_date().toString()); 
+			TempAttendance restartTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "RESTART", attendance.getAttend_date().toString()); 
+			
+		}
+			
+		model.addAttribute("json", "{\"data\": "+0+"}");
 		return "/ajax/ajaxDefault";
 	}
 	

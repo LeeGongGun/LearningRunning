@@ -5,12 +5,12 @@ import java.sql.Timestamp;
 
 public class Attendance {
 	int attend_id,class_id,m_id;
-	Date attend_date;
+	String attend_date;
 	String attend_status,start_time,end_time,stop_time,restart_time;
 	
 	
 	
-	public Attendance(int attend_id, int class_id, int m_id, Date attend_date, String attend_status, String start_time,
+	public Attendance(int attend_id, int class_id, int m_id, String attend_date, String attend_status, String start_time,
 			String end_time, String stop_time, String restart_time) {
 		super();
 		this.attend_id = attend_id;
@@ -24,6 +24,15 @@ public class Attendance {
 		this.restart_time = restart_time;
 	}
 	
+	public Attendance(int class_id, int m_id, String attend_date) {
+		super();
+		this.class_id = class_id;
+		this.m_id = m_id;
+		this.attend_date = attend_date;
+	}
+
+
+
 	public int getAttend_id() {
 		return attend_id;
 	}
@@ -42,10 +51,10 @@ public class Attendance {
 	public void setM_id(int m_id) {
 		this.m_id = m_id;
 	}
-	public Date getAttend_date() {
+	public String getAttend_date() {
 		return attend_date;
 	}
-	public void setAttend_date(Date attend_date) {
+	public void setAttend_date(String attend_date) {
 		this.attend_date = attend_date;
 	}
 	public String getAttend_status() {

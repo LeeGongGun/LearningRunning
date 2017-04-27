@@ -426,7 +426,7 @@ public class TeacherDao {
 					rs.getInt("attend_id"),
 					rs.getInt("class_id"),
 					rs.getInt("m_id"),
-					rs.getDate("attend_date"),
+					rs.getDate("attend_date").toString(),
 					rs.getString("attend_status"),
 					rs.getString("start_time"),
 					rs.getString("end_time"),
