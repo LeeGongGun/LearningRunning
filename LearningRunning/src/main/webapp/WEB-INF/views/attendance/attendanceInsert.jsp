@@ -12,6 +12,9 @@
 <head>
 <title>출결 관리</title>
 <%@ include file="/WEB-INF/views/include/html-head.jsp"%>
+<style type="text/css">
+.attend_status{display: none;position: absolute;left:0;top: 0; background-color: #fff;border: 1px solid #000;}
+</style>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
 	<div class="wrapper">
@@ -34,13 +37,14 @@
 					<div class="col-xs-12">
 						<div class="box box-success form-inline">
 							<form id="searchFrm">
-								<select class="form-control " name="status" id="status">
+								<!--<select class="form-control " name="status" id="status">
 									<option value="START">출석</option>
 									<option value="END">퇴교</option>
 									<option value="STOP">외출</option>
 									<option value="RESTART">복귀</option>
 									<option value="CHECK">중간확인</option>
-								</select> <select class="form-control " name="class_id"
+								</select>-->
+								 <select class="form-control " name="class_id"
 									id="class_select_id">
 									<option value="">반을 선택하세요.</option>
 									<c:forEach var="classes" items="${classList}">
@@ -59,7 +63,7 @@
 								enctype="multipart/form-data">
 								<input type="hidden" id="state" name="state">
 								<input type="hidden" id="time" name="time">
-								<table class="table table-bordered "
+								<table class="table table-bordered table-hover"
 									cellspacing="0" width="100%" id="temp-attend">
 									<thead>
 										<tr>
@@ -110,7 +114,7 @@ $(function(){
 	var members = [];
 	var attends = [];
 	var $table=$("#temp-attend");
-	$table.on("click","tr.list-tr",function(){
+	$table.on("click","tr.list-tr.active",function(){
 		trClick("#44b6d9",this);
 	});
 	$("#con-allCheck").click(function(){
@@ -119,6 +123,8 @@ $(function(){
 		});
 	});
 	$("#attendInsertBtn").click(attendInsert);
+	$("#todayInsertBtn").click(attendConfirm);
+	
 	function getMembers(){
 		$class_id = $("#class_select_id");
 		members = [];
@@ -150,14 +156,14 @@ $(function(){
 		        type:'post',
 		        data: {
 		        	class_id: $class_id.val(),
-		        	status: $("#status").val(),
+		        	//status: $("#status").val(),
 		        	temp_date: $("#attendDate").val()
 		        	},
 		        success: function(json){
 		        	authTag = "";
 		        	attends = json.data;
 					$(members).each(function(i,item){
-							authTag +="<tr class='list-tr' data-m_id='"+item.m_id+"'>";
+							authTag +="<tr class='list-tr active' data-m_id='"+item.m_id+"'>";
 							authTag +="<td><input type='checkbox' name='m_id' value='"+item.m_id+"' readonly/></td>";
 							authTag +="<td>"+item.m_name+"</td>";
 							authTag +="</tr>";
@@ -170,17 +176,27 @@ $(function(){
 		            alert("code : " + request.status + "\r\nmessage : " + request.reponseText); 
 		        }, 
 		        complete: function(){
-		        	setAttend();
+		        	setMemDesabled();
 		        }
 		        
 		    });
 		}
 		
 	}
-	function setAttend(){
+	function setMemDesabled(){
 		$(attends).each(function(i,item){
-			tr = $table.find("tr[data-m_id='"+item.m_id+"']");
-			trClick("#44b6d9",tr);
+			$tr=$table.find("tr[data-m_id='"+item.m_id+"']")
+			$tr.removeClass("active");
+			$tr.data("toggle","popover");
+			$tr.data("placement","bottom");
+			$tr.attr("title","출결:"+item.attend_status);
+			$tr.data("content",
+					"출석:"+item.start_time
+					+"<br/>"+"퇴교:"+item.end_time
+					+"<br/>"+"외출:"+item.stop_time
+					+"<br/>"+"재입장:"+item.restart_time
+					);
+			$tr.popover({container: $table,trigger:"hover",html:true});
 		});
 	}
 	function getTableList(sText){
@@ -210,13 +226,13 @@ $(function(){
 		}
 	}
 	function attendInsert(){
-		obj = $table.find("input[name='m_id']:checked");
+		obj = $table.find("tr.active").find("input[name='m_id']:checked");
 		arr =[];
 		obj.each(function(i){
 			arr.push($(this).val());
 		});
 		if(arr.length>0){
-			if(confirm(arr.length+"건 "+$("#status").find("option:selected").text()+"로 입력하시겠습니까?")){
+			if(confirm(arr.length+"건  입력하시겠습니까?")){
 			$.ajax({
 		        url : "<%=rootPath %>/admin/tempAttend/insert",
 				type : 'post',
@@ -224,7 +240,7 @@ $(function(){
 					m_id : arr,
 					class_id : $class_id.val(),
 					temp_date : $("#attendDate").val(),
-					status : $("#status").val(),
+					//status : $("#status").val(),
 				},
 				success : function(json) {
 					if (json.data > 0){
@@ -246,7 +262,7 @@ $(function(){
 	function attendConfirm(){
 		$class_id = $("#class_select_id");
 		if($class_id.val()!=""){
-			if(confirm(arr.length+"건 "+$("#status").find("option:selected").text()+"로 입력하시겠습니까?")){
+			if(confirm("임시저장된 출결사항을 확정하시겠습니까?")){
 			$.ajax({
 		        url : "<%=rootPath %>/admin/tempAttend/attendConfirm",
 				type : 'post',

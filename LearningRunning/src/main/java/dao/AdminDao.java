@@ -256,11 +256,11 @@ public class AdminDao {
 				);
 	}
 	public int memberEdit(AuthMember command) {
-		String imgSql = (command.getM_image()==null)?"":"M_IMAGE='"+command.getM_image()+"'"; 
+		String imgSql = (command.getM_image()==null)?"":" , M_IMAGE='"+command.getM_image()+"'"; 
 		return jdbcTemplate.update(" update MEMBER set "
 				+ "M_EMAIL=?,"
 				+ "M_NAME=?,"
-				+ "M_PASS=?,"
+				+ "M_PASS=? "
 				+ imgSql
 				+ " where M_ID = ? ",
 				command.getM_email(),
@@ -685,7 +685,29 @@ public class AdminDao {
 				jdbcTemplate.query(sql, attendPersonRowMapper, command.getM_id(), command.getClass_id(), command.getFrom(), command.getTo());
 		return results;
 	}
+	public int attendInsert(Attendance attend) {
+		return jdbcTemplate.update("insert into ATTENDANCE "
+				+ "(ATTEND_ID,CLASS_ID,M_ID,ATTEND_DATE,ATTEND_STATUS,START_TIME,END_TIME,STOP_TIME,RESTART_TIME) "
+				+ "values(SEQUENCE_ATTEND.NEXTVAL,?,?,?,?,?,?,?,?) ",
+				attend.getClass_id(),
+				attend.getM_id(),
+				attend.getAttend_date(),
+				attend.getAttend_status(),
+				attend.getStart_time(),
+				attend.getEnd_time(),
+				attend.getStop_time(),
+				attend.getRestart_time()
+				);
+	}
+	public List<Attendance> classAttendanceList(int class_id, String temp_date) {
+		String sql = "select * from ATTENDANCE where CLASS_ID=? and ATTEND_DATE=? ";
+		List<Attendance> results = 
+				jdbcTemplate.query(sql, attendPersonRowMapper, class_id, temp_date);
+		return results;
+	}
 
+	
+	
 	//TempAttendance
 	private RowMapper<TempAttendance> tempAttendanceRowMapper = new RowMapper<TempAttendance>() {
 		@Override
@@ -695,7 +717,6 @@ public class AdminDao {
 					rs.getInt("ClASS_ID"),
 					rs.getInt("M_ID"),
 					rs.getTime("CHECK_TIME"),
-					rs.getString("STATUS"),
 					rs.getString("TEMP_DATE")
 			);
 			return beanAttendance;
@@ -715,56 +736,31 @@ public class AdminDao {
 		List<Classes> result = jdbcTemplate.query(sql,classRowMapper);
 		return result;
 	}
-	public List<TempAttendance> tempAttendanceList(int class_id, String status,String date) {
-		if(status.toUpperCase().equals("CHECK")) return null;
-		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? and status=? and temp_date=? ) "
+	public List<TempAttendance> tempAttendanceList(int class_id, String date) {
+		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? and temp_date=? ) "
 				+ "natural join MEMBER  ";
-		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id,status,date);
+		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id,date);
 		return result;
 	}
-	public int attendInsert(AttendanceInsertCommand command,int class_id) {
-		String state = command.getState();
-		String cName = "";
-		if (state.equals("start")) {
-			cName = "START_TIME";
-		}else if (state.equals("stop")) {
-			cName = "STOP_TIME";
-		}else if (state.equals("restart")) {
-			cName = "RESTART_TIME";
-		}else if (state.equals("end")) {
-			cName = "END_TIME";
-		}else {
-			return 0;
-		}
-		String inSql = "";
-		String[] ids = command.getAttendanceCheck();
-		for (int i = 0; i < ids.length; i++) {
-			if (i!=0) inSql += ",";
-			inSql += ids[i];
-		}
-		String sql = "update TEMP_ATTENDANCE set " + cName + " = ? where CLASS_ID = ? and M_ID IN ("+inSql+") and "+cName+" IS NULL ";
-		return jdbcTemplate.update(sql, command.getTime(),class_id);
-	}
 	@Transactional
-	public int tempAttendInsert(List<Integer> m_ids, String class_id,Time time,String status,String temp_date) {
+	public int tempAttendInsert(List<Integer> m_ids, String class_id,Time time,String temp_date) {
 		int result=0;
 		for (int i = 0;i<m_ids.size() ;i++) {
-			result += jdbcTemplate.update("insert into TEMP_ATTENDANCE (TEMP_ID,CLASS_ID,M_ID,CHECK_TIME,STATUS,TEMP_DATE) "
-					+ "values(SEQUENCE_TEMP_ATTEND.NEXTVAL,?,?,?,?,?) ",
+			result += jdbcTemplate.update("insert into TEMP_ATTENDANCE (TEMP_ID,CLASS_ID,M_ID,CHECK_TIME,TEMP_DATE) "
+					+ "values(SEQUENCE_TEMP_ATTEND.NEXTVAL,?,?,?,?) ",
 					class_id,
 					m_ids.get(i),
 					time,
-					status,
 					temp_date
 					);
 		}
 		return result;
 	}
-	public TempAttendance getAttend(Integer m_id, String class_id,String status,String temp_date) {
-		String sql = "select * from TEMP_ATTENDANCE where M_ID = ? and CLASS_ID=?   and STATUS=?  and TEMP_DATE=?  ";
+	public List<TempAttendance> getAttend(Integer m_id, String class_id,String temp_date) {
+		String sql = "select * from TEMP_ATTENDANCE where M_ID = ? and CLASS_ID=? and TEMP_DATE=? order by TEMP_DATE,CHECK_TIME ";
 		List<TempAttendance> result = 
-				jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id, status, temp_date);
-		return result.isEmpty()?null:result.get(0);
+				jdbcTemplate.query(sql, tempAttendanceRowMapper, m_id, class_id,  temp_date);
+		return result;
 	}
 	public List<TempAttendance> tempAttendanceListByClass(String class_id) {
 		String sql = "select * from (select * from TEMP_ATTENDANCE where CLASS_ID = ? ) "
@@ -772,6 +768,15 @@ public class AdminDao {
 		List<TempAttendance> result = jdbcTemplate.query(sql,tempAttendanceRowMapper,class_id);
 		return result;
 	} 
+	public int delTempAttend(Attendance attendance) {
+		// (attendance.getM_id(), attendance.getClass_id()+"",attendance.getAttend_date().toString())
+		return jdbcTemplate.update("delete from TEMP_ATTENDANCE where m_id = ? and class_id = ? and TEMP_DATE = ?",
+				attendance.getM_id(),
+				attendance.getClass_id(),
+				attendance.getAttend_date()
+				);
+		
+	}
 
 	
 	
@@ -788,9 +793,9 @@ public class AdminDao {
 	};
 	
 	
-	public List<Attendance> tempAttendanceListByClassSum(String class_id, String temp_date) {
-		String sql = "select CLASS_ID,M_ID,TEMP_DATE,count(*) as CNT from TEMP_ATTENDANCE where CLASS_ID = ? and TEMP_DATE=?  group by CLASS_ID,M_ID,TEMP_DATE";
-		List<Attendance> result = jdbcTemplate.query(sql,confirmAttendanceRowMapper,class_id,temp_date);
+	public List<Attendance> tempAttendanceListByClassSum(String class_id) {
+		String sql = "select CLASS_ID,M_ID,TEMP_DATE,count(*) as CNT from TEMP_ATTENDANCE where CLASS_ID = ?  group by CLASS_ID,M_ID,TEMP_DATE";
+		List<Attendance> result = jdbcTemplate.query(sql,confirmAttendanceRowMapper,class_id);
 		return result;
 	} 
 

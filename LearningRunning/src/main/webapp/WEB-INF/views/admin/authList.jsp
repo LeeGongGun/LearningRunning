@@ -174,7 +174,7 @@
 				});
 			}
 			function insertAuth(){
-				obj = $("#not-members  [name='m_id']:checked");
+				obj = $("#not-members  input[name='m_id']:checked");
 				arr =[];
 				obj.each(function(i){
 					arr.push($(this).val());

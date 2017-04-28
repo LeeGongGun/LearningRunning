@@ -241,7 +241,8 @@
 			    });
 			}
 		});
-		$("#modal_subject_id").select2().change(function(){
+		$("#modal_subject_id").select2();
+		$("#modal_subject_id").on("change",function(){
 			if($("#modal_subject_id").val()=="" || $("#modal_subject_id").val()==null){ 
 				clearFrm();
 				return false;

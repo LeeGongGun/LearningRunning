@@ -3,6 +3,7 @@ package controller;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -135,9 +137,10 @@ public class AdminController {
 		
 		AuthInfo authInfo = (AuthInfo) session.getAttribute("authinfo");
 		int rs=0;
-		if(authInfo!=null && authInfo.isAdmin()){
-			rs = dao.authInsert(m_ids,auth_ename,authInfo.getM_id());
-		}
+//		if(authInfo!=null && authInfo.isAdmin()){
+//			System.out.println("isAdmin");
+			rs = dao.authInsert(m_ids,auth_ename,1);
+//		}
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
@@ -726,8 +729,9 @@ public class AdminController {
 		return "/attendance/attendanceInsert";
 	}
 	@RequestMapping(value = "/tempAttend", method = RequestMethod.POST)
-	public String tempAttendanceList(int class_id,String status,String temp_date, Model model) {
-		List<TempAttendance> rs = (status.toUpperCase().equals("CHECK"))?null:dao.tempAttendanceList(class_id,status,temp_date); 
+	public String tempAttendanceList(int class_id,String temp_date, Model model) {
+//		List<TempAttendance> rs = (status.toUpperCase().equals("CHECK"))?null:dao.tempAttendanceList(class_id,status,temp_date); 
+		List<Attendance> rs = dao.classAttendanceList(class_id,temp_date); 
 		String json = "";
 		try {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
@@ -748,39 +752,92 @@ public class AdminController {
 			@RequestParam(value="m_id[]") List<Integer> m_ids,
 			@RequestParam(value="class_id") String class_id,
 			@RequestParam(value="temp_date") String temp_date,
-			@RequestParam(value="status") String status,
 			Model model) {
-		if(!status.equals("CHECK")){
-			for (Iterator<Integer> it = m_ids.iterator() ; it.hasNext() ;) {
-				Integer m_id = it.next();
-				TempAttendance isAttend = dao.getAttend(m_id,class_id,status,temp_date);
-				if(isAttend!=null) it.remove();
-			}
-		}
+//			for (Iterator<Integer> it = m_ids.iterator() ; it.hasNext() ;) {
+//				Integer m_id = it.next();
+//				List<TempAttendance> isAttend = dao.getAttend(m_id,class_id,temp_date);
+//				if(isAttend.isEmpty()) it.remove();
+//			}
 		Time time = new Time(System.currentTimeMillis());
-		int rs = (m_ids.isEmpty())?0:dao.tempAttendInsert(m_ids,class_id, time, status, temp_date);
+		int rs = (m_ids.isEmpty())?0:dao.tempAttendInsert(m_ids,class_id, time,  temp_date);
 //		int rs = (m_ids.isEmpty())?0:0;
 		model.addAttribute("json", "{\"data\": "+rs+"}");
 		return "/ajax/ajaxDefault";
 	}
 	
-	
+	@Transactional
 	@RequestMapping(value = "/tempAttend/attendConfirm", method = RequestMethod.POST)
 	public String tempAttendConfirm(
 			@RequestParam(value="class_id") String class_id,
 			@RequestParam(value="temp_date") String temp_date,
 			Model model) {
-		//
-		List<Attendance> attends = dao.tempAttendanceListByClassSum(class_id,temp_date); 
-		
+		//@Transactional 에러가 발생가능성 있음 javascript 에서 에러 처리를 해줘야 함
+		List<Attendance> attends = dao.tempAttendanceListByClassSum(class_id); 
+		int status = 0;
+		String[] attend_status = {"결석","출석","지각","조퇴","외출"};
 		for (Attendance attendance : attends) {
-			TempAttendance startTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "START", attendance.getAttend_date().toString()); 
-			TempAttendance endTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "END", attendance.getAttend_date().toString()); 
-			TempAttendance stopTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "STOP", attendance.getAttend_date().toString()); 
-			TempAttendance restartTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"", "RESTART", attendance.getAttend_date().toString()); 
-			
+			List<TempAttendance> memberTempAttend = dao.getAttend(attendance.getM_id(), attendance.getClass_id()+"",attendance.getAttend_date().toString()); 
+			if(!memberTempAttend.isEmpty()){
+				String option = "gukbi";
+				if(option.equals("gukbi")){//국비지원 학원의 출석정책
+					int size = memberTempAttend.size();
+					Time limitStart = new Time(9, 10, 0);//출석 인정시간
+					Time limitEnd = new Time(17, 50, 0);//출석 인정시간
+					Time start=null,end=null,stop=null,restart=null;
+					long completTime = 480000L;
+					long minimumTime = 240000L;
+					switch (size) {
+					case 1: //이경우 에러로 보고 결석 처리
+						status = 0;
+						break;
+					case 2: case 3://출석 ,퇴교 시간만 있는 일반적인 경우 3개있는 경우는 1,2번만 유효값으로 처리함
+						start = memberTempAttend.get(0).getCheck_time();
+						end = memberTempAttend.get(1).getCheck_time();
+						attendance.setStart_time(start.toString());
+						attendance.setEnd_time(end.toString());
+						if(end.getTime() - start.getTime() < minimumTime ){//4시간이 안될 경우
+							break;							
+						}
+						if(end.getTime() - start.getTime() < completTime ){//8시간이 안될 경우
+							status = 3;	
+							break;							
+						}
+						if( start.getTime() > limitStart.getTime() ){//지각처리
+							status = 2;	
+							break;
+						}
+						if( end.getTime() < limitEnd.getTime() ){//조퇴처리
+							status = 3;	
+							break;
+						}
+						status = 1;	
+						break;
+					case 4://외출의 경우
+						start = memberTempAttend.get(0).getCheck_time();
+						end = memberTempAttend.get(1).getCheck_time();
+						stop = memberTempAttend.get(2).getCheck_time();
+						restart = memberTempAttend.get(3).getCheck_time();
+						attendance.setStart_time(start.toString());
+						attendance.setEnd_time(end.toString());
+						attendance.setStop_time(stop.toString());
+						attendance.setRestart_time(restart.toString());
+						if((stop.getTime() - start.getTime()) + (end.getTime() - restart.getTime()) < minimumTime ){//총시간이 4시간 이하일경우 결석
+							break;
+						}
+						status = 4;	//4시간 이상 외출 처리
+						break;
+
+					default:
+						status = 0;
+						break;
+					}
+					
+				}
+			}
+			attendance.setAttend_status(attend_status[status]);
+			dao.attendInsert(attendance);
+			dao.delTempAttend(attendance);
 		}
-			
 		model.addAttribute("json", "{\"data\": "+0+"}");
 		return "/ajax/ajaxDefault";
 	}
