@@ -60,19 +60,16 @@ td.input-td{padding:0px !important;}
 							<button id="allDel" class="btn  btn-danger  btn-sm">모두
 								삭제</button>
 							<button id="allClear" class="btn  btn-default  btn-sm">
-								모두<input id="setNum" type="number" min=0 max=100 step=10
-									value='0' />
+								모두<input id="setNum" type="number" min="0" max="100" step="10" value="0" />
 							</button>
 							<div class="box box-primary">
 								
 								<input type="hidden" name="exam_id" id="exam_frm_id">
 								<table class="table table-striped table-bordered table-hover"
-									id="sub-table" cellspacing="0" width="100%">
+									id="sub-table">
 									<thead>
 										<tr>
-											<th class="search-th"><input type="text"
-												class="form-control" id="searchText" name="searchText"
-												placeholder="검색"></th>
+											<th class="search-th"><input type="text" class="form-control" id="searchText" name="searchText" placeholder="검색"></th>
 										</tr>
 									</thead>
 									<tbody>

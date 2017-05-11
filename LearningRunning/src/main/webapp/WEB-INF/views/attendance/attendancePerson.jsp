@@ -57,12 +57,10 @@
 					~
 					<input type="text" name="to" id="to" class="form-control"
 									placeholder="to" required readonly />
-								</label>
 								<input type="button" value="조회" class="btn btn-default"
 									id="searchBtn">
 							</form:form>
-							<table class="table table-striped table-bordered" cellspacing="0"
-								width="100%" id="personTotalAttendTable">
+							<table class="table table-striped table-bordered" id="personTotalAttendTable">
 								<tr>
 									<th><span class="badge bg-green">출석</span> : <span id="attendings">${ClassAttend.attendings }</span></th>
 									<th><span class="badge bg-red">결석</span> : <span id="noAttendings">${ClassAttend.noAttendings }</span></th>
@@ -72,8 +70,7 @@
 								</tr>
 
 							</table>
-							<table class="table table-hover table-bordered" cellspacing="0"
-								width="100%" id="personAttendTable">
+							<table class="table table-hover table-bordered"  id="personAttendTable">
 								<thead>
 									<tr>
 										<th>수강날짜</th>

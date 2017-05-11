@@ -44,8 +44,7 @@
 					</div>
 					<div class="col-xs-5">
 						<div class="box box-info">
-							<table class="table table-striped table-bordered" cellspacing="0"
-								width="100%" id="not-members">
+							<table class="table table-striped table-bordered"  id="not-members">
 								<thead>
 									<tr>
 
@@ -74,8 +73,7 @@
 					</div>
 					<div class="col-sm-5">
 						<div class="box box-warning">
-							<table class="table table-striped table-bordered" cellspacing="0"
-								width="100%" id="auth-members">
+							<table class="table table-striped table-bordered" id="auth-members">
 								<thead>
 									<tr>
 

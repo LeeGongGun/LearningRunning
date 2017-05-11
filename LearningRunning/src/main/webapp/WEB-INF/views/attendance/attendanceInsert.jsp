@@ -63,8 +63,7 @@
 								enctype="multipart/form-data">
 								<input type="hidden" id="state" name="state">
 								<input type="hidden" id="time" name="time">
-								<table class="table table-bordered table-hover"
-									cellspacing="0" width="100%" id="temp-attend">
+								<table class="table table-bordered table-hover" id="temp-attend">
 									<thead>
 										<tr>
 
