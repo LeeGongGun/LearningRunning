@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>권한 관리</title>
+<title>권한 관리ㅁㄴㅇㄹ</title>
 <%@ include file="/WEB-INF/views/include/html-head.jsp"%>
 </head>
 <body class="hold-transition skin-blue sidebar-mini">
